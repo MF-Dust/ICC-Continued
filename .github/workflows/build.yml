@@ -2,9 +2,9 @@ name: Build
 
 on:
   push:
-    branches: [ main]
+    branches: [ main ]
   pull_request:
-    branches: [ main]
+    branches: [ main ]
 
 env:
   DOTNET_VERSION: '8.0.x'
@@ -13,27 +13,35 @@ env:
 jobs:
   quick-build:
     runs-on: windows-latest
-    
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: ${{ env.DOTNET_VERSION }}
+      - name: Setup .NET 8 (locked)
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+          dotnet-quality: ga
 
-    - name: Restore dependencies
-      run: dotnet restore "${{ env.SOLUTION_PATH }}"
+      - name: Verify .NET SDK
+        run: dotnet --info
 
-    - name: Build Release (x86)
-      run: dotnet build "${{ env.SOLUTION_PATH }}" `
-        --configuration Release `
-        --no-restore `
-        -p:Platform=x86
+      - name: Restore dependencies (net8 only)
+        run: dotnet restore "${{ env.SOLUTION_PATH }}" --framework net8.0
 
-    - name: Build Release (x64)
-      run: dotnet build "${{ env.SOLUTION_PATH }}" `
-        --configuration Release `
-        --no-restore `
-        -p:Platform=x64
+      - name: Build Release (x86, net8 only)
+        run: |
+          dotnet build "${{ env.SOLUTION_PATH }}" `
+            --configuration Release `
+            --framework net8.0 `
+            --no-restore `
+            -p:Platform=x86
+
+      - name: Build Release (x64, net8 only)
+        run: |
+          dotnet build "${{ env.SOLUTION_PATH }}" `
+            --configuration Release `
+            --framework net8.0 `
+            --no-restore `
+            -p:Platform=x64
