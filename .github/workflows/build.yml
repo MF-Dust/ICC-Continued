@@ -7,7 +7,6 @@ on:
     branches: [ main ]
 
 env:
-  DOTNET_VERSION: '8.0.x'
   SOLUTION_PATH: 'Ink Canvas.sln'
 
 jobs:
@@ -18,17 +17,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup .NET 8 (locked)
+      - name: Setup .NET 8 (hard pinned)
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
+          dotnet-version: '8.0.x'
           dotnet-quality: ga
 
-      - name: Verify .NET SDK
+      - name: Verify SDK
         run: dotnet --info
 
-      - name: Restore dependencies (net8 only)
-        run: dotnet restore "${{ env.SOLUTION_PATH }}" --framework net8.0
+      - name: Restore dependencies
+        run: dotnet restore "${{ env.SOLUTION_PATH }}"
 
       - name: Build Release (x86, net8 only)
         run: |
