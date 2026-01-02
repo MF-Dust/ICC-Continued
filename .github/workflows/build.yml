@@ -17,24 +17,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          lfs: true  # 开启 LFS 支持，防止图片资源损坏或丢失
+          lfs: true
           submodules: recursive
 
       - name: Setup .NET 8
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
-          cache: dotnet # 开启 NuGet 缓存，加速构建
+          cache: true  
 
       - name: Verify SDK
         run: dotnet --info
 
       - name: Restore dependencies
-        # 还原所有依赖
         run: dotnet restore "${{ env.SOLUTION_PATH }}"
 
       - name: Build Release (x86)
-
         run: |
           dotnet build "${{ env.SOLUTION_PATH }}" `
             --configuration Release `
