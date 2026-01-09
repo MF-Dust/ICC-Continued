@@ -44,20 +44,10 @@
     <Optimize>true</Optimize>
   </PropertyGroup>
 
-  <!-- 本地 DLL 引用 -->
+  <!-- 本地 DLL 引用 - 已移除旧版 IA 库，改用 Windows.UI.Input.Inking.Analysis API -->
   <ItemGroup>
-    <Reference Include="IACore">
-      <HintPath>IACore.dll</HintPath>
-      <Private>true</Private>
-    </Reference>
-    <Reference Include="IALoader">
-      <HintPath>IALoader.dll</HintPath>
-      <Private>true</Private>
-    </Reference>
-    <Reference Include="IAWinFX">
-      <HintPath>IAWinFX.dll</HintPath>
-      <Private>true</Private>
-    </Reference>
+    <!-- IACore.dll, IALoader.dll, IAWinFX.dll 已移除 -->
+    <!-- 现在使用 Windows 10 1607+ 内置的墨迹分析 API -->
   </ItemGroup>
 
   <!-- NuGet 包引用 -->
@@ -104,9 +94,7 @@
   <!-- 其他文件配置 -->
   <ItemGroup>
     <None Include="app.manifest" />
-    <None Update="IACore.dll" CopyToOutputDirectory="PreserveNewest" />
-    <None Update="IALoader.dll" CopyToOutputDirectory="PreserveNewest" />
-    <None Update="IAWinFX.dll" CopyToOutputDirectory="PreserveNewest" />
+    <!-- IACore.dll, IALoader.dll, IAWinFX.dll 已移除 -->
     <None Update="custom-copyright-banner.png" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 

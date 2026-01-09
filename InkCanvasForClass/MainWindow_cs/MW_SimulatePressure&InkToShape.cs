@@ -23,7 +23,8 @@ namespace Ink_Canvas {
 
             try {
                 inkCanvas.Opacity = 1;
-                if (Settings.InkToShape.IsInkToShapeEnabled && !Environment.Is64BitProcess) {
+                // 注意：新的 Windows.UI.Input.Inking.Analysis API 支持 x64，移除了 64 位进程检查
+                if (Settings.InkToShape.IsInkToShapeEnabled) {
                     void InkToShapeProcess() {
                         try {
                             newStrokes.Add(e.Stroke);

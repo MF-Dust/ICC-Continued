@@ -75,10 +75,15 @@ namespace Ink_Canvas
                     }
                 }
                 
-                LogHelper.WriteLogToFile("Application Exit: Cleanup completed", LogHelper.LogType.Event);
+                LogHelper.WriteLogToFile("Application Exit: Cleanup completed, forcing exit", LogHelper.LogType.Event);
             }
             catch (Exception ex) {
                 LogHelper.WriteLogToFile("Application Exit: Error during cleanup - " + ex.Message, LogHelper.LogType.Error);
+            }
+            finally {
+                // 强制终止进程，确保不会残留
+                // 使用 Environment.Exit 确保所有线程（包括前台线程）都被终止
+                Environment.Exit(0);
             }
         }
 
@@ -112,18 +117,8 @@ namespace Ink_Canvas
         }
 
         private Assembly OnAssemblyResolve(object sender, ResolveEventArgs args) {
-            if (args.Name.Contains("IAWinFX") || args.Name.Contains("IACore") || args.Name.Contains("IALoader")) {
-                try {
-                    string assemblyName = new AssemblyName(args.Name).Name + ".dll";
-                    string assemblyPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, assemblyName);
-                    if (File.Exists(assemblyPath)) {
-                        return Assembly.LoadFrom(assemblyPath);
-                    }
-                }
-                catch (Exception ex) {
-                    LogHelper.WriteLogToFile("AssemblyResolve failed for " + args.Name + ": " + ex.Message, LogHelper.LogType.Error);
-                }
-            }
+            // 旧版 IA 库 (IAWinFX, IACore, IALoader) 已移除
+            // 现在使用 Windows.UI.Input.Inking.Analysis API，不再需要处理这些程序集
             return null;
         }
 

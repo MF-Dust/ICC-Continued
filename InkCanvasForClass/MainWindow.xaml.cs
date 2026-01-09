@@ -470,19 +470,9 @@ namespace Ink_Canvas {
 
         private static void PreloadIALibrary() {
             try {
-                GC.KeepAlive(typeof(InkAnalyzer));
-                GC.KeepAlive(typeof(AnalysisAlternate));
-                GC.KeepAlive(typeof(InkDrawingNode));
-                var analyzer = new InkAnalyzer();
-                analyzer.AddStrokes(new StrokeCollection() {
-                    new Stroke(new StylusPointCollection() {
-                        new StylusPoint(114,514),
-                        new StylusPoint(191,9810),
-                        new StylusPoint(7,21),
-                        new StylusPoint(123,789),
-                    })
-                });
-                analyzer.Analyze();
+                // 使用新的 Windows.UI.Input.Inking.Analysis API 预热
+                _ = InkRecognizeHelper.PreloadAsync();
+                LogHelper.WriteLogToFile("Ink Analysis API preload initiated", LogHelper.LogType.Info);
             }
             catch (Exception ex) {
                 LogHelper.WriteLogToFile("PreloadIALibrary failed: " + ex.Message, LogHelper.LogType.Error);
@@ -499,7 +489,8 @@ namespace Ink_Canvas {
             CheckPenTypeUIState();
             
             // HasNewUpdateWindow hasNewUpdateWindow = new HasNewUpdateWindow();
-            if (Environment.Is64BitProcess) SettingsInkRecognitionGroupBox.Visibility = Visibility.Collapsed;
+            // 注意：旧版 IA 库不支持 64 位，但新的 Windows.UI.Input.Inking.Analysis API 支持 x64
+            // 因此移除了 64 位进程检查
 
             ThemeManager.Current.ApplicationTheme = ApplicationTheme.Light;
             SystemEvents_UserPreferenceChanged(null, null);
