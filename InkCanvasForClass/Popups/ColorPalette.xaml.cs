@@ -1042,7 +1042,8 @@ namespace Ink_Canvas.Popups {
             spcm.HorizontalOffset = pt.X;
             spcm.Placement = System.Windows.Controls.Primitives.PlacementMode.Relative;
             spcm.PlacementTarget = this;
-            spcm.IsOpen = !spcm.IsOpen;
+            spcm.IsOpen = true;
+            spcm.StaysOpen = true;
         }
 
 
