@@ -1846,7 +1846,7 @@ namespace Ink_Canvas {
             UpdateFloatingBarHandIconCheckedStatus();
         }
 
-        private void BtnUndo_Click(object sender, RoutedEventArgs e) {
+        public void BtnUndo_Click(object sender, RoutedEventArgs e) {
             if (inkCanvas.GetSelectedStrokes().Count != 0) {
                 GridInkCanvasSelectionCover.Visibility = Visibility.Collapsed;
                 inkCanvas.Select(new StrokeCollection());
@@ -1858,7 +1858,7 @@ namespace Ink_Canvas {
             ApplyHistoryToCanvas(item);
         }
 
-        private void BtnRedo_Click(object sender, RoutedEventArgs e) {
+        public void BtnRedo_Click(object sender, RoutedEventArgs e) {
             if (inkCanvas.GetSelectedStrokes().Count != 0) {
                 GridInkCanvasSelectionCover.Visibility = Visibility.Collapsed;
                 inkCanvas.Select(new StrokeCollection());
@@ -1946,7 +1946,7 @@ namespace Ink_Canvas {
         private bool forceEraser = false;
 
 
-        private void BtnClear_Click(object sender, RoutedEventArgs e) {
+        public void BtnClear_Click(object sender, RoutedEventArgs e) {
             forceEraser = false;
             //BorderClearInDelete.Visibility = Visibility.Collapsed;
 

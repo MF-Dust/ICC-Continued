@@ -69,9 +69,15 @@ namespace Ink_Canvas {
             }
             
             // 绑定工具按钮点击事件
+            CursorButton.MouseUp += CursorButton_Click;
+            UndoButton.MouseUp += UndoButton_Click;
+            RedoButton.MouseUp += RedoButton_Click;
+            ClearButton.MouseUp += ClearButton_Click;
             GridLineButton.MouseUp += GridLineButton_Click;
             SnapButton.MouseUp += SnapButton_Click;
             MultiPointButton.MouseUp += MultiPointButton_Click;
+            InfoButton.MouseUp += InfoButton_Click;
+            MoreButton.MouseUp += MoreButton_Click;
 
             Toolbar.Visibility = Visibility.Collapsed;
             AngleTooltip.Visibility = Visibility.Collapsed;
@@ -441,6 +447,200 @@ namespace Ink_Canvas {
             } else {
                 button.Background = TransparentBrush;
             }
+        }
+
+        #endregion
+
+        #region 其他工具按钮功能
+
+        /// <summary>
+        /// 光标按钮 - 退出绘制模式
+        /// </summary>
+        private void CursorButton_Click(object sender, MouseButtonEventArgs e) {
+            if (ToolButtonMouseDownBorder == null || ToolButtonMouseDownBorder != sender) return;
+            
+            ToolButton_MouseLeave(sender, null);
+            
+            // 退出绘制模式
+            EndShapeDrawing();
+        }
+
+        /// <summary>
+        /// 撤销按钮
+        /// </summary>
+        private void UndoButton_Click(object sender, MouseButtonEventArgs e) {
+            if (ToolButtonMouseDownBorder == null || ToolButtonMouseDownBorder != sender) return;
+            
+            ToolButton_MouseLeave(sender, null);
+            
+            // 调用 MainWindow 的撤销方法
+            if (MainWindow != null) {
+                MainWindow.BtnUndo_Click(null, null);
+            }
+        }
+
+        /// <summary>
+        /// 重做按钮
+        /// </summary>
+        private void RedoButton_Click(object sender, MouseButtonEventArgs e) {
+            if (ToolButtonMouseDownBorder == null || ToolButtonMouseDownBorder != sender) return;
+            
+            ToolButton_MouseLeave(sender, null);
+            
+            // 调用 MainWindow 的重做方法
+            if (MainWindow != null) {
+                MainWindow.BtnRedo_Click(null, null);
+            }
+        }
+
+        /// <summary>
+        /// 清空按钮
+        /// </summary>
+        private void ClearButton_Click(object sender, MouseButtonEventArgs e) {
+            if (ToolButtonMouseDownBorder == null || ToolButtonMouseDownBorder != sender) return;
+            
+            ToolButton_MouseLeave(sender, null);
+            
+            // 调用 MainWindow 的清空方法
+            if (MainWindow != null) {
+                MainWindow.BtnClear_Click(null, null);
+            }
+        }
+
+        /// <summary>
+        /// 信息按钮 - 显示帮助信息
+        /// </summary>
+        private void InfoButton_Click(object sender, MouseButtonEventArgs e) {
+            if (ToolButtonMouseDownBorder == null || ToolButtonMouseDownBorder != sender) return;
+            
+            ToolButton_MouseLeave(sender, null);
+            
+            // 显示帮助信息
+            ShowHelpInfo();
+        }
+
+        /// <summary>
+        /// 更多按钮 - 显示更多选项
+        /// </summary>
+        private void MoreButton_Click(object sender, MouseButtonEventArgs e) {
+            if (ToolButtonMouseDownBorder == null || ToolButtonMouseDownBorder != sender) return;
+            
+            ToolButton_MouseLeave(sender, null);
+            
+            // 显示更多选项菜单
+            ShowMoreOptions();
+        }
+
+        /// <summary>
+        /// 显示帮助信息
+        /// </summary>
+        private void ShowHelpInfo() {
+            var helpText = @"几何图形绘制工具
+
+快捷键：
+• 网格辅助线：显示网格帮助精确绘制
+• 顶点吸附：自动吸附到网格点或笔画端点
+• 多指绘制：启用多点触控支持
+
+使用方法：
+1. 点击对应按钮启用功能
+2. 开始绘制几何图形
+3. 激活的按钮显示蓝色背景
+
+提示：
+• 网格大小：20像素
+• 吸附距离：15像素
+• 按钮可以组合使用";
+
+            System.Windows.MessageBox.Show(
+                helpText,
+                "几何图形绘制帮助",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information
+            );
+        }
+
+        /// <summary>
+        /// 显示更多选项
+        /// </summary>
+        private void ShowMoreOptions() {
+            // 创建上下文菜单
+            var contextMenu = new System.Windows.Controls.ContextMenu();
+            
+            // 网格大小设置
+            var gridSizeItem = new System.Windows.Controls.MenuItem {
+                Header = "网格大小"
+            };
+            
+            foreach (var size in new[] { 10, 20, 30, 40, 50 }) {
+                var sizeItem = new System.Windows.Controls.MenuItem {
+                    Header = $"{size} 像素",
+                    IsCheckable = true,
+                    IsChecked = Math.Abs(_gridSize - size) < 0.1
+                };
+                var capturedSize = size;
+                sizeItem.Click += (s, e) => {
+                    _gridSize = capturedSize;
+                    // 如果网格已启用，刷新显示
+                    if (_isGridEnabled && !isFullscreenGridDown) {
+                        using (DrawingContext dc = DrawingVisualCanvas.DrawingVisual.RenderOpen()) {
+                            DrawGrid(dc);
+                        }
+                    }
+                };
+                gridSizeItem.Items.Add(sizeItem);
+            }
+            contextMenu.Items.Add(gridSizeItem);
+            
+            // 吸附距离设置
+            var snapDistanceItem = new System.Windows.Controls.MenuItem {
+                Header = "吸附距离"
+            };
+            
+            foreach (var distance in new[] { 10, 15, 20, 25, 30 }) {
+                var distItem = new System.Windows.Controls.MenuItem {
+                    Header = $"{distance} 像素",
+                    IsCheckable = true,
+                    IsChecked = Math.Abs(_snapDistance - distance) < 0.1
+                };
+                var capturedDistance = distance;
+                distItem.Click += (s, e) => {
+                    _snapDistance = capturedDistance;
+                };
+                snapDistanceItem.Items.Add(distItem);
+            }
+            contextMenu.Items.Add(snapDistanceItem);
+            
+            // 分隔符
+            contextMenu.Items.Add(new System.Windows.Controls.Separator());
+            
+            // 重置所有设置
+            var resetItem = new System.Windows.Controls.MenuItem {
+                Header = "重置所有设置"
+            };
+            resetItem.Click += (s, e) => {
+                _gridSize = Constants.GridDefaultSize;
+                _snapDistance = Constants.SnapDefaultDistance;
+                _isGridEnabled = false;
+                _isSnapEnabled = false;
+                _isMultiTouchEnabled = false;
+                
+                // 更新按钮状态
+                UpdateToolButtonState(GridLineButton, false);
+                UpdateToolButtonState(SnapButton, false);
+                UpdateToolButtonState(MultiPointButton, false);
+                
+                // 清空绘制
+                using (DrawingContext dc = DrawingVisualCanvas.DrawingVisual.RenderOpen()) {
+                    // 清空
+                }
+            };
+            contextMenu.Items.Add(resetItem);
+            
+            // 显示菜单
+            contextMenu.PlacementTarget = MoreButton;
+            contextMenu.Placement = System.Windows.Controls.Primitives.PlacementMode.Bottom;
+            contextMenu.IsOpen = true;
         }
 
         #endregion
