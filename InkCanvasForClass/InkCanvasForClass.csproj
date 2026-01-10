@@ -70,7 +70,8 @@
     <PackageReference Include="Lierda.WPFHelper" Version="1.0.3" NoWarn="NU1701" />
     <PackageReference Include="Microsoft.Office.Interop.PowerPoint" Version="15.0.4420.1018" />
     <PackageReference Include="MicrosoftOfficeCore" Version="15.0.0" NoWarn="NU1701" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <!-- 升级到 13.0.4 以修复 CVE-2024-21907 漏洞 -->
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="System.Management" Version="8.0.0" />
     <PackageReference Include="NHotkey.Wpf" Version="3.0.0" />
     <PackageReference Include="Ookii.Dialogs.Wpf" Version="5.0.1" />
