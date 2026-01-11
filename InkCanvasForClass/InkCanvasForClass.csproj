@@ -17,7 +17,7 @@
 
     <!-- 运行时配置 -->
     <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>x64</PlatformTarget>
     <Configurations>Debug;Release;x86 Debug</Configurations>
 
     <!-- 程序集信息 -->
