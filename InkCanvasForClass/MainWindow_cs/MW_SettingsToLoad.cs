@@ -138,6 +138,13 @@ namespace Ink_Canvas {
                             needSave = true;
                             LogHelper.WriteLogToFile($"Migrated old default path from '{currentPath}' to '{newDefaultPath}'", LogHelper.LogType.Info);
                         }
+                        // 特殊处理：如果当前路径包含 "InkCanvasForClass" 且存储位置是 "fr"，强制更新为 Data 目录
+                        // 这解决了用户反馈的路径卡在旧默认值的问题，即使路径不完全匹配 oldDefaultPath2
+                        else if (storageLocation == "fr" && currentPath.IndexOf("InkCanvasForClass", StringComparison.OrdinalIgnoreCase) >= 0) {
+                            Settings.Automation.AutoSavedStrokesLocation = newDefaultPath;
+                            needSave = true;
+                            LogHelper.WriteLogToFile($"Forced migration from '{currentPath}' to '{newDefaultPath}' because it contains 'InkCanvasForClass'", LogHelper.LogType.Info);
+                        }
                         // 强制同步 AutoSavedStrokesLocation 与 StorageLocation
                         // 始终以 StorageLocation 为准
                         else if (!string.IsNullOrEmpty(expectedPath) &&
