@@ -1069,219 +1069,150 @@ namespace Ink_Canvas {
 
             if (e.Cancel) LogHelper.WriteLogToFile("Ink Canvas closing cancelled", LogHelper.LogType.Event);
             else {
+                // 使用 Task 包装清理操作，设置超时以避免卡住
+                var cleanupTask = Task.Run(() => {
+                    try {
+                        // 停止墨迹回放线程
+                        isStopInkReplay = true;
+
+                        // 停止所有定时器，防止进程残留
+                        StopTimerSafely(timerCheckPPT, TimerCheckPPT_Elapsed);
+                        StopTimerSafely(timerKillProcess, TimerKillProcess_Elapsed);
+                        StopTimerSafely(timerCheckAutoFold, TimerCheckAutoFold_Elapsed);
+                        StopTimerSafely(timerCheckAutoUpdateWithSilence, TimerCheckAutoUpdateWithSilence_Elapsed);
+                        StopTimerSafely(timerDisplayTime, TimerDisplayTime_Elapsed);
+                        StopTimerSafely(timerDisplayDate, TimerDisplayDate_Elapsed);
+                    }
+                    catch { /* 忽略错误 */ }
+                });
+
+                // 等待清理任务最多 500ms
+                cleanupTask.Wait(500);
+
+                // 在 UI 线程上执行必要的清理
                 try {
-                    LogHelper.WriteLogToFile("Ink Canvas closing: Stopping background tasks");
-                    // 停止墨迹回放线程
-                    isStopInkReplay = true;
-
-                    LogHelper.WriteLogToFile("Ink Canvas closing: Stopping timers");
-                    // 停止所有定时器，防止进程残留
-                    try {
-                        if (timerCheckPPT != null) {
-                            timerCheckPPT.Stop();
-                            timerCheckPPT.Elapsed -= TimerCheckPPT_Elapsed;
-                            timerCheckPPT.Dispose();
-                        }
-                    }
-                    catch (Exception ex) {
-                        LogHelper.WriteLogToFile("Error stopping timerCheckPPT: " + ex.Message, LogHelper.LogType.Error);
-                    }
-
-                    try {
-                        if (timerKillProcess != null) {
-                            timerKillProcess.Stop();
-                            timerKillProcess.Elapsed -= TimerKillProcess_Elapsed;
-                            timerKillProcess.Dispose();
-                        }
-                    }
-                    catch (Exception ex) {
-                        LogHelper.WriteLogToFile("Error stopping timerKillProcess: " + ex.Message, LogHelper.LogType.Error);
-                    }
-
-                    try {
-                        if (timerCheckAutoFold != null) {
-                            timerCheckAutoFold.Stop();
-                            timerCheckAutoFold.Elapsed -= TimerCheckAutoFold_Elapsed;
-                            timerCheckAutoFold.Dispose();
-                        }
-                    }
-                    catch (Exception ex) {
-                        LogHelper.WriteLogToFile("Error stopping timerCheckAutoFold: " + ex.Message, LogHelper.LogType.Error);
-                    }
-
-                    try {
-                        if (timerCheckAutoUpdateWithSilence != null) {
-                            timerCheckAutoUpdateWithSilence.Stop();
-                            timerCheckAutoUpdateWithSilence.Elapsed -= TimerCheckAutoUpdateWithSilence_Elapsed;
-                            timerCheckAutoUpdateWithSilence.Dispose();
-                        }
-                    }
-                    catch (Exception ex) {
-                        LogHelper.WriteLogToFile("Error stopping timerCheckAutoUpdateWithSilence: " + ex.Message, LogHelper.LogType.Error);
-                    }
-
-                    try {
-                        if (timerDisplayTime != null) {
-                            timerDisplayTime.Stop();
-                            timerDisplayTime.Elapsed -= TimerDisplayTime_Elapsed;
-                            timerDisplayTime.Dispose();
-                        }
-                    }
-                    catch (Exception ex) {
-                        LogHelper.WriteLogToFile("Error stopping timerDisplayTime: " + ex.Message, LogHelper.LogType.Error);
-                    }
-
-                    try {
-                        if (timerDisplayDate != null) {
-                            timerDisplayDate.Stop();
-                            timerDisplayDate.Elapsed -= TimerDisplayDate_Elapsed;
-                            timerDisplayDate.Dispose();
-                        }
-                    }
-                    catch (Exception ex) {
-                        LogHelper.WriteLogToFile("Error stopping timerDisplayDate: " + ex.Message, LogHelper.LogType.Error);
-                    }
-
-                    LogHelper.WriteLogToFile("Ink Canvas closing: Disposing freeze frame");
                     DisposeFreezeFrame();
-
-                    LogHelper.WriteLogToFile("Ink Canvas closing: Unsubscribing system events");
-                    // 取消系统事件订阅，防止进程残留
-                    try {
-                        Microsoft.Win32.SystemEvents.UserPreferenceChanged -= SystemEvents_UserPreferenceChanged;
-                    }
-                    catch (Exception ex) {
-                        LogHelper.WriteLogToFile("Error unsubscribing UserPreferenceChanged: " + ex.Message, LogHelper.LogType.Error);
-                    }
-
-                    try {
-                        SystemEvents.DisplaySettingsChanged -= SystemEventsOnDisplaySettingsChanged;
-                    }
-                    catch (Exception ex) {
-                        LogHelper.WriteLogToFile("Error unsubscribing DisplaySettingsChanged: " + ex.Message, LogHelper.LogType.Error);
-                    }
-
-                    LogHelper.WriteLogToFile("Ink Canvas closing: Unsubscribing InkCanvas and TimeMachine events");
-                    // 取消 InkCanvas 和 TimeMachine 事件订阅
-                    try {
-                        if (timeMachine != null) {
-                            timeMachine.OnRedoStateChanged -= TimeMachine_OnRedoStateChanged;
-                            timeMachine.OnUndoStateChanged -= TimeMachine_OnUndoStateChanged;
-                        }
-                    }
-                    catch (Exception ex) {
-                        LogHelper.WriteLogToFile("Error unsubscribing TimeMachine events: " + ex.Message, LogHelper.LogType.Error);
-                    }
-
-                    try {
-                        if (inkCanvas != null && inkCanvas.Strokes != null) {
-                            inkCanvas.Strokes.StrokesChanged -= StrokesOnStrokesChanged;
-                        }
-                    }
-                    catch (Exception ex) {
-                        LogHelper.WriteLogToFile("Error unsubscribing InkCanvas.Strokes events: " + ex.Message, LogHelper.LogType.Error);
-                    }
-
-                    LogHelper.WriteLogToFile("Ink Canvas closing: Releasing PPT COM objects");
-                    // 释放 PPT COM 对象，防止进程残留
-                    try {
-                        if (pptApplication != null) {
-                            try {
-                                // 取消订阅所有 PPT 事件
-                                pptApplication.PresentationOpen -= PptApplication_PresentationOpen;
-                                pptApplication.PresentationClose -= PptApplication_PresentationClose;
-                                pptApplication.SlideShowBegin -= PptApplication_SlideShowBegin;
-                                pptApplication.SlideShowNextSlide -= PptApplication_SlideShowNextSlide;
-                                pptApplication.SlideShowEnd -= PptApplication_SlideShowEnd;
-                            }
-                            catch (Exception ex) {
-                                LogHelper.WriteLogToFile("Error unsubscribing PPT events: " + ex.Message, LogHelper.LogType.Warning);
-                            }
-
-                            // 释放 COM 对象引用
-                            try {
-                                System.Runtime.InteropServices.Marshal.ReleaseComObject(pptApplication);
-                                LogHelper.WriteLogToFile("PPT Application COM object released", LogHelper.LogType.Info);
-                            }
-                            catch (Exception ex) {
-                                LogHelper.WriteLogToFile("Error releasing pptApplication COM object: " + ex.Message, LogHelper.LogType.Error);
-                            }
-                            pptApplication = null;
-                        }
-
-                        if (presentation != null) {
-                            try {
-                                System.Runtime.InteropServices.Marshal.ReleaseComObject(presentation);
-                                LogHelper.WriteLogToFile("Presentation COM object released", LogHelper.LogType.Info);
-                            }
-                            catch (Exception ex) {
-                                LogHelper.WriteLogToFile("Error releasing presentation COM object: " + ex.Message, LogHelper.LogType.Error);
-                            }
-                            presentation = null;
-                        }
-
-                        if (slides != null) {
-                            try {
-                                System.Runtime.InteropServices.Marshal.ReleaseComObject(slides);
-                                LogHelper.WriteLogToFile("Slides COM object released", LogHelper.LogType.Info);
-                            }
-                            catch (Exception ex) {
-                                LogHelper.WriteLogToFile("Error releasing slides COM object: " + ex.Message, LogHelper.LogType.Error);
-                            }
-                            slides = null;
-                        }
-
-                        if (slide != null) {
-                            try {
-                                System.Runtime.InteropServices.Marshal.ReleaseComObject(slide);
-                                LogHelper.WriteLogToFile("Slide COM object released", LogHelper.LogType.Info);
-                            }
-                            catch (Exception ex) {
-                                LogHelper.WriteLogToFile("Error releasing slide COM object: " + ex.Message, LogHelper.LogType.Error);
-                            }
-                            slide = null;
-                        }
-                    }
-                    catch (Exception ex) {
-                        LogHelper.WriteLogToFile("Error releasing PPT COM objects: " + ex.Message, LogHelper.LogType.Error);
-                    }
-
-                    LogHelper.WriteLogToFile("Ink Canvas closing: Unsubscribing ViewModel events");
-                    // 取消 ViewModel 事件订阅
-                    try {
-                        UnsubscribeViewModelEvents();
-                    }
-                    catch (Exception ex) {
-                        LogHelper.WriteLogToFile("Error unsubscribing ViewModel events: " + ex.Message, LogHelper.LogType.Error);
-                    }
-
-                    LogHelper.WriteLogToFile("Ink Canvas closing: Disposing TaskbarIcon");
-                    // 释放托盘图标，防止进程残留
-                    try {
-                        var taskbar = (Hardcodet.Wpf.TaskbarNotification.TaskbarIcon)Application.Current.FindResource("TaskbarTrayIcon");
-                        if (taskbar != null) {
-                            taskbar.Dispose();
-                        }
-                    }
-                    catch (Exception ex) {
-                        LogHelper.WriteLogToFile("Error disposing TaskbarIcon: " + ex.Message, LogHelper.LogType.Error);
-                    }
-
-                    LogHelper.WriteLogToFile("Ink Canvas closing: Finished cleanup");
                 }
-                catch (Exception ex) {
-                    LogHelper.WriteLogToFile("Error during window closing: " + ex.Message, LogHelper.LogType.Error);
-                }
+                catch { /* 忽略错误 */ }
 
-                // 强制进行垃圾回收，确保 COM 对象被释放
+                // 取消系统事件订阅
                 try {
-                    GC.Collect();
-                    GC.WaitForPendingFinalizers();
+                    Microsoft.Win32.SystemEvents.UserPreferenceChanged -= SystemEvents_UserPreferenceChanged;
                 }
-                catch { /* 忽略 GC 错误 */ }
+                catch { /* 忽略错误 */ }
+
+                try {
+                    SystemEvents.DisplaySettingsChanged -= SystemEventsOnDisplaySettingsChanged;
+                }
+                catch { /* 忽略错误 */ }
+
+                // 取消 InkCanvas 和 TimeMachine 事件订阅
+                try {
+                    if (timeMachine != null) {
+                        timeMachine.OnRedoStateChanged -= TimeMachine_OnRedoStateChanged;
+                        timeMachine.OnUndoStateChanged -= TimeMachine_OnUndoStateChanged;
+                    }
+                }
+                catch { /* 忽略错误 */ }
+
+                try {
+                    if (inkCanvas != null && inkCanvas.Strokes != null) {
+                        inkCanvas.Strokes.StrokesChanged -= StrokesOnStrokesChanged;
+                    }
+                }
+                catch { /* 忽略错误 */ }
+
+                // 异步释放 PPT COM 对象（设置超时避免卡住）
+                var pptCleanupTask = Task.Run(() => {
+                    try {
+                        ReleasePptComObjects();
+                    }
+                    catch { /* 忽略错误 */ }
+                });
+
+                // 等待 PPT 清理最多 300ms
+                pptCleanupTask.Wait(300);
+
+                // 取消 ViewModel 事件订阅
+                try {
+                    UnsubscribeViewModelEvents();
+                }
+                catch { /* 忽略错误 */ }
+
+                // 释放托盘图标
+                try {
+                    var taskbar = (Hardcodet.Wpf.TaskbarNotification.TaskbarIcon)Application.Current.FindResource("TaskbarTrayIcon");
+                    taskbar?.Dispose();
+                }
+                catch { /* 忽略错误 */ }
+
+                LogHelper.WriteLogToFile("Ink Canvas closing: Finished cleanup", LogHelper.LogType.Event);
 
                 Application.Current.Shutdown();
             }
+        }
+
+        /// <summary>
+        /// 安全停止定时器
+        /// </summary>
+        private void StopTimerSafely(System.Timers.Timer timer, System.Timers.ElapsedEventHandler handler) {
+            try {
+                if (timer != null) {
+                    timer.Stop();
+                    timer.Elapsed -= handler;
+                    timer.Dispose();
+                }
+            }
+            catch { /* 忽略错误 */ }
+        }
+
+        /// <summary>
+        /// 释放 PPT COM 对象
+        /// </summary>
+        private void ReleasePptComObjects() {
+            try {
+                if (pptApplication != null) {
+                    try {
+                        pptApplication.PresentationOpen -= PptApplication_PresentationOpen;
+                        pptApplication.PresentationClose -= PptApplication_PresentationClose;
+                        pptApplication.SlideShowBegin -= PptApplication_SlideShowBegin;
+                        pptApplication.SlideShowNextSlide -= PptApplication_SlideShowNextSlide;
+                        pptApplication.SlideShowEnd -= PptApplication_SlideShowEnd;
+                    }
+                    catch { /* 忽略错误 */ }
+
+                    try {
+                        System.Runtime.InteropServices.Marshal.ReleaseComObject(pptApplication);
+                    }
+                    catch { /* 忽略错误 */ }
+                    pptApplication = null;
+                }
+
+                if (presentation != null) {
+                    try {
+                        System.Runtime.InteropServices.Marshal.ReleaseComObject(presentation);
+                    }
+                    catch { /* 忽略错误 */ }
+                    presentation = null;
+                }
+
+                if (slides != null) {
+                    try {
+                        System.Runtime.InteropServices.Marshal.ReleaseComObject(slides);
+                    }
+                    catch { /* 忽略错误 */ }
+                    slides = null;
+                }
+
+                if (slide != null) {
+                    try {
+                        System.Runtime.InteropServices.Marshal.ReleaseComObject(slide);
+                    }
+                    catch { /* 忽略错误 */ }
+                    slide = null;
+                }
+            }
+            catch { /* 忽略错误 */ }
         }
 
         [DllImport("user32.dll", SetLastError = true)]

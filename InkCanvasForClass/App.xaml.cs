@@ -144,14 +144,13 @@ namespace Ink_Canvas
                 LogHelper.WriteLogToFile("Application Exit: Error during cleanup - " + ex.Message, LogHelper.LogType.Error);
             }
             finally {
-                // 关闭 Sentry，确保所有待发送的事件都能发送出去
+                // 关闭 Sentry，使用更短的超时避免卡住
                 try {
-                    SentrySdk.Flush(TimeSpan.FromSeconds(2));
-                    SentrySdk.Close();
-                    LogHelper.WriteLogToFile("Application Exit: Sentry closed", LogHelper.LogType.Info);
+                    // 使用更短的超时（500ms），避免退出时卡住
+                    SentrySdk.Flush(TimeSpan.FromMilliseconds(500));
                 }
-                catch (Exception ex) {
-                    LogHelper.WriteLogToFile("Application Exit: Error closing Sentry - " + ex.Message, LogHelper.LogType.Error);
+                catch {
+                    // 忽略 Sentry Flush 错误
                 }
 
                 // 强制终止进程，确保不会残留
