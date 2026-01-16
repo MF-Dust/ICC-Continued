@@ -705,7 +705,7 @@ namespace Ink_Canvas {
                 iconTextBlocksFloatingBar[(int)mode].Foreground = UIStyleHelper.WhiteBrush;
                 ngdf.Geometry = Geometry.Parse(iconGeometryPathStringsFloatingBar[(int)mode+5]);
                 FloatingbarSelectionBG.Visibility = Visibility.Visible;
-                var iconPosI = final_items.IndexOf(floatingBarIconsSimpleStackPanels[(int)mode])*28;
+                var iconPosI = final_items.IndexOf(floatingBarIconsSimpleStackPanels[(int)mode])*highlightStepWidth;
                 System.Windows.Controls.Canvas.SetLeft(FloatingbarSelectionBG, iconPosI);
 
                 // whiteboard
@@ -1300,7 +1300,7 @@ namespace Ink_Canvas {
                 }
                 elem.Width = Settings.Appearance.FloatingBarButtonLabelVisibility ? 28 : 21;
                 elem.Height = Settings.Appearance.FloatingBarButtonLabelVisibility ? 34 : 28;
-                FloatingbarSelectionBG.Height = Settings.Appearance.FloatingBarButtonLabelVisibility ? 34 : 26;
+                FloatingbarSelectionBG.Height = Settings.Appearance.FloatingBarButtonLabelVisibility ? 34 : 28;
             }
             BorderFloatingBarMoveControls.Width = barHeight;
             BorderFloatingBarMoveControls.Height = barHeight;
