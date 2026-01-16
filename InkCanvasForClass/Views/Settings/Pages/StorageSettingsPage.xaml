@@ -1,0 +1,78 @@
+<UserControl x:Class="Ink_Canvas.Views.Settings.Pages.StorageSettingsPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
+             mc:Ignorable="d"
+             d:DesignHeight="800" d:DesignWidth="600"
+             Background="Transparent"
+             Foreground="#FAFAFA"
+             ui:ThemeManager.RequestedTheme="Dark">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="SettingsPageStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <StackPanel>
+        <TextBlock Text="存储" Style="{StaticResource PageTitleStyle}"/>
+
+        <!-- 存储位置设置 -->
+        <TextBlock Text="存储位置" Style="{StaticResource SettingsGroupTitleStyle}"/>
+
+        <!-- 存储位置选择 -->
+        <Border Style="{StaticResource SettingsCardStyle}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="200"/>
+                </Grid.ColumnDefinitions>
+                <ui:FontIcon Glyph="&#xE74E;" Style="{StaticResource SettingsIconStyle}"/>
+                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                    <TextBlock Text="数据存储位置" Style="{StaticResource SettingsTitleStyle}"/>
+                    <TextBlock Text="选择应用程序数据的存储位置" Style="{StaticResource SettingsDescriptionStyle}"/>
+                </StackPanel>
+                <ComboBox Grid.Column="2" VerticalAlignment="Center"
+                          SelectedValue="{Binding Storage.StorageLocation, Mode=TwoWay}"
+                          SelectedValuePath="Tag">
+                    <ComboBoxItem Content="自动选择 (默认)" Tag="a-"/>
+                    <ComboBoxItem Content="自定义位置" Tag="custom"/>
+                </ComboBox>
+            </Grid>
+        </Border>
+
+        <!-- 自定义路径输入 -->
+        <Border>
+            <Border.Style>
+                <Style TargetType="Border" BasedOn="{StaticResource SettingsCardStyle}">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Storage.StorageLocation}" Value="custom">
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
+             <!-- Note: Visibility controlled by DataTrigger above. -->
+             <Grid>
+                 <Grid.ColumnDefinitions>
+                     <ColumnDefinition Width="Auto"/>
+                     <ColumnDefinition Width="*"/>
+                 </Grid.ColumnDefinitions>
+                 <ui:FontIcon Glyph="&#xE8B7;" Style="{StaticResource SettingsIconStyle}"/>
+                 <ui:SimpleStackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="5">
+                     <TextBlock Text="自定义路径" Style="{StaticResource SettingsTitleStyle}"/>
+                     <TextBox Text="{Binding Storage.UserStorageLocation, UpdateSourceTrigger=PropertyChanged}"/>
+                     <TextBlock Text="请输入有效的文件夹路径作为存储位置"
+                                FontSize="12" Foreground="Gray"/>
+                 </ui:SimpleStackPanel>
+             </Grid>
+        </Border>
+
+    </StackPanel>
+</UserControl>

@@ -1,0 +1,60 @@
+using CommunityToolkit.Mvvm.ComponentModel;
+using Ink_Canvas.Models.Settings;
+using System;
+
+namespace Ink_Canvas.ViewModels.Settings
+{
+    public partial class RandomPickSettingsViewModel : ObservableObject
+    {
+        private readonly RandSettings _settings;
+        private readonly Action _saveAction;
+
+        public RandomPickSettingsViewModel(RandSettings settings, Action saveAction)
+        {
+            _settings = settings;
+            _saveAction = saveAction;
+        }
+
+        public bool DisplayRandWindowNamesInputBtn
+        {
+            get => _settings.DisplayRandWindowNamesInputBtn;
+            set
+            {
+                if (_settings.DisplayRandWindowNamesInputBtn != value)
+                {
+                    _settings.DisplayRandWindowNamesInputBtn = value;
+                    OnPropertyChanged();
+                    _saveAction?.Invoke();
+                }
+            }
+        }
+
+        public double RandWindowOnceCloseLatency
+        {
+            get => _settings.RandWindowOnceCloseLatency;
+            set
+            {
+                if (Math.Abs(_settings.RandWindowOnceCloseLatency - value) > 0.001)
+                {
+                    _settings.RandWindowOnceCloseLatency = value;
+                    OnPropertyChanged();
+                    _saveAction?.Invoke();
+                }
+            }
+        }
+
+        public int RandWindowOnceMaxStudents
+        {
+            get => _settings.RandWindowOnceMaxStudents;
+            set
+            {
+                if (_settings.RandWindowOnceMaxStudents != value)
+                {
+                    _settings.RandWindowOnceMaxStudents = value;
+                    OnPropertyChanged();
+                    _saveAction?.Invoke();
+                }
+            }
+        }
+    }
+}

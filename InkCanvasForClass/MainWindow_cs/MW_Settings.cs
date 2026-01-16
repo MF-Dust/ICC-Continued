@@ -211,217 +211,18 @@ namespace Ink_Canvas {
 
         #region Appearance
 
-        private void ToggleSwitchEnableDisPlayNibModeToggle_Toggled(object sender, RoutedEventArgs e) {
-            if (!isLoaded) return;
-            Settings.Appearance.IsEnableDisPlayNibModeToggler = ToggleSwitchEnableDisPlayNibModeToggle.IsOn;
-            SaveSettings();
-            if (!ToggleSwitchEnableDisPlayNibModeToggle.IsOn) {
-                NibModeSimpleStackPanel.Visibility = Visibility.Collapsed;
-                BoardNibModeSimpleStackPanel.Visibility = Visibility.Collapsed;
-            } else {
-                NibModeSimpleStackPanel.Visibility = Visibility.Visible;
-                BoardNibModeSimpleStackPanel.Visibility = Visibility.Visible;
-            }
-        }
-
-        private void ToggleSwitchEnableQuickPanel_Toggled(object sender, RoutedEventArgs e) {
-            if (!isLoaded) return;
-            Settings.Appearance.IsShowQuickPanel = ToggleSwitchEnableQuickPanel.IsOn;
-            SaveSettings();
-        }
-
-        private void ViewboxFloatingBarScaleTransformValueSlider_ValueChanged(object sender, RoutedEventArgs e) {
-            if (!isLoaded) return;
-            Settings.Appearance.ViewboxFloatingBarScaleTransformValue =
-                ViewboxFloatingBarScaleTransformValueSlider.Value;
-            SaveSettings();
-            var val = ViewboxFloatingBarScaleTransformValueSlider.Value;
-
-            // 更新 FloatingBarViewModel 的缩放
-            var scale = val > 0.5 && val < 1.25 ? val : val <= 0.5 ? 0.5 : val >= 1.25 ? 1.25 : 1;
-            if (_floatingBarViewModel != null)
-            {
-                _floatingBarViewModel.UpdateScale(scale);
-            }
-
-            // 同时更新 ViewboxFloatingBar 的缩放
-            var st = ViewboxFloatingBar.LayoutTransform as ScaleTransform;
-            if (st != null)
-            {
-                st.ScaleX = scale;
-                st.ScaleY = scale;
-            }
-
-            // auto align
-            if (BorderFloatingBarExitPPTBtn.Visibility == Visibility.Visible)
-                ViewboxFloatingBarMarginAnimation(60);
-            else
-                ViewboxFloatingBarMarginAnimation(100, true);
-        }
-
-        private void ViewboxFloatingBarOpacityValueSlider_ValueChanged(object sender, RoutedEventArgs e) {
-            if (!isLoaded) return;
-            Settings.Appearance.ViewboxFloatingBarOpacityValue = ViewboxFloatingBarOpacityValueSlider.Value;
-            SaveSettings();
-            ViewboxFloatingBar.Opacity = Settings.Appearance.ViewboxFloatingBarOpacityValue;
-        }
-
-        private void ViewboxFloatingBarOpacityInPPTValueSlider_ValueChanged(object sender, RoutedEventArgs e) {
-            if (!isLoaded) return;
-            Settings.Appearance.ViewboxFloatingBarOpacityInPPTValue = ViewboxFloatingBarOpacityInPPTValueSlider.Value;
-            SaveSettings();
-        }
-
-        private void ToggleSwitchEnableTrayIcon_Toggled(object sender, RoutedEventArgs e) {
-            if (!isLoaded) return;
-            Settings.Appearance.EnableTrayIcon = ToggleSwitchEnableTrayIcon.IsOn;
-            ICCTrayIconExampleImage.Visibility = Settings.Appearance.EnableTrayIcon ? Visibility.Visible : Visibility.Collapsed;
-            var _taskbar = (TaskbarIcon)Application.Current.Resources["TaskbarTrayIcon"];
-            _taskbar.Visibility = ToggleSwitchEnableTrayIcon.IsOn? Visibility.Visible : Visibility.Collapsed;
-            SaveSettings();
-        }
-
-        private void ComboBoxUnFoldBtnImg_SelectionChanged(object sender, RoutedEventArgs e) {
-            if (!isLoaded) return;
-            Settings.Appearance.UnFoldButtonImageType = ComboBoxUnFoldBtnImg.SelectedIndex;
-            SaveSettings();
-            if (ComboBoxUnFoldBtnImg.SelectedIndex == 0) {
-                RightUnFoldBtnImgChevron.Source =
-                    new BitmapImage(new Uri("pack://application:,,,/Resources/new-icons/unfold-chevron.png"));
-                RightUnFoldBtnImgChevron.Width = 14;
-                RightUnFoldBtnImgChevron.Height = 14;
-                RightUnFoldBtnImgChevron.RenderTransform = new RotateTransform(180);
-                LeftUnFoldBtnImgChevron.Source =
-                    new BitmapImage(new Uri("pack://application:,,,/Resources/new-icons/unfold-chevron.png"));
-                LeftUnFoldBtnImgChevron.Width = 14;
-                LeftUnFoldBtnImgChevron.Height = 14;
-                LeftUnFoldBtnImgChevron.RenderTransform = null;
-            } else if (ComboBoxUnFoldBtnImg.SelectedIndex == 1) {
-                RightUnFoldBtnImgChevron.Source =
-                    new BitmapImage(new Uri("pack://application:,,,/Resources/new-icons/pen-white.png"));
-                RightUnFoldBtnImgChevron.Width = 18;
-                RightUnFoldBtnImgChevron.Height = 18;
-                RightUnFoldBtnImgChevron.RenderTransform = null;
-                LeftUnFoldBtnImgChevron.Source =
-                    new BitmapImage(new Uri("pack://application:,,,/Resources/new-icons/pen-white.png"));
-                LeftUnFoldBtnImgChevron.Width = 18;
-                LeftUnFoldBtnImgChevron.Height = 18;
-                LeftUnFoldBtnImgChevron.RenderTransform = null;
-            }
-        }
-
-        private void ComboBoxChickenSoupSource_SelectionChanged(object sender, RoutedEventArgs e) {
-            if (!isLoaded) return;
-            Settings.Appearance.ChickenSoupSource = ComboBoxChickenSoupSource.SelectedIndex;
-            SaveSettings();
-            if (Settings.Appearance.ChickenSoupSource == 0) {
-                int randChickenSoupIndex = new Random().Next(ChickenSoup.OSUPlayerYuLu.Length);
-                BlackBoardWaterMark.Text = ChickenSoup.OSUPlayerYuLu[randChickenSoupIndex];
-            } else if (Settings.Appearance.ChickenSoupSource == 1) {
-                int randChickenSoupIndex = new Random().Next(ChickenSoup.MingYanJingJu.Length);
-                BlackBoardWaterMark.Text = ChickenSoup.MingYanJingJu[randChickenSoupIndex];
-            } else if (Settings.Appearance.ChickenSoupSource == 2) {
-                int randChickenSoupIndex = new Random().Next(ChickenSoup.GaoKaoPhrases.Length);
-                BlackBoardWaterMark.Text = ChickenSoup.GaoKaoPhrases[randChickenSoupIndex];
-            }
-        }
-
-        private void ToggleSwitchEnableViewboxBlackBoardScaleTransform_Toggled(object sender, RoutedEventArgs e) {
-            if (!isLoaded) return;
-            Settings.Appearance.EnableViewboxBlackBoardScaleTransform =
-                ToggleSwitchEnableViewboxBlackBoardScaleTransform.IsOn;
-
-            if (Settings.Appearance.EnableViewboxBlackBoardScaleTransform) // 画板 UI 缩放 80%
-            {
-                ViewboxBlackboardLeftSideScaleTransform.ScaleX = 0.8;
-                ViewboxBlackboardLeftSideScaleTransform.ScaleY = 0.8;
-                ViewboxBlackboardCenterSideScaleTransform.ScaleX = 0.8;
-                ViewboxBlackboardCenterSideScaleTransform.ScaleY = 0.8;
-                ViewboxBlackboardRightSideScaleTransform.ScaleX = 0.8;
-                ViewboxBlackboardRightSideScaleTransform.ScaleY = 0.8;
-            }
-            else
-            {
-                ViewboxBlackboardLeftSideScaleTransform.ScaleX = 1;
-                ViewboxBlackboardLeftSideScaleTransform.ScaleY = 1;
-                ViewboxBlackboardCenterSideScaleTransform.ScaleX = 1;
-                ViewboxBlackboardCenterSideScaleTransform.ScaleY = 1;
-                ViewboxBlackboardRightSideScaleTransform.ScaleX = 1;
-                ViewboxBlackboardRightSideScaleTransform.ScaleY = 1;
-            }
-
-            SaveSettings();
-        }
-
-        public void ComboBoxFloatingBarImg_SelectionChanged(object sender, RoutedEventArgs e) {
-            if (!isLoaded) return;
-            Settings.Appearance.FloatingBarImg = ComboBoxFloatingBarImg.SelectedIndex;
-            if (ComboBoxFloatingBarImg.SelectedIndex == 0) {
-                FloatingbarHeadIconImg.Source =
-                    new BitmapImage(new Uri("pack://application:,,,/Resources/Icons-png/icc.png"));
-                FloatingbarHeadIconImg.Margin = new Thickness(0.5);
-            } else if (ComboBoxFloatingBarImg.SelectedIndex == 1) {
-                FloatingbarHeadIconImg.Source =
-                    new BitmapImage(
-                        new Uri("pack://application:,,,/Resources/Icons-png/icc-transparent-dark-small.png"));
-                FloatingbarHeadIconImg.Margin = new Thickness(1.2);
-            } else if (ComboBoxFloatingBarImg.SelectedIndex == 2) {
-                FloatingbarHeadIconImg.Source =
-                    new BitmapImage(new Uri("pack://application:,,,/Resources/Icons-png/kuandoujiyanhuaji.png"));
-                FloatingbarHeadIconImg.Margin = new Thickness(2, 2, 2, 1.5);
-            } else if (ComboBoxFloatingBarImg.SelectedIndex == 3) {
-                FloatingbarHeadIconImg.Source =
-                    new BitmapImage(new Uri("pack://application:,,,/Resources/Icons-png/kuanshounvhuaji.png"));
-                FloatingbarHeadIconImg.Margin = new Thickness(2, 2, 2, 1.5);
-            } else if (ComboBoxFloatingBarImg.SelectedIndex == 4) {
-                FloatingbarHeadIconImg.Source =
-                    new BitmapImage(new Uri("pack://application:,,,/Resources/Icons-png/kuanciya.png"));
-                FloatingbarHeadIconImg.Margin = new Thickness(2, 2, 2, 1.5);
-            } else if (ComboBoxFloatingBarImg.SelectedIndex == 5) {
-                FloatingbarHeadIconImg.Source =
-                    new BitmapImage(new Uri("pack://application:,,,/Resources/Icons-png/kuanneikuhuaji.png"));
-                FloatingbarHeadIconImg.Margin = new Thickness(2, 2, 2, 1.5);
-            } else if (ComboBoxFloatingBarImg.SelectedIndex == 6) {
-                FloatingbarHeadIconImg.Source =
-                    new BitmapImage(new Uri("pack://application:,,,/Resources/Icons-png/kuandogeyuanliangwo.png"));
-                FloatingbarHeadIconImg.Margin = new Thickness(2, 2, 2, 1.5);
-            } else if (ComboBoxFloatingBarImg.SelectedIndex == 7) {
-                FloatingbarHeadIconImg.Source =
-                    new BitmapImage(new Uri("pack://application:,,,/Resources/Icons-png/tiebahuaji.png"));
-                FloatingbarHeadIconImg.Margin = new Thickness(2, 2, 2, 1);
-            }
-            SaveSettings();
-        }
-
-        private void ToggleSwitchEnableTimeDisplayInWhiteboardMode_Toggled(object sender, RoutedEventArgs e) {
-            if (!isLoaded) return;
-            Settings.Appearance.EnableTimeDisplayInWhiteboardMode = ToggleSwitchEnableTimeDisplayInWhiteboardMode.IsOn;
-            if (currentMode == 1) {
-                if (ToggleSwitchEnableTimeDisplayInWhiteboardMode.IsOn) {
-                    WaterMarkTime.Visibility = Visibility.Visible;
-                    WaterMarkDate.Visibility = Visibility.Visible;
-                } else {
-                    WaterMarkTime.Visibility = Visibility.Collapsed;
-                    WaterMarkDate.Visibility = Visibility.Collapsed;
-                }
-            }
-
-            SaveSettings();
-        }
-
-        private void ToggleSwitchEnableChickenSoupInWhiteboardMode_Toggled(object sender, RoutedEventArgs e) {
-            if (!isLoaded) return;
-            Settings.Appearance.EnableChickenSoupInWhiteboardMode = ToggleSwitchEnableChickenSoupInWhiteboardMode.IsOn;
-            if (currentMode == 1) {
-                if (ToggleSwitchEnableTimeDisplayInWhiteboardMode.IsOn) {
-                    BlackBoardWaterMark.Visibility = Visibility.Visible;
-                } else {
-                    BlackBoardWaterMark.Visibility = Visibility.Collapsed;
-                }
-            }
-
-            SaveSettings();
-        }
+        private void ToggleSwitchEnableDisPlayNibModeToggle_Toggled(object sender, RoutedEventArgs e) { }
+        private void ToggleSwitchEnableQuickPanel_Toggled(object sender, RoutedEventArgs e) { }
+        private void ViewboxFloatingBarScaleTransformValueSlider_ValueChanged(object sender, RoutedEventArgs e) { }
+        private void ViewboxFloatingBarOpacityValueSlider_ValueChanged(object sender, RoutedEventArgs e) { }
+        private void ViewboxFloatingBarOpacityInPPTValueSlider_ValueChanged(object sender, RoutedEventArgs e) { }
+        private void ToggleSwitchEnableTrayIcon_Toggled(object sender, RoutedEventArgs e) { }
+        private void ComboBoxUnFoldBtnImg_SelectionChanged(object sender, RoutedEventArgs e) { }
+        private void ComboBoxChickenSoupSource_SelectionChanged(object sender, RoutedEventArgs e) { }
+        private void ToggleSwitchEnableViewboxBlackBoardScaleTransform_Toggled(object sender, RoutedEventArgs e) { }
+        public void ComboBoxFloatingBarImg_SelectionChanged(object sender, RoutedEventArgs e) { }
+        private void ToggleSwitchEnableTimeDisplayInWhiteboardMode_Toggled(object sender, RoutedEventArgs e) { }
+        private void ToggleSwitchEnableChickenSoupInWhiteboardMode_Toggled(object sender, RoutedEventArgs e) { }
 
         private void ToggleSwitchShowPPTButton_OnToggled(object sender, RoutedEventArgs e) {
             if (!isLoaded) return;
@@ -783,77 +584,10 @@ namespace Ink_Canvas {
             SaveSettings();
         }
 
-        private async void ToggleSwitchFloatingBarButtonLabelVisibility_Toggled(object sender, RoutedEventArgs e) {
-            if (!isLoaded) return;
-
-            Settings.Appearance.FloatingBarButtonLabelVisibility = ToggleSwitchFloatingBarButtonLabelVisibility.IsOn;
-            FloatingBarTextVisibilityBindingLikeAPieceOfShit.Visibility = Settings.Appearance.FloatingBarButtonLabelVisibility ? Visibility.Visible : Visibility.Collapsed;
-            UpdateFloatingBarIconsLayout();
-            await Task.Delay(1);
-            ViewboxFloatingBarMarginAnimation(60,true);
-            SaveSettings();
-        }
-
-        private void CheckboxFloatingBarIconsVisibility_CheckedChanged(object sender, RoutedEventArgs e) {
-            if (!isLoaded) return;
-
-            var items = new CheckBox[] {
-                CheckboxEnableFloatingBarShapes,
-                CheckboxEnableFloatingBarFreeze,
-                CheckboxEnableFloatingBarHand,
-                CheckboxEnableFloatingBarUndo,
-                CheckboxEnableFloatingBarRedo,
-                CheckboxEnableFloatingBarCAM,
-                CheckboxEnableFloatingBarLasso,
-                CheckboxEnableFloatingBarWhiteboard,
-                CheckboxEnableFloatingBarFold,
-                CheckboxEnableFloatingBarGesture
-            };
-
-            if (!items.Contains((CheckBox)sender)) return;
-            if (Settings.Appearance.FloatingBarIconsVisibility.Length != 10) {
-                Settings.Appearance.FloatingBarIconsVisibility =
-                    Settings.Appearance.FloatingBarIconsVisibility.PadRight(10, '1');
-                SaveSettings();
-            }
-            var value = Settings.Appearance.FloatingBarIconsVisibility;
-            var vsb = new StringBuilder(value);
-            vsb[Array.IndexOf(items, (CheckBox)sender)] = (bool)((CheckBox)sender).IsChecked ? '1' : '0';
-            Settings.Appearance.FloatingBarIconsVisibility = vsb.ToString();
-
-            UpdateFloatingBarIconsVisibility();
-            ForceUpdateToolSelection(null);
-            Dispatcher.InvokeAsync(async () => {
-                if (BorderFloatingBarExitPPTBtn.Visibility == Visibility.Visible) {
-                    await Task.Delay(10);
-                    ViewboxFloatingBarMarginAnimation(60);
-                } else if (Topmost == true) //非黑板
-                {
-                    await Task.Delay(10);
-                    ViewboxFloatingBarMarginAnimation(100, true);
-                } else //黑板
-                {
-                    await Task.Delay(10);
-                    ViewboxFloatingBarMarginAnimation(60);
-                }
-            });
-
-            SaveSettings();
-        }
-
-        private void ComboBoxEraserButton_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e) {
-            if (!isLoaded) return;
-            Settings.Appearance.EraserButtonsVisibility = ComboBoxEraserButton.SelectedIndex;
-            UpdateFloatingBarIconsVisibility();
-            SaveSettings();
-        }
-
-        private void ToggleSwitchOnlyDisplayEraserBtn_OnToggled(object sender, RoutedEventArgs e) {
-            if (!isLoaded) return;
-            Settings.Appearance.OnlyDisplayEraserBtn = ToggleSwitchOnlyDisplayEraserBtn.IsOn;
-            UpdateFloatingBarIconsVisibility();
-            SaveSettings();
-        }
+        private void ToggleSwitchFloatingBarButtonLabelVisibility_Toggled(object sender, RoutedEventArgs e) { }
+        private void CheckboxFloatingBarIconsVisibility_CheckedChanged(object sender, RoutedEventArgs e) { }
+        private void ComboBoxEraserButton_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e) { }
+        private void ToggleSwitchOnlyDisplayEraserBtn_OnToggled(object sender, RoutedEventArgs e) { }
 
         #endregion
 
@@ -1702,6 +1436,12 @@ namespace Ink_Canvas {
             var runfolder = AppDomain.CurrentDomain.BaseDirectory;
             Settings.Automation.AutoSavedStrokesLocation =
                 (runfolder.EndsWith("\\") ? runfolder.Substring(0, runfolder.Length - 1) : runfolder) + "\\Data";
+        }
+
+        private void BtnOpenNewSettingsWindow_Click(object sender, RoutedEventArgs e)
+        {
+            var settingsWindow = new Views.Settings.SettingsWindow();
+            settingsWindow.Show();
         }
 
         private void BtnResetToSuggestion_Click(object sender, RoutedEventArgs e) {

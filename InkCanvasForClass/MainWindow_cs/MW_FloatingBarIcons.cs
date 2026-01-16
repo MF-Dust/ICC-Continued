@@ -155,7 +155,7 @@ namespace Ink_Canvas {
         /// 控制是否顯示浮動工具欄的“手勢”按鈕
         /// </summary>
         private void CheckEnableTwoFingerGestureBtnVisibility(bool isVisible) {
-            if (CheckboxEnableFloatingBarGesture.IsChecked == false) {
+            if (Settings.Appearance.FloatingBarIconsVisibility.Length > 9 && Settings.Appearance.FloatingBarIconsVisibility[9] == '0') {
                 EnableTwoFingerGestureBorder.Visibility = Visibility.Collapsed;
                 return;
             }

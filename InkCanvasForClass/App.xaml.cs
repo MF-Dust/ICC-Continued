@@ -53,36 +53,18 @@ namespace Ink_Canvas
         /// </summary>
         private void InitializeSentry()
         {
-            SentrySdk.Init(options =>
-            {
-                options.Dsn = "https://b86a792323dcbb06a78bd4e28e521630@o4510690045001728.ingest.us.sentry.io/4510690051620864";
+            // 使用 SentryHelper 进行初始化，包含更多功能
+            SentryHelper.Initialize(enablePerformanceMonitoring: true, tracesSampleRate: 1.0);
 
-                // 设置发布版本，便于追踪
-                options.Release = $"InkCanvasForClass@{Assembly.GetExecutingAssembly().GetName().Version}";
+            // 设置匿名用户标识
+            SentryHelper.SetAnonymousUser();
 
-                // 设置环境
-#if DEBUG
-                options.Environment = "development";
-#else
-                options.Environment = "production";
-#endif
-
-                // 启用调试模式（仅在开发时使用）
-#if DEBUG
-                options.Debug = true;
-#endif
-
-                // 设置采样率（1.0 = 100% 的事件都会被发送）
-                options.TracesSampleRate = 1.0;
-
-                // 自动捕获未处理异常
-                options.AutoSessionTracking = true;
-
-                // 附加堆栈跟踪到所有消息
-                options.AttachStacktrace = true;
-            });
-
-            LogHelper.WriteLogToFile("Sentry SDK initialized successfully", LogHelper.LogType.Info);
+            // 添加应用启动面包屑
+            SentryHelper.AddBreadcrumb(
+                message: "Application starting",
+                category: SentryHelper.BreadcrumbCategory.System,
+                level: BreadcrumbLevel.Info
+            );
         }
 
         /// <summary>
@@ -93,15 +75,20 @@ namespace Ink_Canvas
             var exception = e.ExceptionObject as Exception;
             if (exception != null)
             {
-                // 发送异常到 Sentry
-                SentrySdk.CaptureException(exception);
+                // 使用 SentryHelper 捕获异常，包含更多上下文
+                SentryHelper.CaptureException(exception,
+                    tags: new System.Collections.Generic.Dictionary<string, string>
+                    {
+                        { "exception_type", "unhandled" },
+                        { "is_terminating", e.IsTerminating.ToString() }
+                    });
 
                 LogHelper.NewLog($"[AppDomain UnhandledException] {exception}");
 
                 // 如果是终止性异常，确保 Sentry 有时间发送
                 if (e.IsTerminating)
                 {
-                    SentrySdk.Flush(TimeSpan.FromSeconds(2));
+                    SentryHelper.Flush(2000);
                 }
             }
         }
@@ -112,6 +99,13 @@ namespace Ink_Canvas
         private void App_Exit(object sender, ExitEventArgs e) {
             try {
                 LogHelper.WriteLogToFile("Application Exit: Starting cleanup", LogHelper.LogType.Event);
+
+                // 添加应用退出面包屑
+                SentryHelper.AddBreadcrumb(
+                    message: "Application exiting",
+                    category: SentryHelper.BreadcrumbCategory.System,
+                    level: BreadcrumbLevel.Info
+                );
 
                 // 释放 mutex
                 if (mutex != null) {
@@ -146,11 +140,10 @@ namespace Ink_Canvas
             finally {
                 // 关闭 Sentry，使用更短的超时避免卡住
                 try {
-                    // 使用更短的超时（500ms），避免退出时卡住
-                    SentrySdk.Flush(TimeSpan.FromMilliseconds(500));
+                    SentryHelper.Close(500);
                 }
                 catch {
-                    // 忽略 Sentry Flush 错误
+                    // 忽略 Sentry 关闭错误
                 }
 
                 // 强制终止进程，确保不会残留
@@ -257,8 +250,13 @@ namespace Ink_Canvas
 
         private void App_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
-            // 发送异常到 Sentry
-            SentrySdk.CaptureException(e.Exception);
+            // 使用 SentryHelper 捕获异常，包含更多上下文
+            SentryHelper.CaptureException(e.Exception,
+                tags: new System.Collections.Generic.Dictionary<string, string>
+                {
+                    { "exception_type", "dispatcher_unhandled" },
+                    { "thread", "ui" }
+                });
 
             Ink_Canvas.MainWindow.ShowNewMessage("抱歉，出现未预期的异常，可能导致 InkCanvasForClass 运行不稳定。\n建议保存墨迹后重启应用。");
             LogHelper.NewLog(e.Exception.ToString());
@@ -275,6 +273,10 @@ namespace Ink_Canvas
             {
                 Directory.CreateDirectory(RootPath);
             }
+
+            // 开始应用启动事务
+            SentryHelper.StartTransaction("app.startup", "application");
+            SentryHelper.StartSpan("initialization", "Initializing application");
 
             LogHelper.NewLog(string.Format("Ink Canvas Starting (Version: {0})", Assembly.GetExecutingAssembly().GetName().Version.ToString()));
 
@@ -351,6 +353,24 @@ namespace Ink_Canvas
             cracker.Cracker();
 
             StartArgs = e.Args;
+
+            // 结束启动 Span
+            SentryHelper.EndSpan();
+
+            // 添加启动完成面包屑
+            SentryHelper.AddBreadcrumb(
+                message: "Application startup completed",
+                category: SentryHelper.BreadcrumbCategory.System,
+                level: BreadcrumbLevel.Info,
+                data: new System.Collections.Generic.Dictionary<string, string>
+                {
+                    { "args_count", e.Args.Length.ToString() },
+                    { "version", Assembly.GetExecutingAssembly().GetName().Version.ToString() }
+                }
+            );
+
+            // 结束启动事务
+            SentryHelper.EndTransaction();
         }
 
         private void ScrollViewer_PreviewMouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)

@@ -5282,6 +5282,31 @@
                                                VerticalAlignment="Center" FontSize="15" Margin="0,0,0,10"
                                                Text="设置更改将自动保存，部分设置需要重启软件后生效" />
                                     <ui:SimpleStackPanel Spacing="5">
+                                        <Button Width="358" Height="45" FontFamily="Microsoft YaHei UI"
+                                                Click="BtnOpenNewSettingsWindow_Click" Margin="0,0,0,5">
+                                            <ui:SimpleStackPanel Orientation="Horizontal"
+                                                                 VerticalAlignment="Center"
+                                                                 HorizontalAlignment="Center" Spacing="6">
+                                                <Image RenderOptions.BitmapScalingMode="HighQuality"
+                                                       Height="20" Width="20">
+                                                    <Image.Source>
+                                                        <DrawingImage>
+                                                            <DrawingImage.Drawing>
+                                                                <DrawingGroup ClipGeometry="M0,0 V24 H24 V0 H0 Z">
+                                                                    <GeometryDrawing Brush="White"
+                                                                                     Geometry="F1 M24,24z M0,0z M12,2C17.5228,2 22,6.47715 22,12 22,17.5228 17.5228,22 12,22 6.47715,22 2,17.5228 2,12 2,6.47715 6.47715,2 12,2z M12,4C7.58172,4 4,7.58172 4,12 4,16.4183 7.58172,20 12,20 16.4183,20 20,16.4183 20,12 20,7.58172 16.4183,4 12,4z M11,7L13,7 13,11 17,11 17,13 13,13 13,17 11,17 11,13 7,13 7,11 11,11 11,7z" />
+                                                                </DrawingGroup>
+                                                            </DrawingImage.Drawing>
+                                                        </DrawingImage>
+                                                    </Image.Source>
+                                                </Image>
+                                                <Label FontSize="16" Foreground="#fafafa"
+                                                       VerticalAlignment="Center" FontFamily="Microsoft YaHei UI"
+                                                       FontWeight="Bold">
+                                                    打开新版设置窗口
+                                                </Label>
+                                            </ui:SimpleStackPanel>
+                                        </Button>
                                         <ui:SimpleStackPanel Spacing="5" Orientation="Horizontal"
                                                              HorizontalAlignment="Center">
                                             <Button Width="116" Height="45" FontFamily="Microsoft YaHei UI"

@@ -3,6 +3,7 @@ using Ink_Canvas.Helpers;
 using Ink_Canvas.Services;
 using Ink_Canvas.ViewModels;
 using Ink_Canvas.Views.Settings;
+using Ink_Canvas.Services.Events;
 using iNKORE.UI.WPF.Modern;
 using System;
 using System.Collections.ObjectModel;
@@ -95,9 +96,14 @@ namespace Ink_Canvas {
                 // 统一设置系统：MainWindow.Settings 通过 getter 从 SettingsService 获取设置
                 // 如果 SettingsService 还没有加载设置，先加载
                 var settingsService = ServiceLocator.GetRequiredService<ISettingsService>();
-                if (settingsService != null && !settingsService.IsLoaded)
+                if (settingsService != null)
                 {
-                    settingsService.Load();
+                    if (!settingsService.IsLoaded)
+                    {
+                        settingsService.Load();
+                    }
+                    // 订阅设置变更事件，确保设置修改后立即生效
+                    settingsService.SettingChanged += OnSettingChanged;
                 }
 
                 // 订阅 ViewModel 事件
@@ -105,6 +111,9 @@ namespace Ink_Canvas {
 
                 // 注册默认热键
                 RegisterDefaultHotkeys();
+
+                // 初始化外观设置事件监听
+                InitializeAppearanceSettingsHandler();
 
                 LogHelper.WriteLogToFile("ViewModels initialized successfully", LogHelper.LogType.Info);
             }
@@ -727,6 +736,24 @@ namespace Ink_Canvas {
 
         #endregion
 
+        /// <summary>
+        /// 处理设置变更事件
+        /// </summary>
+        private void OnSettingChanged(object sender, SettingChangedEventArgs e)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                try
+                {
+                    // 这里可以处理其他分类的设置变更
+                }
+                catch (Exception ex)
+                {
+                    LogHelper.WriteLogToFile($"Error handling setting change: {ex.Message}", LogHelper.LogType.Error);
+                }
+            });
+        }
+
         #endregion
 
         protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
@@ -1136,6 +1163,7 @@ namespace Ink_Canvas {
                 // 取消 ViewModel 事件订阅
                 try {
                     UnsubscribeViewModelEvents();
+                    CleanupAppearanceSettingsHandler();
                 }
                 catch { /* 忽略错误 */ }
 

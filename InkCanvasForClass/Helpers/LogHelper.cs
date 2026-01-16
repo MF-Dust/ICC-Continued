@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Sentry;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
@@ -8,6 +9,11 @@ namespace Ink_Canvas.Helpers
 {
     class LogHelper
     {
+        /// <summary>
+        /// 是否启用 Sentry 面包屑集成
+        /// </summary>
+        public static bool EnableSentryBreadcrumbs { get; set; } = true;
+
         static LogHelper()
         {
             try
@@ -52,32 +58,39 @@ namespace Ink_Canvas.Helpers
         {
             string strLogType = "信息";
             ConsoleColor consoleColor = ConsoleColor.White;
+            BreadcrumbLevel sentryLevel = BreadcrumbLevel.Info;
 
             switch (logType)
             {
                 case LogType.Event:
                     strLogType = "事件";
                     consoleColor = ConsoleColor.Cyan;
+                    sentryLevel = BreadcrumbLevel.Info;
                     break;
                 case LogType.Trace:
                     strLogType = "追踪";
                     consoleColor = ConsoleColor.Gray;
+                    sentryLevel = BreadcrumbLevel.Debug;
                     break;
                 case LogType.Error:
                     strLogType = "错误";
                     consoleColor = ConsoleColor.Red;
+                    sentryLevel = BreadcrumbLevel.Error;
                     break;
                 case LogType.Warning:
                     strLogType = "警告";
                     consoleColor = ConsoleColor.Yellow;
+                    sentryLevel = BreadcrumbLevel.Warning;
                     break;
                 case LogType.Fatal:
                     strLogType = "致命";
                     consoleColor = ConsoleColor.DarkRed;
+                    sentryLevel = BreadcrumbLevel.Error; // Sentry 6.0.0 没有 Critical 级别，使用 Error
                     break;
                 case LogType.Info:
                     strLogType = "信息";
                     consoleColor = ConsoleColor.White;
+                    sentryLevel = BreadcrumbLevel.Info;
                     break;
             }
 
@@ -94,6 +107,30 @@ namespace Ink_Canvas.Helpers
 
             // Debug Output
             Debug.WriteLine(fullLogMessage);
+
+            // Sentry Breadcrumb Integration
+            if (EnableSentryBreadcrumbs)
+            {
+                try
+                {
+                    SentryHelper.AddBreadcrumb(
+                        message: str,
+                        category: "log",
+                        level: sentryLevel,
+                        data: new System.Collections.Generic.Dictionary<string, string>
+                        {
+                            { "file", fileName },
+                            { "method", memberName },
+                            { "line", sourceLineNumber.ToString() },
+                            { "log_type", logType.ToString() }
+                        }
+                    );
+                }
+                catch
+                {
+                    // Ignore Sentry errors to prevent recursive logging
+                }
+            }
 
             try
             {
