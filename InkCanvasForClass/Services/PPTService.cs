@@ -65,9 +65,6 @@ namespace Ink_Canvas.Services
         // 设置服务，用于访问应用程序配置
         private readonly ISettingsService _settingsService;
 
-        // 异步墨迹保存队列
-        private readonly ConcurrentQueue<(int slideId, MemoryStream stream)> _strokeSaveQueue = new ConcurrentQueue<(int, MemoryStream)>();
-
         #region 优先级判断相关
 
         /// <summary>

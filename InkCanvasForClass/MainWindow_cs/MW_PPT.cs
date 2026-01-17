@@ -65,9 +65,6 @@ namespace Ink_Canvas {
         // PPT联动优化：使用线程池代替每次new Thread
         private static readonly object _pptOperationLock = new object();
 
-        // PPT联动优化：异步墨迹保存队列
-        private readonly ConcurrentQueue<(int slideId, MemoryStream stream)> _strokeSaveQueue = new ConcurrentQueue<(int, MemoryStream)>();
-
         static MainWindow() {
             // 冻结画刷以提高性能
             _darkBgBrush.Freeze();
