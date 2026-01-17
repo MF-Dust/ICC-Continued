@@ -100,7 +100,8 @@ namespace Ink_Canvas {
         }
 
         /// <summary>
-        /// 鐢ㄦ柤鏇存柊娴嫊宸ュ叿娆勭殑"鎵嬪嫝"鎸夐垥鍜岀櫧鏉垮伐鍏锋瑒鐨?鎵嬪嫝"鎸夐垥鐨勬ǎ寮忥紙闁嬪暉鍜岄棞闁夌媭鎱嬶級
+        /// 根據當前多點觸控與兩指手勢設定，更新浮動工具欄與白板工具欄中
+        /// 「兩指手勢」按鈕的圖示與啟用狀態提示（顏色/透明度等）。
         /// </summary>
         private void CheckEnableTwoFingerGestureBtnColorPrompt() {
             if (ToggleSwitchEnableMultiTouchMode.IsOn) {
