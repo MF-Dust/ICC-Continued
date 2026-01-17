@@ -219,7 +219,7 @@ namespace Ink_Canvas.Services
         /// <summary>
         /// 窗口信息类
         /// </summary>
-        class WindowInformation
+        class WindowInformation : IDisposable
         {
             public string Title { get; set; }
             public Bitmap WindowBitmap { get; set; }
@@ -234,6 +234,27 @@ namespace Ink_Canvas.Services
             public int WindowDPI { get; set; }
             public int SystemDPI { get; set; }
             public double DPIScale { get; set; }
+
+            private bool _disposed = false;
+
+            public void Dispose() {
+                Dispose(true);
+                GC.SuppressFinalize(this);
+            }
+
+            protected virtual void Dispose(bool disposing) {
+                if (!_disposed) {
+                    if (disposing) {
+                        WindowBitmap?.Dispose();
+                        AppIcon?.Dispose();
+                    }
+                    _disposed = true;
+                }
+            }
+
+            ~WindowInformation() {
+                Dispose(false);
+            }
         }
     }
 }

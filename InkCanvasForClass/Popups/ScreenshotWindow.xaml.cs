@@ -361,7 +361,7 @@ namespace Ink_Canvas.Popups
                         Title = windowInformation.Title,
                         Snapshot = BitmapToImageSource(clonedBitmap),
                         Handle = windowInformation.hwnd,
-                        OriginBitmap = windowInformation.WindowBitmap,
+                        OriginBitmap = clonedBitmap,
                         Icon = clonedIcon == null ? new BitmapImage(new Uri("pack://application:,,,/Resources/Icons-png/classic-icons/program-icon.png")) : IconToImageSource(clonedIcon),
                         Width = w,
                         TextBlockWidth = w - 48 - 8,
