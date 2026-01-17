@@ -29,6 +29,7 @@ namespace Ink_Canvas.Models.Settings
         private bool _applyScaleToStylusTip = false;
         private bool _onlyHitTestFullyContainedStrokes = false;
         private bool _allowClickToSelectLockedStroke = false;
+        private bool _hideInkAfterExitBoardMode = true;
         private int _selectionMethod = 0;
         private int _lastPenType = 0;
         private int _lastDesktopInkColor = 1;
@@ -244,6 +245,16 @@ namespace Ink_Canvas.Models.Settings
         {
             get => _allowClickToSelectLockedStroke;
             set => SetProperty(ref _allowClickToSelectLockedStroke, value);
+        }
+
+        /// <summary>
+        /// 退出画板模式后隐藏墨迹
+        /// </summary>
+        [JsonProperty("hideInkAfterExitBoardMode")]
+        public bool HideInkAfterExitBoardMode
+        {
+            get => _hideInkAfterExitBoardMode;
+            set => SetProperty(ref _hideInkAfterExitBoardMode, value);
         }
 
         /// <summary>

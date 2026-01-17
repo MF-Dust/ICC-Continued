@@ -92,6 +92,24 @@ namespace Ink_Canvas.ViewModels
             get => _gesture.EnableMouseWheelGesture;
             set { if (SetProperty(_gesture.EnableMouseWheelGesture, value, _gesture, (g, v) => g.EnableMouseWheelGesture = v)) _saveAction?.Invoke(); }
         }
+
+        public int HideCursorMode
+        {
+            get => _gesture.HideCursorMode;
+            set { if (SetProperty(_gesture.HideCursorMode, value, _gesture, (g, v) => g.HideCursorMode = v)) _saveAction?.Invoke(); }
+        }
+
+        public int MouseWheelAction
+        {
+            get => _gesture.MouseWheelAction;
+            set { if (SetProperty(_gesture.MouseWheelAction, value, _gesture, (g, v) => g.MouseWheelAction = v)) _saveAction?.Invoke(); }
+        }
+
+        public int MouseWheelDirection
+        {
+            get => _gesture.MouseWheelDirection;
+            set { if (SetProperty(_gesture.MouseWheelDirection, value, _gesture, (g, v) => g.MouseWheelDirection = v)) _saveAction?.Invoke(); }
+        }
     }
 
     /// <summary>
@@ -379,6 +397,24 @@ namespace Ink_Canvas.ViewModels
         {
             get => _inkToShape.IsInkToShapeRounded;
             set { if (SetProperty(_inkToShape.IsInkToShapeRounded, value, _inkToShape, (i, v) => i.IsInkToShapeRounded = v)) _saveAction?.Invoke(); }
+        }
+
+        public bool TreatRecognizedInkAsShape
+        {
+            get => _inkToShape.TreatRecognizedInkAsShape;
+            set { if (SetProperty(_inkToShape.TreatRecognizedInkAsShape, value, _inkToShape, (i, v) => i.TreatRecognizedInkAsShape = v)) _saveAction?.Invoke(); }
+        }
+
+        public bool EnableDrawingToolbar
+        {
+            get => _inkToShape.EnableDrawingToolbar;
+            set { if (SetProperty(_inkToShape.EnableDrawingToolbar, value, _inkToShape, (i, v) => i.EnableDrawingToolbar = v)) _saveAction?.Invoke(); }
+        }
+
+        public bool ExpandShapeVariantsByDefault
+        {
+            get => _inkToShape.ExpandShapeVariantsByDefault;
+            set { if (SetProperty(_inkToShape.ExpandShapeVariantsByDefault, value, _inkToShape, (i, v) => i.ExpandShapeVariantsByDefault = v)) _saveAction?.Invoke(); }
         }
     }
 

@@ -6,7 +6,7 @@
              xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
              xmlns:local="clr-namespace:Ink_Canvas.Views.Settings.Pages"
              mc:Ignorable="d"
-             d:DesignHeight="900" d:DesignWidth="600"
+             d:DesignHeight="1200" d:DesignWidth="600"
              Background="Transparent"
              Foreground="#FAFAFA"
              ui:ThemeManager.RequestedTheme="Dark">
@@ -18,6 +18,7 @@
             <Color x:Key="AccentColor">#60A5FA</Color>
             <Color x:Key="PrimaryTextColor">#FAFAFA</Color>
             <Color x:Key="SecondaryTextColor">#A1A1AA</Color>
+            <Color x:Key="TertiaryTextColor">#71717A</Color>
             <Color x:Key="BorderColor">#3F3F46</Color>
 
             <!-- 画刷定义 -->
@@ -25,6 +26,7 @@
             <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource AccentColor}"/>
             <SolidColorBrush x:Key="PrimaryTextBrush" Color="{StaticResource PrimaryTextColor}"/>
             <SolidColorBrush x:Key="SecondaryTextBrush" Color="{StaticResource SecondaryTextColor}"/>
+            <SolidColorBrush x:Key="TertiaryTextBrush" Color="{StaticResource TertiaryTextColor}"/>
             <SolidColorBrush x:Key="BorderBrush" Color="{StaticResource BorderColor}"/>
 
             <!-- 页面标题样式 -->
@@ -85,156 +87,177 @@
                 <Setter Property="VerticalAlignment" Value="Center"/>
                 <Setter Property="HorizontalAlignment" Value="Right"/>
             </Style>
+
+            <!-- 提示文本样式 -->
+            <Style x:Key="HintTextStyle" TargetType="TextBlock">
+                <Setter Property="FontSize" Value="11"/>
+                <Setter Property="Foreground" Value="{StaticResource TertiaryTextBrush}"/>
+                <Setter Property="FontStyle" Value="Italic"/>
+                <Setter Property="Margin" Value="0,8,0,0"/>
+            </Style>
+
+            <!-- 复选框样式 -->
+            <Style x:Key="SettingsCheckBoxStyle" TargetType="CheckBox">
+                <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}"/>
+                <Setter Property="FontSize" Value="13"/>
+                <Setter Property="Margin" Value="0,8,0,0"/>
+            </Style>
         </ResourceDictionary>
     </UserControl.Resources>
 
     <StackPanel>
         <TextBlock Text="书写" Style="{StaticResource PageTitleStyle}"/>
 
-        <!-- 笔迹设置 -->
-        <TextBlock Text="笔迹设置" Style="{StaticResource SettingsGroupTitleStyle}"/>
+        <!-- ==================== 画板和墨迹 ==================== -->
+        <TextBlock Text="画板和墨迹" Style="{StaticResource SettingsGroupTitleStyle}"/>
 
-        <!-- 墨迹宽度 -->
+        <!-- 显示画笔光标 -->
         <Border Style="{StaticResource SettingsCardStyle}">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="200"/>
-                    <ColumnDefinition Width="50"/>
+                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <ui:FontIcon Glyph="&#xED63;" Style="{StaticResource SettingsIconStyle}"/>
-                <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                    <TextBlock Text="墨迹宽度" Style="{StaticResource SettingsTitleStyle}"/>
-                    <TextBlock Text="调整画笔的默认粗细" Style="{StaticResource SettingsDescriptionStyle}"/>
-                </StackPanel>
-                <Slider Grid.Column="2" VerticalAlignment="Center"
-                        Minimum="1" Maximum="10"
-                        Value="{Binding Whiteboard.InkWidth, Mode=TwoWay}"
-                        TickFrequency="0.5" IsSnapToTickEnabled="True"
-                        SmallChange="0.5" LargeChange="1"/>
-                <TextBlock Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Right"
-                           Text="{Binding Whiteboard.InkWidth, StringFormat={}{0:F1}}"
-                           Style="{StaticResource SettingsValueStyle}"/>
+                <TextBlock Grid.Column="0" Text="显示画笔光标" Style="{StaticResource SettingsTitleStyle}"
+                           VerticalAlignment="Center"/>
+                <ui:ToggleSwitch Grid.Column="1" VerticalAlignment="Center"
+                                 IsOn="{Binding Whiteboard.IsShowCursor, Mode=TwoWay}"/>
             </Grid>
         </Border>
 
-        <!-- 荧光笔宽度 -->
+        <!-- 橡皮大小 -->
         <Border Style="{StaticResource SettingsCardStyle}">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="200"/>
-                    <ColumnDefinition Width="50"/>
-                </Grid.ColumnDefinitions>
-                <ui:FontIcon Glyph="&#xE7E6;" Style="{StaticResource SettingsIconStyle}"/>
-                <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                    <TextBlock Text="荧光笔宽度" Style="{StaticResource SettingsTitleStyle}"/>
-                    <TextBlock Text="调整荧光笔的默认粗细" Style="{StaticResource SettingsDescriptionStyle}"/>
-                </StackPanel>
-                <Slider Grid.Column="2" VerticalAlignment="Center"
-                        Minimum="5" Maximum="50"
-                        Value="{Binding Whiteboard.HighlighterWidth, Mode=TwoWay}"
-                        TickFrequency="1" IsSnapToTickEnabled="True"
-                        SmallChange="1" LargeChange="5"/>
-                <TextBlock Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Right"
-                           Text="{Binding Whiteboard.HighlighterWidth, StringFormat={}{0:F0}}"
-                           Style="{StaticResource SettingsValueStyle}"/>
-            </Grid>
+            <StackPanel>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="橡皮大小" Style="{StaticResource SettingsTitleStyle}"
+                               VerticalAlignment="Center" Margin="0,0,16,0"/>
+                    <ComboBox Grid.Column="2" Width="100"
+                              SelectedIndex="{Binding Whiteboard.EraserSize, Mode=TwoWay}">
+                        <ComboBoxItem Content="很小"/>
+                        <ComboBoxItem Content="较小"/>
+                        <ComboBoxItem Content="中等"/>
+                        <ComboBoxItem Content="较大"/>
+                        <ComboBoxItem Content="很大"/>
+                    </ComboBox>
+                </Grid>
+                <TextBlock Text="非实时切换，下一次使用画板擦时生效。"
+                           Style="{StaticResource HintTextStyle}"/>
+            </StackPanel>
         </Border>
 
-        <!-- 平滑曲线 -->
+        <!-- ==================== 墨迹纠正 ==================== -->
+        <TextBlock Text="墨迹纠正" Style="{StaticResource SettingsGroupTitleStyle}"/>
+
+        <!-- 启用墨迹识别 -->
         <Border Style="{StaticResource SettingsCardStyle}">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <ui:FontIcon Glyph="&#xE809;" Style="{StaticResource SettingsIconStyle}"/>
-                <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                    <TextBlock Text="平滑曲线" Style="{StaticResource SettingsTitleStyle}"/>
-                    <TextBlock Text="使笔迹更加平滑自然" Style="{StaticResource SettingsDescriptionStyle}"/>
-                </StackPanel>
-                <ui:ToggleSwitch Grid.Column="2" VerticalAlignment="Center"
-                                 IsOn="{Binding Whiteboard.FitToCurve, Mode=TwoWay}"/>
-            </Grid>
-        </Border>
-
-        <!-- 墨迹识别设置 -->
-        <TextBlock Text="墨迹识别" Style="{StaticResource SettingsGroupTitleStyle}"/>
-
-        <!-- 启用墨迹转形状 -->
-        <Border Style="{StaticResource SettingsCardStyle}">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <ui:FontIcon Glyph="&#xED5F;" Style="{StaticResource SettingsIconStyle}"/>
-                <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                    <TextBlock Text="启用墨迹转形状" Style="{StaticResource SettingsTitleStyle}"/>
-                    <TextBlock Text="自动将手绘墨迹转换为标准几何形状" Style="{StaticResource SettingsDescriptionStyle}"/>
-                </StackPanel>
-                <ui:ToggleSwitch Grid.Column="2" VerticalAlignment="Center"
+                <TextBlock Grid.Column="0" Text="启用墨迹识别" Style="{StaticResource SettingsTitleStyle}"
+                           VerticalAlignment="Center"/>
+                <ui:ToggleSwitch Grid.Column="1" VerticalAlignment="Center"
                                  IsOn="{Binding InkToShape.IsInkToShapeEnabled, Mode=TwoWay}"/>
             </Grid>
         </Border>
 
-        <!-- 识别三角形 -->
+        <!-- 阻止矫正后的矩形带有模拟压感值 -->
         <Border Style="{StaticResource SettingsCardStyle}">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <ui:FontIcon Glyph="&#xF158;" Style="{StaticResource SettingsIconStyle}"/>
-                <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                    <TextBlock Text="识别三角形" Style="{StaticResource SettingsTitleStyle}"/>
-                    <TextBlock Text="将手绘三角形转换为标准三角形" Style="{StaticResource SettingsDescriptionStyle}"/>
-                </StackPanel>
-                <ui:ToggleSwitch Grid.Column="2" VerticalAlignment="Center"
-                                 IsOn="{Binding InkToShape.IsInkToShapeTriangle, Mode=TwoWay}"/>
+                <TextBlock Grid.Column="0" Text="阻止矫正后的矩形带有模拟压感值" Style="{StaticResource SettingsTitleStyle}"
+                           VerticalAlignment="Center"/>
+                <ui:ToggleSwitch Grid.Column="1" VerticalAlignment="Center"
+                                 IsOn="{Binding InkToShape.IsInkToShapeNoFakePressureRectangle, Mode=TwoWay}"/>
             </Grid>
         </Border>
 
-        <!-- 识别矩形 -->
+        <!-- 阻止矫正后的三角形带有模拟压感值 -->
         <Border Style="{StaticResource SettingsCardStyle}">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <ui:FontIcon Glyph="&#xF156;" Style="{StaticResource SettingsIconStyle}"/>
-                <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                    <TextBlock Text="识别矩形" Style="{StaticResource SettingsTitleStyle}"/>
-                    <TextBlock Text="将手绘矩形转换为标准矩形" Style="{StaticResource SettingsDescriptionStyle}"/>
-                </StackPanel>
-                <ui:ToggleSwitch Grid.Column="2" VerticalAlignment="Center"
-                                 IsOn="{Binding InkToShape.IsInkToShapeRectangle, Mode=TwoWay}"/>
+                <TextBlock Grid.Column="0" Text="阻止矫正后的三角形带有模拟压感值" Style="{StaticResource SettingsTitleStyle}"
+                           VerticalAlignment="Center"/>
+                <ui:ToggleSwitch Grid.Column="1" VerticalAlignment="Center"
+                                 IsOn="{Binding InkToShape.IsInkToShapeNoFakePressureTriangle, Mode=TwoWay}"/>
             </Grid>
         </Border>
 
-        <!-- 识别圆形 -->
+        <!-- 将识别的墨迹当作形状处理 -->
         <Border Style="{StaticResource SettingsCardStyle}">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <ui:FontIcon Glyph="&#xEA3A;" Style="{StaticResource SettingsIconStyle}"/>
-                <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                    <TextBlock Text="识别圆形/椭圆" Style="{StaticResource SettingsTitleStyle}"/>
-                    <TextBlock Text="将手绘圆形转换为标准圆形或椭圆" Style="{StaticResource SettingsDescriptionStyle}"/>
-                </StackPanel>
-                <ui:ToggleSwitch Grid.Column="2" VerticalAlignment="Center"
-                                 IsOn="{Binding InkToShape.IsInkToShapeRounded, Mode=TwoWay}"/>
+                <TextBlock Grid.Column="0" Text="将识别的墨迹当作形状处理" Style="{StaticResource SettingsTitleStyle}"
+                           VerticalAlignment="Center"/>
+                <ui:ToggleSwitch Grid.Column="1" VerticalAlignment="Center"
+                                 IsOn="{Binding InkToShape.TreatRecognizedInkAsShape, Mode=TwoWay}"/>
             </Grid>
         </Border>
+
+        <!-- 矫正手绘形状复选框组 -->
+        <Border Style="{StaticResource SettingsCardStyle}">
+            <StackPanel>
+                <CheckBox Content="矫正手绘三角形" Style="{StaticResource SettingsCheckBoxStyle}"
+                          IsChecked="{Binding InkToShape.IsInkToShapeTriangle, Mode=TwoWay}"
+                          Margin="0"/>
+                <CheckBox Content="矫正手绘矩形" Style="{StaticResource SettingsCheckBoxStyle}"
+                          IsChecked="{Binding InkToShape.IsInkToShapeRectangle, Mode=TwoWay}"/>
+                <CheckBox Content="矫正手绘圆形与椭圆" Style="{StaticResource SettingsCheckBoxStyle}"
+                          IsChecked="{Binding InkToShape.IsInkToShapeRounded, Mode=TwoWay}"/>
+            </StackPanel>
+        </Border>
+
+        <!-- ==================== 形状绘制 ==================== -->
+        <TextBlock Text="形状绘制" Style="{StaticResource SettingsGroupTitleStyle}"/>
+
+        <!-- 启用绘制时工具栏 -->
+        <Border Style="{StaticResource SettingsCardStyle}">
+            <StackPanel>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="启用绘制时工具栏" Style="{StaticResource SettingsTitleStyle}"
+                               VerticalAlignment="Center"/>
+                    <ui:ToggleSwitch Grid.Column="1" VerticalAlignment="Center"
+                                     IsOn="{Binding InkToShape.EnableDrawingToolbar, Mode=TwoWay}"/>
+                </Grid>
+                <TextBlock Text="启用绘制工具栏后，可以在绘制形状时显示一个工具栏，可以快捷进行变体的切换、形状绘制属性，关闭该选项后将无法修改形状变体！"
+                           Style="{StaticResource HintTextStyle}"/>
+            </StackPanel>
+        </Border>
+
+        <!-- 工具栏默认展开形状变体栏 -->
+        <Border Style="{StaticResource SettingsCardStyle}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="工具栏默认展开形状变体栏" Style="{StaticResource SettingsTitleStyle}"
+                           VerticalAlignment="Center"/>
+                <ui:ToggleSwitch Grid.Column="1" VerticalAlignment="Center"
+                                 IsOn="{Binding InkToShape.ExpandShapeVariantsByDefault, Mode=TwoWay}"/>
+            </Grid>
+        </Border>
+
+        <!-- 底部间距 -->
+        <Border Height="40"/>
     </StackPanel>
 </UserControl>

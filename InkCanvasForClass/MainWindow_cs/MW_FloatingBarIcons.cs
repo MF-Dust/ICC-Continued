@@ -534,8 +534,17 @@ namespace Ink_Canvas {
 
             BtnSwitch_Click(null, null);
 
-            if (currentMode == 0 && inkCanvas.Strokes.Count == 0 && BorderFloatingBarExitPPTBtn.Visibility != Visibility.Visible)
-                CursorIcon_Click(null, null);
+            if (currentMode == 0)
+            {
+                if (Settings.Canvas.HideInkAfterExitBoardMode && BorderFloatingBarExitPPTBtn.Visibility == Visibility.Visible)
+                {
+                    CursorIcon_Click(null, null);
+                }
+                else if (inkCanvas.Strokes.Count == 0 && BorderFloatingBarExitPPTBtn.Visibility != Visibility.Visible)
+                {
+                    CursorIcon_Click(null, null);
+                }
+            }
 
             //ThemeManager.Current.ApplicationTheme = ApplicationTheme.Dark;
 

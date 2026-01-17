@@ -19,6 +19,7 @@
     <Color x:Key="SuccessColor">#4ADE80</Color>
     <Color x:Key="WarningColor">#FBBF24</Color>
     <Color x:Key="ErrorColor">#F87171</Color>
+    <Color x:Key="NewFeatureColor">#10B981</Color>
 
     <!-- 画刷定义 -->
     <SolidColorBrush x:Key="PrimaryBackgroundBrush" Color="{StaticResource PrimaryBackgroundColor}"/>
@@ -35,6 +36,7 @@
     <SolidColorBrush x:Key="SuccessBrush" Color="{StaticResource SuccessColor}"/>
     <SolidColorBrush x:Key="WarningBrush" Color="{StaticResource WarningColor}"/>
     <SolidColorBrush x:Key="ErrorBrush" Color="{StaticResource ErrorColor}"/>
+    <SolidColorBrush x:Key="NewFeatureBrush" Color="{StaticResource NewFeatureColor}"/>
 
     <!-- 页面标题样式 -->
     <Style x:Key="PageTitleStyle" TargetType="TextBlock">
@@ -116,6 +118,24 @@
         <Setter Property="CornerRadius" Value="4"/>
         <Setter Property="Padding" Value="8,4"/>
         <Setter Property="Margin" Value="0,0,8,8"/>
+    </Style>
+
+    <!-- 新功能标签样式 -->
+    <Style x:Key="NewFeatureTagStyle" TargetType="Border">
+        <Setter Property="Background" Value="#1A10B981"/>
+        <Setter Property="BorderBrush" Value="{StaticResource NewFeatureBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="4"/>
+        <Setter Property="Padding" Value="6,2"/>
+        <Setter Property="Margin" Value="8,0,0,0"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
+
+    <!-- 新功能标签文本样式 -->
+    <Style x:Key="NewFeatureTagTextStyle" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="10"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Foreground" Value="{StaticResource NewFeatureBrush}"/>
     </Style>
 
 </ResourceDictionary>

@@ -4,194 +4,337 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
+             xmlns:ic="clr-namespace:Ink_Canvas"
              xmlns:local="clr-namespace:Ink_Canvas.Views.Settings.Pages"
              mc:Ignorable="d"
-             d:DesignHeight="800" d:DesignWidth="600"
+             d:DesignHeight="1200" d:DesignWidth="800"
              Background="Transparent"
-             Foreground="#FAFAFA"
+             Foreground="{DynamicResource PrimaryTextBrush}"
              ui:ThemeManager.RequestedTheme="Dark">
 
     <UserControl.Resources>
         <ResourceDictionary>
-            <!-- 颜色定义 -->
-            <Color x:Key="CardBackgroundColor">#2D2D30</Color>
-            <Color x:Key="AccentColor">#60A5FA</Color>
-            <Color x:Key="PrimaryTextColor">#FAFAFA</Color>
-            <Color x:Key="SecondaryTextColor">#A1A1AA</Color>
-            <Color x:Key="BorderColor">#3F3F46</Color>
-
-            <!-- 画刷定义 -->
-            <SolidColorBrush x:Key="CardBackgroundBrush" Color="{StaticResource CardBackgroundColor}"/>
-            <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource AccentColor}"/>
-            <SolidColorBrush x:Key="PrimaryTextBrush" Color="{StaticResource PrimaryTextColor}"/>
-            <SolidColorBrush x:Key="SecondaryTextBrush" Color="{StaticResource SecondaryTextColor}"/>
-            <SolidColorBrush x:Key="BorderBrush" Color="{StaticResource BorderColor}"/>
-
-            <!-- 页面标题样式 -->
-            <Style x:Key="PageTitleStyle" TargetType="TextBlock">
-                <Setter Property="FontSize" Value="28"/>
-                <Setter Property="FontWeight" Value="SemiBold"/>
-                <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}"/>
-                <Setter Property="Margin" Value="0,0,0,24"/>
-            </Style>
-
-            <!-- 设置卡片容器样式 -->
-            <Style x:Key="SettingsCardStyle" TargetType="Border">
-                <Setter Property="Background" Value="{StaticResource CardBackgroundBrush}"/>
-                <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
-                <Setter Property="BorderThickness" Value="1"/>
-                <Setter Property="CornerRadius" Value="8"/>
-                <Setter Property="Padding" Value="16"/>
-                <Setter Property="Margin" Value="0,0,0,8"/>
-            </Style>
-
-            <!-- 设置项标题样式 -->
-            <Style x:Key="SettingsTitleStyle" TargetType="TextBlock">
-                <Setter Property="FontSize" Value="14"/>
-                <Setter Property="FontWeight" Value="SemiBold"/>
-                <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}"/>
-                <Setter Property="VerticalAlignment" Value="Center"/>
-            </Style>
-
-            <!-- 设置项描述样式 -->
-            <Style x:Key="SettingsDescriptionStyle" TargetType="TextBlock">
-                <Setter Property="FontSize" Value="12"/>
-                <Setter Property="Foreground" Value="{StaticResource SecondaryTextBrush}"/>
-                <Setter Property="TextWrapping" Value="Wrap"/>
-                <Setter Property="Margin" Value="0,4,0,0"/>
-            </Style>
-
-            <!-- 设置分组标题样式 -->
-            <Style x:Key="SettingsGroupTitleStyle" TargetType="TextBlock">
-                <Setter Property="FontSize" Value="13"/>
-                <Setter Property="FontWeight" Value="SemiBold"/>
-                <Setter Property="Margin" Value="0,20,0,12"/>
-                <Setter Property="Foreground" Value="{StaticResource AccentBrush}"/>
-            </Style>
-
-            <!-- 图标样式 -->
-            <Style x:Key="SettingsIconStyle" TargetType="ui:FontIcon">
-                <Setter Property="FontSize" Value="20"/>
-                <Setter Property="Foreground" Value="{StaticResource AccentBrush}"/>
-                <Setter Property="Margin" Value="0,0,16,0"/>
-                <Setter Property="VerticalAlignment" Value="Center"/>
-            </Style>
-
-            <!-- 值显示样式 -->
-            <Style x:Key="SettingsValueStyle" TargetType="TextBlock">
-                <Setter Property="FontSize" Value="14"/>
-                <Setter Property="FontWeight" Value="SemiBold"/>
-                <Setter Property="Foreground" Value="{StaticResource AccentBrush}"/>
-                <Setter Property="VerticalAlignment" Value="Center"/>
-                <Setter Property="HorizontalAlignment" Value="Right"/>
-            </Style>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="SettingsPageStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <StackPanel>
-        <TextBlock Text="白板" Style="{StaticResource PageTitleStyle}"/>
+    <ui:ScrollViewerEx VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Margin="0,0,16,0">
+            <TextBlock Text="白板" Style="{StaticResource PageTitleStyle}"/>
 
-        <!-- 墨迹设置 -->
-        <TextBlock Text="墨迹设置" Style="{StaticResource SettingsGroupTitleStyle}"/>
+            <!-- 白板背景 -->
+            <TextBlock Text="白板背景" Style="{StaticResource SettingsGroupTitleStyle}"/>
 
-        <!-- 启用压感模拟 -->
-        <Border Style="{StaticResource SettingsCardStyle}">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <ui:FontIcon Glyph="&#xE7C5;" Style="{StaticResource SettingsIconStyle}"/>
-                <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                    <TextBlock Text="启用压感模拟" Style="{StaticResource SettingsTitleStyle}"/>
-                    <TextBlock Text="模拟压感效果，使笔迹更加自然" Style="{StaticResource SettingsDescriptionStyle}"/>
-                </StackPanel>
-                <ui:ToggleSwitch Grid.Column="2" VerticalAlignment="Center"
-                                 IsOn="{Binding Whiteboard.IsEnablePressureSensitiveSimulation, Mode=TwoWay}"/>
-            </Grid>
-        </Border>
+            <!-- 白板模式默认背景色 -->
+            <Border Style="{StaticResource SettingsCardStyle}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <ui:FontIcon Glyph="&#xE790;" Style="{StaticResource SettingsIconStyle}"/>
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Orientation="Horizontal">
+                        <TextBlock Text="白板模式默认背景色" Style="{StaticResource SettingsTitleStyle}"/>
+                        <Border Style="{StaticResource NewFeatureTagStyle}">
+                            <TextBlock Text="✦ 新功能" Style="{StaticResource NewFeatureTagTextStyle}"/>
+                        </Border>
+                    </StackPanel>
+                    <ComboBox Grid.Column="2" VerticalAlignment="Center" MinWidth="120"
+                              SelectedValue="{Binding Whiteboard.BlackboardBackgroundColor, Mode=TwoWay}"
+                              SelectedValuePath="Tag">
+                        <ComboBoxItem Content="灰黑" Tag="{x:Static ic:BlackboardBackgroundColorEnum.GrayBlack}"/>
+                        <ComboBoxItem Content="黑板绿" Tag="{x:Static ic:BlackboardBackgroundColorEnum.BlackBoardGreen}"/>
+                        <ComboBoxItem Content="白色" Tag="{x:Static ic:BlackboardBackgroundColorEnum.White}"/>
+                        <ComboBoxItem Content="蓝黑" Tag="{x:Static ic:BlackboardBackgroundColorEnum.BlueBlack}"/>
+                        <ComboBoxItem Content="护眼绿" Tag="{x:Static ic:BlackboardBackgroundColorEnum.EyeProtectionGreen}"/>
+                        <ComboBoxItem Content="纯黑" Tag="{x:Static ic:BlackboardBackgroundColorEnum.RealBlack}"/>
+                    </ComboBox>
+                </Grid>
+            </Border>
 
-        <!-- 只在PPT模式下模拟压感 -->
-        <Border Style="{StaticResource SettingsCardStyle}">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <ui:FontIcon Glyph="&#xE8A1;" Style="{StaticResource SettingsIconStyle}"/>
-                <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                    <TextBlock Text="只在PPT模式下模拟压感" Style="{StaticResource SettingsTitleStyle}"/>
-                    <TextBlock Text="仅在演示模式时启用压感模拟" Style="{StaticResource SettingsDescriptionStyle}"/>
-                </StackPanel>
-                <ui:ToggleSwitch Grid.Column="2" VerticalAlignment="Center"
-                                 IsOn="{Binding Whiteboard.IsOnlyEnablePressureSensitiveSimulationInPPT, Mode=TwoWay}"/>
-            </Grid>
-        </Border>
+            <!-- 白板模式默认背景稿纸格式 -->
+            <Border Style="{StaticResource SettingsCardStyle}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <ui:FontIcon Glyph="&#xE80A;" Style="{StaticResource SettingsIconStyle}"/>
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Orientation="Horizontal">
+                        <TextBlock Text="白板模式默认背景稿纸格式" Style="{StaticResource SettingsTitleStyle}"/>
+                        <Border Style="{StaticResource NewFeatureTagStyle}">
+                            <TextBlock Text="✦ 新功能" Style="{StaticResource NewFeatureTagTextStyle}"/>
+                        </Border>
+                    </StackPanel>
+                    <ComboBox Grid.Column="2" VerticalAlignment="Center" MinWidth="120"
+                              SelectedValue="{Binding Whiteboard.BlackboardBackgroundPattern, Mode=TwoWay}"
+                              SelectedValuePath="Tag">
+                        <ComboBoxItem Content="无" Tag="{x:Static ic:BlackboardBackgroundPatternEnum.None}"/>
+                        <ComboBoxItem Content="点阵" Tag="{x:Static ic:BlackboardBackgroundPatternEnum.Dots}"/>
+                        <ComboBoxItem Content="网格" Tag="{x:Static ic:BlackboardBackgroundPatternEnum.Grid}"/>
+                    </ComboBox>
+                </Grid>
+            </Border>
 
-        <!-- 墨迹宽度倍数 -->
-        <Border Style="{StaticResource SettingsCardStyle}">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="200"/>
-                    <ColumnDefinition Width="50"/>
-                </Grid.ColumnDefinitions>
-                <ui:FontIcon Glyph="&#xED63;" Style="{StaticResource SettingsIconStyle}"/>
-                <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                    <TextBlock Text="墨迹宽度倍数" Style="{StaticResource SettingsTitleStyle}"/>
-                    <TextBlock Text="调整画笔粗细的倍数" Style="{StaticResource SettingsDescriptionStyle}"/>
-                </StackPanel>
-                <Slider Grid.Column="2" VerticalAlignment="Center"
-                        Minimum="0.5" Maximum="3.0"
-                        Value="{Binding Whiteboard.InkWidthMultiplier, Mode=TwoWay}"
-                        TickFrequency="0.1" IsSnapToTickEnabled="True"
-                        SmallChange="0.1" LargeChange="0.2"/>
-                <TextBlock Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Right"
-                           Text="{Binding Whiteboard.InkWidthMultiplier, StringFormat={}{0:F1}x}"
-                           Style="{StaticResource SettingsValueStyle}"/>
-            </Grid>
-        </Border>
+            <!-- 白板创建新页时始终使用默认背景色 -->
+            <Border Style="{StaticResource SettingsCardStyle}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <ui:FontIcon Glyph="&#xE710;" Style="{StaticResource SettingsIconStyle}"/>
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                        <TextBlock Text="白板创建新页时始终使用默认背景色" Style="{StaticResource SettingsTitleStyle}"/>
+                    </StackPanel>
+                    <ui:ToggleSwitch Grid.Column="2" VerticalAlignment="Center"
+                                     IsOn="{Binding Whiteboard.UseDefaultBackgroundColorForEveryNewAddedBlackboardPage, Mode=TwoWay}"/>
+                </Grid>
+            </Border>
 
-        <!-- 黑板设置 -->
-        <TextBlock Text="黑板设置" Style="{StaticResource SettingsGroupTitleStyle}"/>
+            <!-- 白板创建新页时始终使用默认背景稿纸格式 -->
+            <Border Style="{StaticResource SettingsCardStyle}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
 
-        <!-- 启用黑板虚线网格 -->
-        <Border Style="{StaticResource SettingsCardStyle}">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <ui:FontIcon Glyph="&#xE80A;" Style="{StaticResource SettingsIconStyle}"/>
-                <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                    <TextBlock Text="启用黑板虚线网格" Style="{StaticResource SettingsTitleStyle}"/>
-                    <TextBlock Text="在黑板模式下显示辅助网格线" Style="{StaticResource SettingsDescriptionStyle}"/>
-                </StackPanel>
-                <ui:ToggleSwitch Grid.Column="2" VerticalAlignment="Center"
-                                 IsOn="{Binding Whiteboard.IsShowGridInBlackBoard, Mode=TwoWay}"/>
-            </Grid>
-        </Border>
+                    <ui:FontIcon Glyph="&#xE80A;" Style="{StaticResource SettingsIconStyle}" Grid.RowSpan="2" VerticalAlignment="Top" Margin="0,12,16,0"/>
 
-        <!-- 使用墨迹渲染器 -->
-        <Border Style="{StaticResource SettingsCardStyle}">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <ui:FontIcon Glyph="&#xE90F;" Style="{StaticResource SettingsIconStyle}"/>
-                <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                    <TextBlock Text="使用墨迹渲染器" Style="{StaticResource SettingsTitleStyle}"/>
-                    <TextBlock Text="使用自定义墨迹渲染器来提高性能" Style="{StaticResource SettingsDescriptionStyle}"/>
-                </StackPanel>
-                <ui:ToggleSwitch Grid.Column="2" VerticalAlignment="Center"
-                                 IsOn="{Binding Whiteboard.UseOptimizedInkRenderer, Mode=TwoWay}"/>
-            </Grid>
-        </Border>
-    </StackPanel>
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                        <TextBlock Text="白板创建新页时始终使用默认背景稿纸格式" Style="{StaticResource SettingsTitleStyle}"/>
+                    </StackPanel>
+                    <ui:ToggleSwitch Grid.Column="2" VerticalAlignment="Center"
+                                     IsOn="{Binding Whiteboard.UseDefaultBackgroundPatternForEveryNewAddedBlackboardPage, Mode=TwoWay}"/>
+
+                    <TextBlock Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2"
+                               Text="# 开启后，每次在白板模式下新建页面都会使用默认背景色和背景稿纸格式。如果关闭，新增页面时则会根据当前页面的背景色和稿纸格式来决定新增页面的背景属性。"
+                               Style="{StaticResource SettingsDescriptionStyle}"/>
+                </Grid>
+            </Border>
+
+            <!-- 白板模式更换背景色同时也更换墨迹颜色 -->
+            <Border Style="{StaticResource SettingsCardStyle}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <ui:FontIcon Glyph="&#xE790;" Style="{StaticResource SettingsIconStyle}" Grid.RowSpan="2" VerticalAlignment="Top" Margin="0,12,16,0"/>
+
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                        <TextBlock Text="白板模式更换背景色同时也更换墨迹颜色" Style="{StaticResource SettingsTitleStyle}"/>
+                    </StackPanel>
+                    <ui:ToggleSwitch Grid.Column="2" VerticalAlignment="Center"
+                                     IsOn="{Binding Whiteboard.IsEnableAutoConvertInkColorWhenBackgroundChanged, Mode=TwoWay}"/>
+
+                    <TextBlock Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2"
+                               Text="# 开启后，每次在白板模式下如果更换为暗色背景，则会将所有暗色墨迹转换为亮色墨迹，同理，如果更换为亮色背景，则会将所有亮色墨迹转换为暗色墨迹（自定义颜色不支持转换）"
+                               Style="{StaticResource SettingsDescriptionStyle}"/>
+                </Grid>
+            </Border>
+
+            <!-- 退出画板模式后隐藏墨迹 -->
+            <Border Style="{StaticResource SettingsCardStyle}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <ui:FontIcon Glyph="&#xED1A;" Style="{StaticResource SettingsIconStyle}" Grid.RowSpan="2" VerticalAlignment="Top" Margin="0,12,16,0"/>
+
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                        <TextBlock Text="退出画板模式后隐藏墨迹" Style="{StaticResource SettingsTitleStyle}"/>
+                    </StackPanel>
+                    <ui:ToggleSwitch Grid.Column="2" VerticalAlignment="Center"
+                                     IsOn="{Binding Whiteboard.HideInkAfterExitBoardMode, Mode=TwoWay}"/>
+
+                    <TextBlock Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2"
+                               Text="# 开启 退出画板模式后隐藏墨迹 选项后，进入 PPT 模式时未处于批注模式时不会显示墨迹。"
+                               Style="{StaticResource SettingsDescriptionStyle}"/>
+                </Grid>
+            </Border>
+
+            <!-- 清空墨迹时删除墨迹历史记录 -->
+            <Border Style="{StaticResource SettingsCardStyle}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <ui:FontIcon Glyph="&#xE74D;" Style="{StaticResource SettingsIconStyle}"/>
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                        <TextBlock Text="清空墨迹时删除墨迹历史记录" Style="{StaticResource SettingsTitleStyle}"/>
+                    </StackPanel>
+                    <ui:ToggleSwitch Grid.Column="2" VerticalAlignment="Center"
+                                     IsOn="{Binding Whiteboard.ClearCanvasAndClearTimeMachine, Mode=TwoWay}"/>
+                </Grid>
+            </Border>
+
+            <!-- 保留双曲线渐近线 -->
+            <Border Style="{StaticResource SettingsCardStyle}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <ui:FontIcon Glyph="&#xE9D9;" Style="{StaticResource SettingsIconStyle}" Grid.RowSpan="2" VerticalAlignment="Top" Margin="0,12,16,0"/>
+
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                        <TextBlock Text="保留双曲线渐近线" Style="{StaticResource SettingsTitleStyle}"/>
+                    </StackPanel>
+                    <ComboBox Grid.Column="2" VerticalAlignment="Center" MinWidth="120"
+                              SelectedValue="{Binding Whiteboard.HyperbolaAsymptoteOption, Mode=TwoWay}"
+                              SelectedValuePath="Tag">
+                        <ComboBoxItem Content="是" Tag="{x:Static ic:OptionalOperation.Yes}"/>
+                        <ComboBoxItem Content="否" Tag="{x:Static ic:OptionalOperation.No}"/>
+                        <ComboBoxItem Content="每次询问" Tag="{x:Static ic:OptionalOperation.Ask}"/>
+                    </ComboBox>
+
+                    <TextBlock Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2"
+                               Text="# Ink Canvas祖传Bug。请注意，若不保留双曲线渐近线可能会有遇到撤回相关的 BUG 影响使用。"
+                               Style="{StaticResource SettingsDescriptionStyle}"/>
+                </Grid>
+            </Border>
+
+            <!-- 其他 -->
+            <TextBlock Text="其他" Style="{StaticResource SettingsGroupTitleStyle}"/>
+
+            <!-- 让墨迹使用贝塞尔曲线平滑处理 -->
+            <Border Style="{StaticResource SettingsCardStyle}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <ui:FontIcon Glyph="&#xE9D9;" Style="{StaticResource SettingsIconStyle}"/>
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                        <TextBlock Text="让墨迹使用贝塞尔曲线平滑处理" Style="{StaticResource SettingsTitleStyle}"/>
+                    </StackPanel>
+                    <ui:ToggleSwitch Grid.Column="2" VerticalAlignment="Center"
+                                     IsOn="{Binding Whiteboard.FitToCurve, Mode=TwoWay}"/>
+                </Grid>
+            </Border>
+
+            <!-- 选择 -->
+            <TextBlock Text="选择" Style="{StaticResource SettingsGroupTitleStyle}"/>
+            <TextBlock Text="# 使用左键点击墨迹可以直接选中墨迹；使用右键可以始终触发矩形或套索框选模式，而不会选中被鼠标按下的墨迹。"
+                       Style="{StaticResource SettingsDescriptionStyle}" Margin="0,-8,0,12"/>
+
+            <!-- 墨迹选择模式 -->
+            <Border Style="{StaticResource SettingsCardStyle}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <ui:FontIcon Glyph="&#xEF20;" Style="{StaticResource SettingsIconStyle}"/>
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Orientation="Horizontal">
+                        <TextBlock Text="墨迹选择模式" Style="{StaticResource SettingsTitleStyle}"/>
+                        <Border Style="{StaticResource NewFeatureTagStyle}">
+                            <TextBlock Text="✦ 新功能" Style="{StaticResource NewFeatureTagTextStyle}"/>
+                        </Border>
+                    </StackPanel>
+                    <ComboBox Grid.Column="2" VerticalAlignment="Center" MinWidth="120"
+                              SelectedIndex="{Binding Whiteboard.SelectionMethod, Mode=TwoWay}">
+                        <ComboBoxItem Content="矩形选框"/>
+                        <ComboBoxItem Content="套索圈选"/>
+                    </ComboBox>
+                </Grid>
+            </Border>
+
+            <!-- 将墨迹缩放应用于触笔笔尖 -->
+            <Border Style="{StaticResource SettingsCardStyle}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <ui:FontIcon Glyph="&#xE70F;" Style="{StaticResource SettingsIconStyle}"/>
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Orientation="Horizontal">
+                        <TextBlock Text="将墨迹缩放应用于触笔笔尖" Style="{StaticResource SettingsTitleStyle}"/>
+                        <Border Style="{StaticResource NewFeatureTagStyle}">
+                            <TextBlock Text="✦ 新功能" Style="{StaticResource NewFeatureTagTextStyle}"/>
+                        </Border>
+                    </StackPanel>
+                    <ui:ToggleSwitch Grid.Column="2" VerticalAlignment="Center"
+                                     IsOn="{Binding Whiteboard.ApplyScaleToStylusTip, Mode=TwoWay}"/>
+                </Grid>
+            </Border>
+
+            <!-- 仅命中全部包含的墨迹 -->
+            <Border Style="{StaticResource SettingsCardStyle}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <ui:FontIcon Glyph="&#xE73F;" Style="{StaticResource SettingsIconStyle}"/>
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Orientation="Horizontal">
+                        <TextBlock Text="仅命中全部包含的墨迹" Style="{StaticResource SettingsTitleStyle}"/>
+                        <Border Style="{StaticResource NewFeatureTagStyle}">
+                            <TextBlock Text="✦ 新功能" Style="{StaticResource NewFeatureTagTextStyle}"/>
+                        </Border>
+                    </StackPanel>
+                    <ui:ToggleSwitch Grid.Column="2" VerticalAlignment="Center"
+                                     IsOn="{Binding Whiteboard.OnlyHitTestFullyContainedStrokes, Mode=TwoWay}"/>
+                </Grid>
+            </Border>
+
+            <!-- 允许点选命中被锁定的墨迹 -->
+            <Border Style="{StaticResource SettingsCardStyle}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <ui:FontIcon Glyph="&#xE72E;" Style="{StaticResource SettingsIconStyle}"/>
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Orientation="Horizontal">
+                        <TextBlock Text="允许点选命中被锁定的墨迹" Style="{StaticResource SettingsTitleStyle}"/>
+                        <Border Style="{StaticResource NewFeatureTagStyle}">
+                            <TextBlock Text="✦ 新功能" Style="{StaticResource NewFeatureTagTextStyle}"/>
+                        </Border>
+                    </StackPanel>
+                    <ui:ToggleSwitch Grid.Column="2" VerticalAlignment="Center"
+                                     IsOn="{Binding Whiteboard.AllowClickToSelectLockedStroke, Mode=TwoWay}"/>
+                </Grid>
+            </Border>
+
+        </StackPanel>
+    </ui:ScrollViewerEx>
 </UserControl>

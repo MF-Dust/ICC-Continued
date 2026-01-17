@@ -20,6 +20,9 @@ namespace Ink_Canvas.Models.Settings
         private int _resamplePointCount = 48;
         private bool _enableAdaptiveResampling = true;
         private double _geometryValidationStrength = 0.1; // 降低默认验证强度
+        private bool _treatRecognizedInkAsShape = true;
+        private bool _enableDrawingToolbar = true;
+        private bool _expandShapeVariantsByDefault = false;
 
         /// <summary>
         /// 是否启用墨迹转形状
@@ -149,6 +152,36 @@ namespace Ink_Canvas.Models.Settings
         {
             get => _geometryValidationStrength;
             set => SetProperty(ref _geometryValidationStrength, ValidateRange(value, 0.0, 1.0));
+        }
+
+        /// <summary>
+        /// 将识别的墨迹当作形状处理
+        /// </summary>
+        [JsonProperty("treatRecognizedInkAsShape")]
+        public bool TreatRecognizedInkAsShape
+        {
+            get => _treatRecognizedInkAsShape;
+            set => SetProperty(ref _treatRecognizedInkAsShape, value);
+        }
+
+        /// <summary>
+        /// 启用绘制时工具栏
+        /// </summary>
+        [JsonProperty("enableDrawingToolbar")]
+        public bool EnableDrawingToolbar
+        {
+            get => _enableDrawingToolbar;
+            set => SetProperty(ref _enableDrawingToolbar, value);
+        }
+
+        /// <summary>
+        /// 工具栏默认展开形状变体栏
+        /// </summary>
+        [JsonProperty("expandShapeVariantsByDefault")]
+        public bool ExpandShapeVariantsByDefault
+        {
+            get => _expandShapeVariantsByDefault;
+            set => SetProperty(ref _expandShapeVariantsByDefault, value);
         }
     }
 }
