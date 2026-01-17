@@ -134,6 +134,12 @@ namespace Ink_Canvas.ViewModels
             get => _gesture.PalmEraserMinIntervalMs;
             set { if (SetProperty(_gesture.PalmEraserMinIntervalMs, value, _gesture, (g, v) => g.PalmEraserMinIntervalMs = v)) _saveAction?.Invoke(); }
         }
+
+        public bool PalmEraserDetectOnMove
+        {
+            get => _gesture.PalmEraserDetectOnMove;
+            set { if (SetProperty(_gesture.PalmEraserDetectOnMove, value, _gesture, (g, v) => g.PalmEraserDetectOnMove = v)) _saveAction?.Invoke(); }
+        }
     }
 
     /// <summary>

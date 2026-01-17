@@ -26,6 +26,7 @@ namespace Ink_Canvas.Models.Settings
         private double _palmEraserHugeAreaMultiplier = 2.5;
         private double _palmEraserMinMove = 2.5;
         private int _palmEraserMinIntervalMs = 12;
+        private bool _palmEraserDetectOnMove = true;
 
         /// <summary>
         /// 是否启用双指手势（缩放、平移或旋转）
@@ -227,6 +228,16 @@ namespace Ink_Canvas.Models.Settings
         {
             get => _palmEraserMinIntervalMs;
             set => SetProperty(ref _palmEraserMinIntervalMs, value);
+        }
+
+        /// <summary>
+        /// 是否在触摸移动时检测手掌橡皮
+        /// </summary>
+        [JsonProperty("palmEraserDetectOnMove")]
+        public bool PalmEraserDetectOnMove
+        {
+            get => _palmEraserDetectOnMove;
+            set => SetProperty(ref _palmEraserDetectOnMove, value);
         }
     }
 }

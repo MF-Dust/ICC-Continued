@@ -440,6 +440,16 @@ namespace Ink_Canvas {
                 return;
             }
 
+            if (!Settings.Gesture.DisableGestureEraser && Settings.Gesture.PalmEraserDetectOnMove) {
+                bool shouldCheckPalmEraser = Settings.Advanced.TouchMultiplier != 0 || !Settings.Advanced.IsSpecialScreen;
+                if (shouldCheckPalmEraser && IsPalmTouch(e, out double palmWidth)) {
+                    isLastTouchEraser = true;
+                    if (drawingShapeMode == 0 && forceEraser) return;
+                    StartPalmEraser(e, palmWidth);
+                    return;
+                }
+            }
+
             if (isSingleFingerDragMode) return;
             if (drawingShapeMode != 0) {
                 if (isLastTouchEraser) return;
