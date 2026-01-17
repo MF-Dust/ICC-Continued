@@ -99,7 +99,7 @@ namespace Ink_Canvas
         /// </summary>
         private void App_Exit(object sender, ExitEventArgs e) {
             try {
-                LogHelper.WriteLogToFile("Application Exit: Starting cleanup", LogHelper.LogType.Event);
+                LogHelper.WriteLogToFile("应用退出：开始清理", LogHelper.LogType.Event);
 
                 // 添加应用退出面包屑
                 SentryHelper.AddBreadcrumb(
@@ -114,10 +114,10 @@ namespace Ink_Canvas
                         mutex.ReleaseMutex();
                         mutex.Dispose();
                         mutex = null;
-                        LogHelper.WriteLogToFile("Application Exit: Mutex released", LogHelper.LogType.Info);
+                        LogHelper.WriteLogToFile("应用退出：互斥锁已释放", LogHelper.LogType.Info);
                     }
                     catch (Exception ex) {
-                        LogHelper.WriteLogToFile("Application Exit: Error releasing mutex - " + ex.Message, LogHelper.LogType.Error);
+                        LogHelper.WriteLogToFile("应用退出：释放互斥锁失败 - " + ex.Message, LogHelper.LogType.Error);
                     }
                 }
 
@@ -126,17 +126,17 @@ namespace Ink_Canvas
                     try {
                         _taskbar.Dispose();
                         _taskbar = null;
-                        LogHelper.WriteLogToFile("Application Exit: TaskbarIcon disposed", LogHelper.LogType.Info);
+                        LogHelper.WriteLogToFile("应用退出：托盘图标已释放", LogHelper.LogType.Info);
                     }
                     catch (Exception ex) {
-                        LogHelper.WriteLogToFile("Application Exit: Error disposing TaskbarIcon - " + ex.Message, LogHelper.LogType.Error);
+                        LogHelper.WriteLogToFile("应用退出：释放托盘图标失败 - " + ex.Message, LogHelper.LogType.Error);
                     }
                 }
 
-                LogHelper.WriteLogToFile("Application Exit: Cleanup completed, forcing exit", LogHelper.LogType.Event);
+                LogHelper.WriteLogToFile("应用退出：清理完成，准备强制退出", LogHelper.LogType.Event);
             }
             catch (Exception ex) {
-                LogHelper.WriteLogToFile("Application Exit: Error during cleanup - " + ex.Message, LogHelper.LogType.Error);
+                LogHelper.WriteLogToFile("应用退出：清理过程发生错误 - " + ex.Message, LogHelper.LogType.Error);
             }
             finally {
                 // 关闭 Sentry，使用更短的超时避免卡住
@@ -144,7 +144,7 @@ namespace Ink_Canvas
                     SentryHelper.Close(500);
                 }
                 catch (Exception ex) {
-                    LogHelper.WriteLogToFile("Application Exit: Error closing Sentry - " + ex.Message, LogHelper.LogType.Warning);
+                    LogHelper.WriteLogToFile("应用退出：关闭 Sentry 失败 - " + ex.Message, LogHelper.LogType.Warning);
                 }
 
                 // 强制终止进程，确保不会残留
@@ -240,7 +240,7 @@ namespace Ink_Canvas
             // 设置加载已在 MainWindow.LoadSettings() 中处理
             // 这样可以确保 App.RootPath 在 App_Startup 中被正确设置后再加载设置
 
-            LogHelper.WriteLogToFile("Dependency injection configured successfully", LogHelper.LogType.Info);
+            LogHelper.WriteLogToFile("依赖注入配置完成", LogHelper.LogType.Info);
         }
 
         private Assembly OnAssemblyResolve(object sender, ResolveEventArgs args) {
@@ -287,7 +287,7 @@ namespace Ink_Canvas
 
             if (!ret && !(e.Args.Contains("-m")||e.Args.Contains("--multiple"))) //-m multiple
             {
-                LogHelper.NewLog("Detected existing instance");
+                LogHelper.NewLog("检测到已有实例");
 
                 if (TaskDialog.OSSupportsTaskDialogs) {
                     using (TaskDialog dialog = new())
@@ -312,7 +312,7 @@ namespace Ink_Canvas
                     }
                 }
 
-                LogHelper.NewLog("Ink Canvas automatically closed");
+                LogHelper.NewLog("Ink Canvas 已自动关闭");
                 Environment.Exit(0);
             }
 
@@ -326,7 +326,7 @@ namespace Ink_Canvas
                         isUsingWindowChrome = (bool)obj.SelectToken("startup.enableWindowChromeRendering");
                     }
                     catch (Exception ex) {
-                        LogHelper.WriteLogToFile("Failed to parse Settings.json for WindowChrome setting: " + ex.Message, LogHelper.LogType.Error);
+                        LogHelper.WriteLogToFile("解析 Settings.json 的 WindowChrome 配置失败：" + ex.Message, LogHelper.LogType.Error);
                     }
                 }
             } catch (Exception ex) {
@@ -389,11 +389,11 @@ namespace Ink_Canvas
                         e.Handled = true;
                     }
                     catch (Exception ex) {
-                        LogHelper.WriteLogToFile("ScrollViewer offset calculation failed: " + ex.Message, LogHelper.LogType.Trace);
+                        LogHelper.WriteLogToFile("滚轮偏移计算失败：" + ex.Message, LogHelper.LogType.Trace);
                     }
             }
             catch (Exception ex) {
-                LogHelper.WriteLogToFile("ScrollViewer mouse wheel event failed: " + ex.Message, LogHelper.LogType.Trace);
+                LogHelper.WriteLogToFile("滚轮事件处理失败：" + ex.Message, LogHelper.LogType.Trace);
             }
         }
     }

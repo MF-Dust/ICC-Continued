@@ -102,7 +102,7 @@ namespace Ink_Canvas {
                 }
             }
             catch (Exception ex) {
-                LogHelper.WriteLogToFile("Exception in MW_Hotkeys.cs HotKey_Undo: " + ex.Message, LogHelper.LogType.Error);
+                LogHelper.WriteLogToFile("热键撤销执行异常：" + ex.Message, LogHelper.LogType.Error);
             }
         }
 
@@ -116,7 +116,7 @@ namespace Ink_Canvas {
                 }
             }
             catch (Exception ex) {
-                LogHelper.WriteLogToFile("Exception in MW_Hotkeys.cs HotKey_Redo: " + ex.Message, LogHelper.LogType.Error);
+                LogHelper.WriteLogToFile("热键重做执行异常：" + ex.Message, LogHelper.LogType.Error);
             }
         }
 
@@ -130,7 +130,7 @@ namespace Ink_Canvas {
                 }
             }
             catch (Exception ex) {
-                LogHelper.WriteLogToFile("Exception in MW_Hotkeys.cs HotKey_Clear: " + ex.Message, LogHelper.LogType.Error);
+                LogHelper.WriteLogToFile("热键清空执行异常：" + ex.Message, LogHelper.LogType.Error);
             }
         }
 
@@ -153,7 +153,7 @@ namespace Ink_Canvas {
                 PenIcon_Click(lastBorderMouseDownObject, null);
             }
             catch (Exception ex) {
-                LogHelper.WriteLogToFile("Exception in MW_Hotkeys.cs KeyChangeToDrawTool: " + ex.Message, LogHelper.LogType.Error);
+                LogHelper.WriteLogToFile("热键切换绘图工具异常：" + ex.Message, LogHelper.LogType.Error);
             }
         }
 
@@ -170,7 +170,7 @@ namespace Ink_Canvas {
                 CursorIcon_Click(lastBorderMouseDownObject, null);
             }
             catch (Exception ex) {
-                LogHelper.WriteLogToFile("Exception in MW_Hotkeys.cs KeyChangeToQuitDrawTool: " + ex.Message, LogHelper.LogType.Error);
+                LogHelper.WriteLogToFile("热键退出绘图工具异常：" + ex.Message, LogHelper.LogType.Error);
             }
         }
 
@@ -188,7 +188,7 @@ namespace Ink_Canvas {
                 }
             }
             catch (Exception ex) {
-                LogHelper.WriteLogToFile("Exception in MW_Hotkeys.cs KeyChangeToSelect: " + ex.Message, LogHelper.LogType.Error);
+                LogHelper.WriteLogToFile("热键切换选择工具异常：" + ex.Message, LogHelper.LogType.Error);
             }
         }
 
@@ -209,7 +209,7 @@ namespace Ink_Canvas {
                 }
             }
             catch (Exception ex) {
-                LogHelper.WriteLogToFile("Exception in MW_Hotkeys.cs KeyChangeToEraser: " + ex.Message, LogHelper.LogType.Error);
+                LogHelper.WriteLogToFile("热键切换橡皮擦异常：" + ex.Message, LogHelper.LogType.Error);
             }
         }
 
@@ -225,7 +225,7 @@ namespace Ink_Canvas {
                 ImageBlackboard_MouseUp(lastBorderMouseDownObject, null);
             }
             catch (Exception ex) {
-                LogHelper.WriteLogToFile("Exception in MW_Hotkeys.cs KeyChangeToBoard: " + ex.Message, LogHelper.LogType.Error);
+                LogHelper.WriteLogToFile("热键切换画板异常：" + ex.Message, LogHelper.LogType.Error);
             }
         }
 
@@ -239,7 +239,7 @@ namespace Ink_Canvas {
                 }
             }
             catch (Exception ex) {
-                LogHelper.WriteLogToFile("Exception in MW_Hotkeys.cs KeyCapture: " + ex.Message, LogHelper.LogType.Error);
+                LogHelper.WriteLogToFile("热键截图异常：" + ex.Message, LogHelper.LogType.Error);
             }
         }
 
@@ -257,7 +257,7 @@ namespace Ink_Canvas {
                 }
             }
             catch (Exception ex) {
-                LogHelper.WriteLogToFile("Exception in MW_Hotkeys.cs KeyDrawLine: " + ex.Message, LogHelper.LogType.Error);
+                LogHelper.WriteLogToFile("热键绘制直线异常：" + ex.Message, LogHelper.LogType.Error);
             }
         }
 
@@ -271,7 +271,7 @@ namespace Ink_Canvas {
                 }
             }
             catch (Exception ex) {
-                LogHelper.WriteLogToFile("Exception in MW_Hotkeys.cs KeyHide: " + ex.Message, LogHelper.LogType.Error);
+                LogHelper.WriteLogToFile("热键隐藏/显示异常：" + ex.Message, LogHelper.LogType.Error);
             }
         }
 

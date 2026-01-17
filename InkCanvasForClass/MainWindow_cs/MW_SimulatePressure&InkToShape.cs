@@ -426,7 +426,7 @@ namespace Ink_Canvas {
                     }
                 }
                 catch (Exception ex) {
-                    LogHelper.WriteLogToFile("Error in inkCanvas_StrokeCollected (Speed Calc): " + ex.Message, LogHelper.LogType.Error);
+                    LogHelper.WriteLogToFile("inkCanvas_StrokeCollected 速度计算失败：" + ex.Message, LogHelper.LogType.Error);
                 }
 
                 // 如果InkStyle为-1，不进行压感模拟，直接返回
@@ -463,7 +463,7 @@ namespace Ink_Canvas {
                                 e.Stroke.StylusPoints = stylusPoints;
                             }
                             catch (Exception ex) {
-                                LogHelper.WriteLogToFile("Error in inkCanvas_StrokeCollected (Pressure Calc 1): " + ex.Message, LogHelper.LogType.Error);
+                                LogHelper.WriteLogToFile("inkCanvas_StrokeCollected 压感计算失败（1）：" + ex.Message, LogHelper.LogType.Error);
                             }
 
                         break;
@@ -508,14 +508,14 @@ namespace Ink_Canvas {
                                 e.Stroke.StylusPoints = stylusPoints;
                             }
                             catch (Exception ex) {
-                                LogHelper.WriteLogToFile("Error in inkCanvas_StrokeCollected (Pressure Calc 0): " + ex.Message, LogHelper.LogType.Error);
+                                LogHelper.WriteLogToFile("inkCanvas_StrokeCollected 压感计算失败（0）：" + ex.Message, LogHelper.LogType.Error);
                             }
 
                         break;
                 }
             }
             catch (Exception ex) {
-                LogHelper.WriteLogToFile("Error in inkCanvas_StrokeCollected: " + ex.Message, LogHelper.LogType.Error);
+                LogHelper.WriteLogToFile("inkCanvas_StrokeCollected 处理失败：" + ex.Message, LogHelper.LogType.Error);
             }
 
             if (Settings.Canvas.FitToCurve == true) drawingAttributes.FitToCurve = true;

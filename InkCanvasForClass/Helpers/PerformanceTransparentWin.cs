@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -102,6 +103,7 @@ namespace Ink_Canvas.Helpers
         /// <summary>
         /// 创建高性能透明桌面窗口
         /// </summary>
+        [RequiresUnmanagedCode("Uses DWM and Win32 interop for transparent window setup.")]
         public PerformanceTransparentWin()
         {
             WindowStyle = WindowStyle.None;
@@ -140,6 +142,7 @@ namespace Ink_Canvas.Helpers
         /// <summary>
         /// 设置点击穿透到后面透明的窗口
         /// </summary>
+        [RequiresUnmanagedCode("Uses Win32 SetWindowLongPtr to adjust hit testing.")]
         public void SetTransparentHitThrough()
         {
             if (_dwmEnabled)
@@ -156,6 +159,7 @@ namespace Ink_Canvas.Helpers
         /// <summary>
         /// 设置点击命中，不会穿透到后面的窗口
         /// </summary>
+        [RequiresUnmanagedCode("Uses Win32 SetWindowLongPtr to adjust hit testing.")]
         public void SetTransparentNotHitThrough()
         {
             if (_dwmEnabled)

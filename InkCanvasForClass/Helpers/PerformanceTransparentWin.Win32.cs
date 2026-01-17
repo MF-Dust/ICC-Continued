@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // ReSharper disable InconsistentNaming
@@ -419,6 +420,7 @@ namespace Ink_Canvas.Helpers {
                 /// <returns></returns>
                 // This static method is required because Win32 does not support
                 // GetWindowLongPtr directly
+                [RequiresUnmanagedCode("Uses user32 P/Invoke to read window styles.")]
                 public static IntPtr GetWindowLongPtr(IntPtr hWnd, GetWindowLongFields nIndex) =>
                     GetWindowLongPtr(hWnd, (int)nIndex);
 
@@ -430,6 +432,7 @@ namespace Ink_Canvas.Helpers {
                 /// <returns></returns>
                 // This static method is required because Win32 does not support
                 // GetWindowLongPtr directly
+                [RequiresUnmanagedCode("Uses user32 P/Invoke to read window styles.")]
                 public static IntPtr GetWindowLongPtr(IntPtr hWnd, int nIndex) {
                     return IntPtr.Size > 4
 #pragma warning disable CS0618 // 类型或成员已过时
@@ -468,6 +471,7 @@ namespace Ink_Canvas.Helpers {
                 /// </param>
                 /// <param name="dwNewLong">指定的替换值</param>
                 /// <returns></returns>
+                [RequiresUnmanagedCode("Uses user32 P/Invoke to update window styles.")]
                 public static IntPtr SetWindowLongPtr(IntPtr hWnd, GetWindowLongFields nIndex, IntPtr dwNewLong) =>
                     SetWindowLongPtr(hWnd, (int)nIndex, dwNewLong);
 
@@ -488,8 +492,7 @@ namespace Ink_Canvas.Helpers {
                 /// </param>
                 /// <param name="dwNewLong">指定的替换值</param>
                 /// <returns></returns>
-                // This static method is required because Win32 does not support
-                // GetWindowLongPtr directly
+                [RequiresUnmanagedCode("Uses user32 P/Invoke to update window styles.")]
                 public static IntPtr SetWindowLongPtr(IntPtr hWnd, int nIndex, IntPtr dwNewLong) {
                     return IntPtr.Size > 4
 #pragma warning disable CS0618 // 类型或成员已过时

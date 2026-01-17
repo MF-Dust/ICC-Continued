@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,6 +25,7 @@ namespace Ink_Canvas {
         /// 初始化画面定格窗口
         /// </summary>
         /// <param name="hwndsList"></param>
+        [RequiresUnmanagedCode("Uses Win32 Magnification and user32 P/Invoke to build freeze frame window.")]
         public void InitFreezeWindow(HWND[] hwndsList) {
             isFreezeFrameLoaded = false;
             if (OSVersion.GetOperatingSystem() < OSVersionExtension.OperatingSystem.Windows81) return;
@@ -146,6 +148,7 @@ namespace Ink_Canvas {
             }
         }
 
+        [RequiresUnmanagedCode("Uses Win32 Magnification and user32 P/Invoke to dispose freeze frame window.")]
         public void DisposeFreezeFrame() {
             try {
                 // 销毁宿主窗口
@@ -165,6 +168,7 @@ namespace Ink_Canvas {
             }
         }
 
+        [RequiresUnmanagedCode("Uses Win32 Magnification APIs to update window filter list.")]
         public void SetFreezeFrameWindowsFilterList(HWND[] hwndsList) {
             if (!isFreezeFrameLoaded) return;
             var hwnds = new List<HWND> { MagnificationWinHandle };
@@ -173,6 +177,7 @@ namespace Ink_Canvas {
                     hwnds.Count, hwnds.ToArray())) return;
         }
 
+        [RequiresUnmanagedCode("Uses Win32 Magnification and user32 P/Invoke to capture freeze frame bitmap.")]
         public Bitmap GetFreezedFrame() {
             if (!isFreezeFrameLoaded) return new Bitmap(1,1);
             if (!Magnification.MagSetWindowSource(MagnificationWinHandle, new RECT(0, 0,

@@ -133,7 +133,7 @@ namespace Ink_Canvas.Helpers
         {
             if (strokes == null || strokes.Count == 0)
             {
-                LogHelper.WriteLogToFile("RecognizeShapeAsync: strokes is null or empty", LogHelper.LogType.Trace);
+                LogHelper.WriteLogToFile("RecognizeShapeAsync：墨迹为空或数量为 0", LogHelper.LogType.Trace);
                 return default;
             }
 
@@ -369,7 +369,7 @@ namespace Ink_Canvas.Helpers
             }
             catch (Exception ex)
             {
-                LogHelper.WriteLogToFile("ValidateShapeGeometry error: " + ex.Message, LogHelper.LogType.Error);
+                LogHelper.WriteLogToFile("ValidateShapeGeometry 发生错误：" + ex.Message, LogHelper.LogType.Error);
                 return true;
             }
         }
@@ -667,11 +667,11 @@ namespace Ink_Canvas.Helpers
 
                 await analyzer.AnalyzeAsync();
 
-                LogHelper.WriteLogToFile("Ink Analysis API preloaded successfully", LogHelper.LogType.Info);
+                LogHelper.WriteLogToFile("墨迹分析 API 预热成功", LogHelper.LogType.Info);
             }
             catch (Exception ex)
             {
-                LogHelper.WriteLogToFile("Ink Analysis API preload failed: " + ex.Message, LogHelper.LogType.Error);
+                LogHelper.WriteLogToFile("墨迹分析 API 预热失败：" + ex.Message, LogHelper.LogType.Error);
             }
         }
 

@@ -6,6 +6,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -531,11 +532,11 @@ namespace Ink_Canvas.Services
             
             if (_settingsService == null)
             {
-                LogHelper.WriteLogToFile("PPTService: Initialized without SettingsService, enhanced mode will be disabled", LogHelper.LogType.Warning);
+                LogHelper.WriteLogToFile("PPTService：未注入 SettingsService，增强模式将被禁用", LogHelper.LogType.Warning);
             }
             else
             {
-                LogHelper.WriteLogToFile("PPTService: Initialized with SettingsService", LogHelper.LogType.Info);
+                LogHelper.WriteLogToFile("PPTService：已注入 SettingsService", LogHelper.LogType.Info);
             }
         }
 
@@ -579,6 +580,7 @@ namespace Ink_Canvas.Services
         [DllImport("oleaut32.dll", PreserveSig = false)]
         private static extern void GetActiveObject(ref Guid rclsid, IntPtr pvReserved, [MarshalAs(UnmanagedType.IUnknown)] out object ppunk);
 
+        [RequiresUnmanagedCode("Uses ole32/oleaut32 COM interop to fetch running PowerPoint instance.")]
         private static object GetActiveObject(string progId)
         {
             Guid clsid;
@@ -746,6 +748,7 @@ namespace Ink_Canvas.Services
         /// 通过 GUID 匹配和文件扩展名匹配来识别 PowerPoint 实例
         /// </summary>
         /// <returns>匹配的 COM 对象列表</returns>
+        [RequiresUnmanagedCode("Uses ole32 COM interop to enumerate running object table.")]
         private List<object> EnumerateRunningObjectTable()
         {
             var results = new List<object>();
@@ -756,7 +759,7 @@ namespace Ink_Canvas.Services
                 int hr = GetRunningObjectTable(0, out IRunningObjectTable rot);
                 if (hr != 0)
                 {
-                    LogHelper.WriteLogToFile($"Failed to get Running Object Table, HRESULT: 0x{hr:X8}", LogHelper.LogType.Error);
+                    LogHelper.WriteLogToFile($"获取 ROT 失败，HRESULT：0x{hr:X8}", LogHelper.LogType.Error);
                     return results;
                 }
 
@@ -764,7 +767,7 @@ namespace Ink_Canvas.Services
                 rot.EnumRunning(out IEnumMoniker enumMoniker);
                 if (enumMoniker == null)
                 {
-                    LogHelper.WriteLogToFile("Failed to enumerate monikers in ROT", LogHelper.LogType.Error);
+                    LogHelper.WriteLogToFile("ROT 中枚举 Moniker 失败", LogHelper.LogType.Error);
                     Marshal.ReleaseComObject(rot);
                     return results;
                 }
@@ -773,7 +776,7 @@ namespace Ink_Canvas.Services
                 hr = CreateBindCtx(0, out IBindCtx bindCtx);
                 if (hr != 0)
                 {
-                    LogHelper.WriteLogToFile($"Failed to create bind context, HRESULT: 0x{hr:X8}", LogHelper.LogType.Error);
+                    LogHelper.WriteLogToFile($"创建绑定上下文失败，HRESULT：0x{hr:X8}", LogHelper.LogType.Error);
                     Marshal.ReleaseComObject(enumMoniker);
                     Marshal.ReleaseComObject(rot);
                     return results;
@@ -795,7 +798,7 @@ namespace Ink_Canvas.Services
 
                         if (!string.IsNullOrEmpty(displayName))
                         {
-                            LogHelper.WriteLogToFile($"ROT: Found moniker: {displayName}", LogHelper.LogType.Trace);
+                            LogHelper.WriteLogToFile($"ROT：发现 Moniker：{displayName}", LogHelper.LogType.Trace);
 
                             bool isMatch = false;
 
@@ -803,7 +806,7 @@ namespace Ink_Canvas.Services
                             if (displayName.Contains(PowerPointApplicationGuid.ToString("B").ToUpper()))
                             {
                                 isMatch = true;
-                                LogHelper.WriteLogToFile($"ROT: Matched by PowerPoint GUID: {displayName}", LogHelper.LogType.Info);
+                                LogHelper.WriteLogToFile($"ROT：通过 PowerPoint GUID 匹配：{displayName}", LogHelper.LogType.Info);
                             }
 
                             // 方法 2: 通过文件扩展名匹配
@@ -814,7 +817,7 @@ namespace Ink_Canvas.Services
                                     if (displayName.EndsWith(ext, StringComparison.OrdinalIgnoreCase))
                                     {
                                         isMatch = true;
-                                        LogHelper.WriteLogToFile($"ROT: Matched by extension {ext}: {displayName}", LogHelper.LogType.Info);
+                                        LogHelper.WriteLogToFile($"ROT：通过扩展名 {ext} 匹配：{displayName}", LogHelper.LogType.Info);
                                         break;
                                     }
                                 }
@@ -829,19 +832,19 @@ namespace Ink_Canvas.Services
                                     if (comObject != null)
                                     {
                                         results.Add(comObject);
-                                        LogHelper.WriteLogToFile($"ROT: Successfully retrieved COM object for: {displayName}", LogHelper.LogType.Info);
+                                        LogHelper.WriteLogToFile($"ROT：成功获取 COM 对象：{displayName}", LogHelper.LogType.Info);
                                     }
                                 }
                                 catch (Exception ex)
                                 {
-                                    LogHelper.WriteLogToFile($"ROT: Failed to get COM object for {displayName}: {ex.Message}", LogHelper.LogType.Warning);
+                                    LogHelper.WriteLogToFile($"ROT：获取 COM 对象失败 {displayName}：{ex.Message}", LogHelper.LogType.Warning);
                                 }
                             }
                         }
                     }
                     catch (Exception ex)
                     {
-                        LogHelper.WriteLogToFile($"ROT: Error processing moniker: {ex.Message}", LogHelper.LogType.Warning);
+                        LogHelper.WriteLogToFile($"ROT：处理 Moniker 失败：{ex.Message}", LogHelper.LogType.Warning);
                     }
                     finally
                     {
@@ -852,7 +855,7 @@ namespace Ink_Canvas.Services
                         }
                         catch (Exception ex)
                         {
-                            LogHelper.WriteLogToFile($"ROT: Error releasing moniker: {ex.Message}", LogHelper.LogType.Warning);
+                            LogHelper.WriteLogToFile($"ROT：释放 Moniker 失败：{ex.Message}", LogHelper.LogType.Warning);
                         }
                     }
                 }
@@ -866,14 +869,14 @@ namespace Ink_Canvas.Services
                 }
                 catch (Exception ex)
                 {
-                    LogHelper.WriteLogToFile($"ROT: Error releasing COM objects: {ex.Message}", LogHelper.LogType.Warning);
+                    LogHelper.WriteLogToFile($"ROT：释放 COM 对象失败：{ex.Message}", LogHelper.LogType.Warning);
                 }
 
-                LogHelper.WriteLogToFile($"ROT: Found {results.Count} PowerPoint instance(s)", LogHelper.LogType.Info);
+                LogHelper.WriteLogToFile($"ROT：发现 {results.Count} 个 PowerPoint 实例", LogHelper.LogType.Info);
             }
             catch (Exception ex)
             {
-                LogHelper.WriteLogToFile($"ROT: Enumeration failed: {ex.Message}", LogHelper.LogType.Error);
+                LogHelper.WriteLogToFile($"ROT：枚举失败：{ex.Message}", LogHelper.LogType.Error);
                 LogHelper.NewLog(ex);
             }
 
@@ -890,11 +893,11 @@ namespace Ink_Canvas.Services
             {
                 if (_rotScanTimer != null)
                 {
-                    LogHelper.WriteLogToFile("StartRotScanning: ROT scan timer already running", LogHelper.LogType.Trace);
+                    LogHelper.WriteLogToFile("StartRotScanning：ROT 扫描定时器已在运行", LogHelper.LogType.Trace);
                     return;
                 }
 
-                LogHelper.WriteLogToFile($"StartRotScanning: Starting ROT scan timer with interval {_rotScanInterval}ms", LogHelper.LogType.Info);
+                LogHelper.WriteLogToFile($"StartRotScanning：启动 ROT 扫描定时器，间隔 {_rotScanInterval}ms", LogHelper.LogType.Info);
                 
                 _rotScanTimer = new System.Threading.Timer(
                     RotScanTimerCallback,
@@ -904,7 +907,7 @@ namespace Ink_Canvas.Services
             }
             catch (Exception ex)
             {
-                LogHelper.WriteLogToFile($"StartRotScanning: Error starting ROT scan timer: {ex.Message}", LogHelper.LogType.Error);
+                LogHelper.WriteLogToFile($"StartRotScanning：启动 ROT 扫描定时器失败：{ex.Message}", LogHelper.LogType.Error);
                 LogHelper.NewLog(ex);
             }
         }
@@ -918,14 +921,14 @@ namespace Ink_Canvas.Services
             {
                 if (_rotScanTimer != null)
                 {
-                    LogHelper.WriteLogToFile("StopRotScanning: Stopping ROT scan timer", LogHelper.LogType.Info);
+                    LogHelper.WriteLogToFile("StopRotScanning：停止 ROT 扫描定时器", LogHelper.LogType.Info);
                     _rotScanTimer.Dispose();
                     _rotScanTimer = null;
                 }
             }
             catch (Exception ex)
             {
-                LogHelper.WriteLogToFile($"StopRotScanning: Error stopping ROT scan timer: {ex.Message}", LogHelper.LogType.Error);
+                LogHelper.WriteLogToFile($"StopRotScanning：停止 ROT 扫描定时器失败：{ex.Message}", LogHelper.LogType.Error);
             }
         }
 
@@ -941,7 +944,7 @@ namespace Ink_Canvas.Services
             {
                 if (_debugMode)
                 {
-                    LogHelper.WriteLogToFile("RotScanTimerCallback: Previous scan still running, skipping this cycle", LogHelper.LogType.Trace);
+                    LogHelper.WriteLogToFile("RotScanTimerCallback：上次扫描仍在进行，跳过本次", LogHelper.LogType.Trace);
                 }
                 return;
             }
@@ -956,7 +959,7 @@ namespace Ink_Canvas.Services
 
                 if (_debugMode)
                 {
-                    LogHelper.WriteLogToFile($"RotScanTimerCallback: Starting ROT scan #{_rotScanCount + 1}", LogHelper.LogType.Trace);
+                    LogHelper.WriteLogToFile($"RotScanTimerCallback：开始 ROT 扫描 #{_rotScanCount + 1}", LogHelper.LogType.Trace);
                 }
 
                 // 执行 ROT 扫描
@@ -970,9 +973,9 @@ namespace Ink_Canvas.Services
 
                 // 性能监控日志
                 LogHelper.WriteLogToFile(
-                    $"RotScan Performance: Scan #{_rotScanCount} took {_lastRotScanDuration}ms, " +
-                    $"found {pptInstances?.Count ?? 0} instances, " +
-                    $"avg time: {(_rotScanTotalDuration / _rotScanCount)}ms",
+                    $"RotScan 性能：第 #{_rotScanCount} 次扫描耗时 {_lastRotScanDuration}ms，" +
+                    $"发现 {pptInstances?.Count ?? 0} 个实例，" +
+                    $"平均耗时：{(_rotScanTotalDuration / _rotScanCount)}ms",
                     LogHelper.LogType.Info);
 
                 // 检测实例数量变化
@@ -982,7 +985,7 @@ namespace Ink_Canvas.Services
                 if (instanceCountChanged)
                 {
                     LogHelper.WriteLogToFile(
-                        $"RotScanTimerCallback: PowerPoint instance count changed from {_lastPptInstanceCount} to {currentInstanceCount}",
+                        $"RotScanTimerCallback：PowerPoint 实例数量从 {_lastPptInstanceCount} 变为 {currentInstanceCount}",
                         LogHelper.LogType.Info);
                     
                     _lastPptInstanceCount = currentInstanceCount;
@@ -998,7 +1001,7 @@ namespace Ink_Canvas.Services
                     if (_debugMode)
                     {
                         LogHelper.WriteLogToFile(
-                            $"RotScanTimerCallback: No change detected, consecutive unchanged scans: {_consecutiveUnchangedScans}",
+                            $"RotScanTimerCallback：未检测到变化，连续未变化次数：{_consecutiveUnchangedScans}",
                             LogHelper.LogType.Trace);
                     }
                 }
@@ -1017,7 +1020,7 @@ namespace Ink_Canvas.Services
             }
             catch (Exception ex)
             {
-                LogHelper.WriteLogToFile($"RotScanTimerCallback: Error during ROT scan: {ex.Message}", LogHelper.LogType.Error);
+                LogHelper.WriteLogToFile($"RotScanTimerCallback：ROT 扫描时发生错误：{ex.Message}", LogHelper.LogType.Error);
                 LogHelper.NewLog(ex);
             }
             finally
@@ -1044,7 +1047,7 @@ namespace Ink_Canvas.Services
                 {
                     newInterval = Math.Max(MIN_ROT_SCAN_INTERVAL, _rotScanInterval / 2);
                     LogHelper.WriteLogToFile(
-                        $"AdjustRotScanInterval: Instance changed, reducing interval from {oldInterval}ms to {newInterval}ms",
+                        $"AdjustRotScanInterval：实例发生变化，扫描间隔从 {oldInterval}ms 降至 {newInterval}ms",
                         LogHelper.LogType.Info);
                 }
                 // 策略 2: 如果连续多次未检测到变化，逐渐延长扫描间隔
@@ -1057,8 +1060,8 @@ namespace Ink_Canvas.Services
                     if (newInterval != oldInterval)
                     {
                         LogHelper.WriteLogToFile(
-                            $"AdjustRotScanInterval: {_consecutiveUnchangedScans} consecutive unchanged scans, " +
-                            $"increasing interval from {oldInterval}ms to {newInterval}ms",
+                            $"AdjustRotScanInterval：连续 {_consecutiveUnchangedScans} 次未变化，" +
+                            $"扫描间隔从 {oldInterval}ms 增至 {newInterval}ms",
                             LogHelper.LogType.Info);
                     }
                 }
@@ -1068,8 +1071,8 @@ namespace Ink_Canvas.Services
                 {
                     newInterval = Math.Min(MAX_ROT_SCAN_INTERVAL, Math.Max(newInterval, (int)(scanDuration * 3)));
                     LogHelper.WriteLogToFile(
-                        $"AdjustRotScanInterval: Scan took {scanDuration}ms (too long), " +
-                        $"adjusting interval to {newInterval}ms",
+                        $"AdjustRotScanInterval：扫描耗时 {scanDuration}ms（过长），" +
+                        $"调整间隔至 {newInterval}ms",
                         LogHelper.LogType.Warning);
                 }
 
@@ -1083,14 +1086,14 @@ namespace Ink_Canvas.Services
                     {
                         _rotScanTimer.Change(_rotScanInterval, _rotScanInterval);
                         LogHelper.WriteLogToFile(
-                            $"AdjustRotScanInterval: ROT scan interval adjusted to {_rotScanInterval}ms",
+                            $"AdjustRotScanInterval：ROT 扫描间隔已调整为 {_rotScanInterval}ms",
                             LogHelper.LogType.Info);
                     }
                 }
             }
             catch (Exception ex)
             {
-                LogHelper.WriteLogToFile($"AdjustRotScanInterval: Error adjusting scan interval: {ex.Message}", LogHelper.LogType.Error);
+                LogHelper.WriteLogToFile($"AdjustRotScanInterval：调整扫描间隔失败：{ex.Message}", LogHelper.LogType.Error);
             }
         }
 
@@ -1103,13 +1106,13 @@ namespace Ink_Canvas.Services
         {
             if (pptInstances == null || pptInstances.Count == 0)
             {
-                LogHelper.WriteLogToFile("HandleRotScanInstanceChange: No PowerPoint instances found", LogHelper.LogType.Info);
+                LogHelper.WriteLogToFile("HandleRotScanInstanceChange：未发现 PowerPoint 实例", LogHelper.LogType.Info);
                 return;
             }
 
             try
             {
-                LogHelper.WriteLogToFile($"HandleRotScanInstanceChange: Processing {pptInstances.Count} PowerPoint instance(s)", LogHelper.LogType.Info);
+                LogHelper.WriteLogToFile($"HandleRotScanInstanceChange：正在处理 {pptInstances.Count} 个 PowerPoint 实例", LogHelper.LogType.Info);
 
                 // 为每个实例计算优先级
                 List<PPTTarget> targets = new List<PPTTarget>();
@@ -1134,8 +1137,8 @@ namespace Ink_Canvas.Services
                             if (_debugMode)
                             {
                                 LogHelper.WriteLogToFile(
-                                    $"HandleRotScanInstanceChange: Found target with priority {target.Priority}, " +
-                                    $"Presentation: {target.PresentationName}",
+                                    $"HandleRotScanInstanceChange：发现优先级 {target.Priority} 的目标，" +
+                                    $"演示文稿：{target.PresentationName}",
                                     LogHelper.LogType.Trace);
                             }
                         }
@@ -1146,14 +1149,14 @@ namespace Ink_Canvas.Services
                     }
                     catch (Exception ex)
                     {
-                        LogHelper.WriteLogToFile($"HandleRotScanInstanceChange: Error processing instance: {ex.Message}", LogHelper.LogType.Warning);
+                        LogHelper.WriteLogToFile($"HandleRotScanInstanceChange：处理实例失败：{ex.Message}", LogHelper.LogType.Warning);
                         SafeReleaseComObject(instance);
                     }
                 }
 
                 if (targets.Count == 0)
                 {
-                    LogHelper.WriteLogToFile("HandleRotScanInstanceChange: No valid targets found", LogHelper.LogType.Warning);
+                    LogHelper.WriteLogToFile("HandleRotScanInstanceChange：未找到有效目标", LogHelper.LogType.Warning);
                     return;
                 }
 
@@ -1161,20 +1164,20 @@ namespace Ink_Canvas.Services
                 PPTTarget bestTarget = targets.OrderByDescending(t => t.Priority).First();
                 
                 LogHelper.WriteLogToFile(
-                    $"HandleRotScanInstanceChange: Best target has priority {bestTarget.Priority}, " +
-                    $"Presentation: {bestTarget.PresentationName}",
+                    $"HandleRotScanInstanceChange：最佳目标优先级 {bestTarget.Priority}，" +
+                    $"演示文稿：{bestTarget.PresentationName}",
                     LogHelper.LogType.Info);
 
                 // 判断是否需要切换绑定
                 if (ShouldSwitchBinding(_currentTarget, bestTarget))
                 {
-                    LogHelper.WriteLogToFile("HandleRotScanInstanceChange: Switching binding to new target", LogHelper.LogType.Info);
+                    LogHelper.WriteLogToFile("HandleRotScanInstanceChange：切换绑定到新目标", LogHelper.LogType.Info);
                     
                     bool switchSuccess = SwitchBinding(bestTarget);
                     
                     if (switchSuccess)
                     {
-                        LogHelper.WriteLogToFile("HandleRotScanInstanceChange: Successfully switched binding", LogHelper.LogType.Info);
+                        LogHelper.WriteLogToFile("HandleRotScanInstanceChange：绑定切换成功", LogHelper.LogType.Info);
                         
                         // 重新启动轮询或事件监听
                         StopPollingOrEventMonitoring();
@@ -1182,14 +1185,14 @@ namespace Ink_Canvas.Services
                     }
                     else
                     {
-                        LogHelper.WriteLogToFile("HandleRotScanInstanceChange: Failed to switch binding", LogHelper.LogType.Error);
+                        LogHelper.WriteLogToFile("HandleRotScanInstanceChange：绑定切换失败", LogHelper.LogType.Error);
                     }
                 }
                 else
                 {
                     if (_debugMode)
                     {
-                        LogHelper.WriteLogToFile("HandleRotScanInstanceChange: No need to switch binding", LogHelper.LogType.Trace);
+                        LogHelper.WriteLogToFile("HandleRotScanInstanceChange：无需切换绑定", LogHelper.LogType.Trace);
                     }
                 }
 
@@ -1204,7 +1207,7 @@ namespace Ink_Canvas.Services
             }
             catch (Exception ex)
             {
-                LogHelper.WriteLogToFile($"HandleRotScanInstanceChange: Error handling instance change: {ex.Message}", LogHelper.LogType.Error);
+                LogHelper.WriteLogToFile($"HandleRotScanInstanceChange：处理实例变化失败：{ex.Message}", LogHelper.LogType.Error);
                 LogHelper.NewLog(ex);
             }
         }
@@ -1218,19 +1221,19 @@ namespace Ink_Canvas.Services
         {
             if (_rotScanCount == 0)
             {
-                return "No ROT scans performed yet";
+                return "尚未执行 ROT 扫描";
             }
 
             long avgDuration = _rotScanTotalDuration / _rotScanCount;
             TimeSpan timeSinceLastScan = DateTime.Now - _lastRotScanTime;
 
-            return $"ROT Scan Stats: " +
-                   $"Total scans: {_rotScanCount}, " +
-                   $"Avg duration: {avgDuration}ms, " +
-                   $"Last duration: {_lastRotScanDuration}ms, " +
-                   $"Current interval: {_rotScanInterval}ms, " +
-                   $"Time since last scan: {timeSinceLastScan.TotalSeconds:F1}s, " +
-                   $"Consecutive unchanged: {_consecutiveUnchangedScans}";
+            return $"ROT 扫描统计：" +
+                   $"总次数：{_rotScanCount}，" +
+                   $"平均耗时：{avgDuration}ms，" +
+                   $"上次耗时：{_lastRotScanDuration}ms，" +
+                   $"当前间隔：{_rotScanInterval}ms，" +
+                   $"距上次扫描：{timeSinceLastScan.TotalSeconds:F1}s，" +
+                   $"连续未变化：{_consecutiveUnchangedScans}";
         }
 
         /// <summary>
@@ -1241,7 +1244,7 @@ namespace Ink_Canvas.Services
         public void SetDebugMode(bool enabled)
         {
             _debugMode = enabled;
-            LogHelper.WriteLogToFile($"PPTService: Debug mode {(enabled ? "enabled" : "disabled")}", LogHelper.LogType.Info);
+            LogHelper.WriteLogToFile($"PPTService：调试模式{(enabled ? "已启用" : "已关闭")}", LogHelper.LogType.Info);
         }
 
         /// <summary>
@@ -1252,38 +1255,38 @@ namespace Ink_Canvas.Services
         {
             try
             {
-                LogHelper.WriteLogToFile("=== PPT Service Current State ===", LogHelper.LogType.Info);
+                LogHelper.WriteLogToFile("=== PPT 服务当前状态 ===", LogHelper.LogType.Info);
                 
                 // 基本状态
-                LogHelper.WriteLogToFile($"Settings Service: {(_settingsService != null ? "Available" : "Not Available")}", LogHelper.LogType.Info);
-                LogHelper.WriteLogToFile($"Debug Mode: {_debugMode}", LogHelper.LogType.Info);
+                LogHelper.WriteLogToFile($"SettingsService：{(_settingsService != null ? "可用" : "不可用")}", LogHelper.LogType.Info);
+                LogHelper.WriteLogToFile($"调试模式：{_debugMode}", LogHelper.LogType.Info);
                 
                 // 当前绑定状态
                 if (_currentTarget != null)
                 {
-                    LogHelper.WriteLogToFile($"Current Binding:", LogHelper.LogType.Info);
-                    LogHelper.WriteLogToFile($"  - Priority: {_currentTarget.Priority}", LogHelper.LogType.Info);
-                    LogHelper.WriteLogToFile($"  - Application: {_currentTarget.ApplicationName}", LogHelper.LogType.Info);
-                    LogHelper.WriteLogToFile($"  - Presentation: {_currentTarget.PresentationName}", LogHelper.LogType.Info);
-                    LogHelper.WriteLogToFile($"  - HWND: 0x{_currentTarget.SlideShowWindowHWND:X}", LogHelper.LogType.Info);
+                    LogHelper.WriteLogToFile("当前绑定：", LogHelper.LogType.Info);
+                    LogHelper.WriteLogToFile($"  - 优先级：{_currentTarget.Priority}", LogHelper.LogType.Info);
+                    LogHelper.WriteLogToFile($"  - 应用：{_currentTarget.ApplicationName}", LogHelper.LogType.Info);
+                    LogHelper.WriteLogToFile($"  - 演示文稿：{_currentTarget.PresentationName}", LogHelper.LogType.Info);
+                    LogHelper.WriteLogToFile($"  - HWND：0x{_currentTarget.SlideShowWindowHWND:X}", LogHelper.LogType.Info);
                 }
                 else
                 {
-                    LogHelper.WriteLogToFile("Current Binding: None", LogHelper.LogType.Info);
+                    LogHelper.WriteLogToFile("当前绑定：无", LogHelper.LogType.Info);
                 }
                 
                 // 事件和轮询状态
-                LogHelper.WriteLogToFile($"Event Registration: {(_eventRegistrationSucceeded ? "Succeeded" : "Failed")}", LogHelper.LogType.Info);
-                LogHelper.WriteLogToFile($"Polling Active: {_isPollingActive}", LogHelper.LogType.Info);
-                LogHelper.WriteLogToFile($"Polling Interval: {_pollingInterval}ms", LogHelper.LogType.Info);
-                LogHelper.WriteLogToFile($"Last Polled Slide Index: {_lastPolledSlideIndex}", LogHelper.LogType.Info);
+                LogHelper.WriteLogToFile($"事件注册：{(_eventRegistrationSucceeded ? "成功" : "失败")}", LogHelper.LogType.Info);
+                LogHelper.WriteLogToFile($"轮询状态：{_isPollingActive}", LogHelper.LogType.Info);
+                LogHelper.WriteLogToFile($"轮询间隔：{_pollingInterval}ms", LogHelper.LogType.Info);
+                LogHelper.WriteLogToFile($"最近轮询页码：{_lastPolledSlideIndex}", LogHelper.LogType.Info);
                 
                 // ROT 扫描状态
-                LogHelper.WriteLogToFile($"ROT Scan Active: {(_rotScanTimer != null)}", LogHelper.LogType.Info);
-                LogHelper.WriteLogToFile($"ROT Scan Interval: {_rotScanInterval}ms", LogHelper.LogType.Info);
-                LogHelper.WriteLogToFile($"ROT Scan Running: {_isRotScanRunning}", LogHelper.LogType.Info);
-                LogHelper.WriteLogToFile($"Last PPT Instance Count: {_lastPptInstanceCount}", LogHelper.LogType.Info);
-                LogHelper.WriteLogToFile($"Consecutive Unchanged Scans: {_consecutiveUnchangedScans}", LogHelper.LogType.Info);
+                LogHelper.WriteLogToFile($"ROT 扫描启用：{(_rotScanTimer != null)}", LogHelper.LogType.Info);
+                LogHelper.WriteLogToFile($"ROT 扫描间隔：{_rotScanInterval}ms", LogHelper.LogType.Info);
+                LogHelper.WriteLogToFile($"ROT 扫描中：{_isRotScanRunning}", LogHelper.LogType.Info);
+                LogHelper.WriteLogToFile($"最近实例数量：{_lastPptInstanceCount}", LogHelper.LogType.Info);
+                LogHelper.WriteLogToFile($"连续未变化扫描次数：{_consecutiveUnchangedScans}", LogHelper.LogType.Info);
                 
                 // ROT 扫描性能统计
                 if (_rotScanCount > 0)
@@ -1292,24 +1295,24 @@ namespace Ink_Canvas.Services
                 }
                 
                 // COM 对象跟踪
-                LogHelper.WriteLogToFile($"Tracked COM Objects: {_comObjectTracker.TrackedCount}", LogHelper.LogType.Info);
+                LogHelper.WriteLogToFile($"跟踪的 COM 对象数：{_comObjectTracker.TrackedCount}", LogHelper.LogType.Info);
                 
                 // 演示文稿信息
                 if (_presentation != null)
                 {
-                    LogHelper.WriteLogToFile($"Presentation Loaded: Yes", LogHelper.LogType.Info);
-                    LogHelper.WriteLogToFile($"Slides Count: {_slidesCount}", LogHelper.LogType.Info);
+                    LogHelper.WriteLogToFile("演示文稿已加载：是", LogHelper.LogType.Info);
+                    LogHelper.WriteLogToFile($"幻灯片数量：{_slidesCount}", LogHelper.LogType.Info);
                 }
                 else
                 {
-                    LogHelper.WriteLogToFile($"Presentation Loaded: No", LogHelper.LogType.Info);
+                    LogHelper.WriteLogToFile("演示文稿已加载：否", LogHelper.LogType.Info);
                 }
                 
-                LogHelper.WriteLogToFile("=== End of PPT Service State ===", LogHelper.LogType.Info);
+                LogHelper.WriteLogToFile("=== PPT 服务状态结束 ===", LogHelper.LogType.Info);
             }
             catch (Exception ex)
             {
-                LogHelper.WriteLogToFile($"LogCurrentState: Error logging state: {ex.Message}", LogHelper.LogType.Error);
+                LogHelper.WriteLogToFile($"LogCurrentState：记录状态失败：{ex.Message}", LogHelper.LogType.Error);
             }
         }
 
@@ -1327,7 +1330,7 @@ namespace Ink_Canvas.Services
         {
             if (comObject == null)
             {
-                LogHelper.WriteLogToFile("GetDynamicComObject: Input object is null", LogHelper.LogType.Warning);
+                LogHelper.WriteLogToFile("GetDynamicComObject：输入对象为空", LogHelper.LogType.Warning);
                 return null;
             }
 
@@ -1336,13 +1339,13 @@ namespace Ink_Canvas.Services
                 // 将 RCW 转换为 dynamic 类型
                 dynamic dynamicObject = comObject;
                 
-                LogHelper.WriteLogToFile($"GetDynamicComObject: Successfully wrapped COM object as dynamic, Type: {comObject.GetType().Name}", LogHelper.LogType.Trace);
+                LogHelper.WriteLogToFile($"GetDynamicComObject：已将 COM 对象包装为 dynamic，类型：{comObject.GetType().Name}", LogHelper.LogType.Trace);
                 
                 return dynamicObject;
             }
             catch (Exception ex)
             {
-                LogHelper.WriteLogToFile($"GetDynamicComObject: Failed to wrap COM object: {ex.Message}", LogHelper.LogType.Error);
+                LogHelper.WriteLogToFile($"GetDynamicComObject：包装 COM 对象失败：{ex.Message}", LogHelper.LogType.Error);
                 return null;
             }
         }
@@ -1423,7 +1426,7 @@ namespace Ink_Canvas.Services
             }
             catch (Exception ex)
             {
-                LogHelper.WriteLogToFile($"SafeGetProperty: Failed to get property '{propertyName}': {ex.Message}", LogHelper.LogType.Trace);
+                LogHelper.WriteLogToFile($"SafeGetProperty：获取属性 '{propertyName}' 失败：{ex.Message}", LogHelper.LogType.Trace);
                 return defaultValue;
             }
         }
@@ -1444,17 +1447,17 @@ namespace Ink_Canvas.Services
             }
             catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException ex)
             {
-                LogHelper.WriteLogToFile($"TryGetDynamicProperty: Property '{propertyName}' not found or inaccessible: {ex.Message}", LogHelper.LogType.Trace);
+                LogHelper.WriteLogToFile($"尝试获取属性：'{propertyName}' 不存在或不可访问：{ex.Message}", LogHelper.LogType.Trace);
                 return defaultValue;
             }
             catch (System.Runtime.InteropServices.COMException ex)
             {
-                LogHelper.WriteLogToFile($"TryGetDynamicProperty: COM error accessing property '{propertyName}': {ex.Message}", LogHelper.LogType.Warning);
+                LogHelper.WriteLogToFile($"尝试获取属性：访问 '{propertyName}' 的 COM 错误：{ex.Message}", LogHelper.LogType.Warning);
                 return defaultValue;
             }
             catch (Exception ex)
             {
-                LogHelper.WriteLogToFile($"TryGetDynamicProperty: Unexpected error accessing property '{propertyName}': {ex.Message}", LogHelper.LogType.Warning);
+                LogHelper.WriteLogToFile($"尝试获取属性：访问 '{propertyName}' 发生异常：{ex.Message}", LogHelper.LogType.Warning);
                 return defaultValue;
             }
         }
@@ -1472,12 +1475,12 @@ namespace Ink_Canvas.Services
                 try
                 {
                     int refCount = Marshal.ReleaseComObject(comObject);
-                    LogHelper.WriteLogToFile($"SafeReleaseComObject: Released COM object of type {comObject.GetType().Name}, remaining ref count = {refCount}", LogHelper.LogType.Trace);
+                    LogHelper.WriteLogToFile($"释放 COM 对象：已释放（{comObject.GetType().Name}），剩余引用计数 = {refCount}", LogHelper.LogType.Trace);
                     return refCount;
                 }
                 catch (Exception ex)
                 {
-                    LogHelper.WriteLogToFile($"SafeReleaseComObject: Error releasing COM object: {ex.Message}", LogHelper.LogType.Warning);
+                    LogHelper.WriteLogToFile($"释放 COM 对象失败：{ex.Message}", LogHelper.LogType.Warning);
                     return 0;
                 }
             }
@@ -1496,11 +1499,11 @@ namespace Ink_Canvas.Services
                 try
                 {
                     int refCount = Marshal.FinalReleaseComObject(comObject);
-                    LogHelper.WriteLogToFile($"FinalReleaseComObject: Fully released COM object of type {comObject.GetType().Name}, final ref count = {refCount}", LogHelper.LogType.Trace);
+                    LogHelper.WriteLogToFile($"完全释放 COM 对象：已释放（{comObject.GetType().Name}），最终引用计数 = {refCount}", LogHelper.LogType.Trace);
                 }
                 catch (Exception ex)
                 {
-                    LogHelper.WriteLogToFile($"FinalReleaseComObject: Error releasing COM object: {ex.Message}", LogHelper.LogType.Warning);
+                    LogHelper.WriteLogToFile($"完全释放 COM 对象失败：{ex.Message}", LogHelper.LogType.Warning);
                 }
             }
         }
@@ -1535,7 +1538,7 @@ namespace Ink_Canvas.Services
         {
             if (app == null)
             {
-                LogHelper.WriteLogToFile("GetActivePresentationWithRetry: Application is null", LogHelper.LogType.Warning);
+                LogHelper.WriteLogToFile("GetActivePresentationWithRetry：Application 为空", LogHelper.LogType.Warning);
                 return null;
             }
 
@@ -1548,47 +1551,47 @@ namespace Ink_Canvas.Services
 
                 try
                 {
-                    LogHelper.WriteLogToFile($"GetActivePresentationWithRetry: Attempt {attemptCount}/{maxRetries}", LogHelper.LogType.Trace);
+                    LogHelper.WriteLogToFile($"GetActivePresentationWithRetry：第 {attemptCount}/{maxRetries} 次尝试", LogHelper.LogType.Trace);
 
                     dynamic activePresentation = app.ActivePresentation;
 
                     if (activePresentation != null)
                     {
-                        LogHelper.WriteLogToFile($"GetActivePresentationWithRetry: Successfully got ActivePresentation on attempt {attemptCount}", LogHelper.LogType.Info);
+                        LogHelper.WriteLogToFile($"GetActivePresentationWithRetry：第 {attemptCount} 次成功获取 ActivePresentation", LogHelper.LogType.Info);
                         return activePresentation;
                     }
                     else
                     {
-                        LogHelper.WriteLogToFile($"GetActivePresentationWithRetry: ActivePresentation is null on attempt {attemptCount}", LogHelper.LogType.Trace);
+                        LogHelper.WriteLogToFile($"GetActivePresentationWithRetry：第 {attemptCount} 次 ActivePresentation 为空", LogHelper.LogType.Trace);
                         lastException = new InvalidOperationException("ActivePresentation is null");
                     }
                 }
                 catch (System.Runtime.InteropServices.COMException comEx)
                 {
                     lastException = comEx;
-                    LogHelper.WriteLogToFile($"GetActivePresentationWithRetry: COM exception on attempt {attemptCount}: HRESULT=0x{comEx.HResult:X8}, Message={comEx.Message}", LogHelper.LogType.Warning);
+                    LogHelper.WriteLogToFile($"GetActivePresentationWithRetry：第 {attemptCount} 次 COM 异常：HRESULT=0x{comEx.HResult:X8}，Message={comEx.Message}", LogHelper.LogType.Warning);
                 }
                 catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException binderEx)
                 {
                     lastException = binderEx;
-                    LogHelper.WriteLogToFile($"GetActivePresentationWithRetry: RuntimeBinder exception on attempt {attemptCount}: {binderEx.Message}", LogHelper.LogType.Warning);
+                    LogHelper.WriteLogToFile($"GetActivePresentationWithRetry：第 {attemptCount} 次 RuntimeBinder 异常：{binderEx.Message}", LogHelper.LogType.Warning);
                 }
                 catch (Exception ex)
                 {
                     lastException = ex;
-                    LogHelper.WriteLogToFile($"GetActivePresentationWithRetry: Unexpected exception on attempt {attemptCount}: {ex.Message}", LogHelper.LogType.Warning);
+                    LogHelper.WriteLogToFile($"GetActivePresentationWithRetry：第 {attemptCount} 次发生异常：{ex.Message}", LogHelper.LogType.Warning);
                 }
 
                 // 如果还有重试机会，等待后重试
                 if (attemptCount < maxRetries)
                 {
-                    LogHelper.WriteLogToFile($"GetActivePresentationWithRetry: Waiting {retryDelayMs}ms before retry...", LogHelper.LogType.Trace);
+                    LogHelper.WriteLogToFile($"GetActivePresentationWithRetry：等待 {retryDelayMs}ms 后重试...", LogHelper.LogType.Trace);
                     System.Threading.Thread.Sleep(retryDelayMs);
                 }
             }
 
             // 所有重试都失败
-            LogHelper.WriteLogToFile($"GetActivePresentationWithRetry: Failed after {maxRetries} attempts. Last error: {lastException?.Message}", LogHelper.LogType.Error);
+            LogHelper.WriteLogToFile($"GetActivePresentationWithRetry：重试 {maxRetries} 次后仍失败。最后错误：{lastException?.Message}", LogHelper.LogType.Error);
             if (lastException != null)
             {
                 LogHelper.NewLog(lastException);
@@ -1612,7 +1615,7 @@ namespace Ink_Canvas.Services
         {
             if (operation == null)
             {
-                LogHelper.WriteLogToFile($"ExecuteWithRetry: Operation is null for '{operationName}'", LogHelper.LogType.Warning);
+                LogHelper.WriteLogToFile($"ExecuteWithRetry：操作为空 '{operationName}'", LogHelper.LogType.Warning);
                 return defaultValue;
             }
 
@@ -1625,44 +1628,44 @@ namespace Ink_Canvas.Services
 
                 try
                 {
-                    LogHelper.WriteLogToFile($"ExecuteWithRetry[{operationName}]: Attempt {attemptCount}/{maxRetries}", LogHelper.LogType.Trace);
+                    LogHelper.WriteLogToFile($"ExecuteWithRetry[{operationName}]：第 {attemptCount}/{maxRetries} 次尝试", LogHelper.LogType.Trace);
 
                     T result = operation();
 
-                    LogHelper.WriteLogToFile($"ExecuteWithRetry[{operationName}]: Successfully executed on attempt {attemptCount}", LogHelper.LogType.Trace);
+                    LogHelper.WriteLogToFile($"ExecuteWithRetry[{operationName}]：第 {attemptCount} 次执行成功", LogHelper.LogType.Trace);
                     return result;
                 }
                 catch (System.Runtime.InteropServices.COMException comEx)
                 {
                     lastException = comEx;
-                    LogHelper.WriteLogToFile($"ExecuteWithRetry[{operationName}]: COM exception on attempt {attemptCount}: HRESULT=0x{comEx.HResult:X8}, Message={comEx.Message}", LogHelper.LogType.Warning);
+                    LogHelper.WriteLogToFile($"ExecuteWithRetry[{operationName}]：第 {attemptCount} 次 COM 异常：HRESULT=0x{comEx.HResult:X8}，Message={comEx.Message}", LogHelper.LogType.Warning);
                 }
                 catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException binderEx)
                 {
                     lastException = binderEx;
-                    LogHelper.WriteLogToFile($"ExecuteWithRetry[{operationName}]: RuntimeBinder exception on attempt {attemptCount}: {binderEx.Message}", LogHelper.LogType.Warning);
+                    LogHelper.WriteLogToFile($"ExecuteWithRetry[{operationName}]：第 {attemptCount} 次 RuntimeBinder 异常：{binderEx.Message}", LogHelper.LogType.Warning);
                 }
                 catch (InvalidOperationException invalidOpEx)
                 {
                     lastException = invalidOpEx;
-                    LogHelper.WriteLogToFile($"ExecuteWithRetry[{operationName}]: InvalidOperation exception on attempt {attemptCount}: {invalidOpEx.Message}", LogHelper.LogType.Warning);
+                    LogHelper.WriteLogToFile($"ExecuteWithRetry[{operationName}]：第 {attemptCount} 次 InvalidOperation 异常：{invalidOpEx.Message}", LogHelper.LogType.Warning);
                 }
                 catch (Exception ex)
                 {
                     lastException = ex;
-                    LogHelper.WriteLogToFile($"ExecuteWithRetry[{operationName}]: Unexpected exception on attempt {attemptCount}: {ex.Message}", LogHelper.LogType.Warning);
+                    LogHelper.WriteLogToFile($"ExecuteWithRetry[{operationName}]：第 {attemptCount} 次发生异常：{ex.Message}", LogHelper.LogType.Warning);
                 }
 
                 // 如果还有重试机会，等待后重试
                 if (attemptCount < maxRetries)
                 {
-                    LogHelper.WriteLogToFile($"ExecuteWithRetry[{operationName}]: Waiting {retryDelayMs}ms before retry...", LogHelper.LogType.Trace);
+                    LogHelper.WriteLogToFile($"ExecuteWithRetry[{operationName}]：等待 {retryDelayMs}ms 后重试...", LogHelper.LogType.Trace);
                     System.Threading.Thread.Sleep(retryDelayMs);
                 }
             }
 
             // 所有重试都失败
-            LogHelper.WriteLogToFile($"ExecuteWithRetry[{operationName}]: Failed after {maxRetries} attempts. Last error: {lastException?.Message}", LogHelper.LogType.Error);
+            LogHelper.WriteLogToFile($"ExecuteWithRetry[{operationName}]：重试 {maxRetries} 次后仍失败。最后错误：{lastException?.Message}", LogHelper.LogType.Error);
             if (lastException != null)
             {
                 LogHelper.NewLog(lastException);
@@ -1683,7 +1686,7 @@ namespace Ink_Canvas.Services
         {
             if (operation == null)
             {
-                LogHelper.WriteLogToFile($"ExecuteWithRetry: Operation is null for '{operationName}'", LogHelper.LogType.Warning);
+                LogHelper.WriteLogToFile($"ExecuteWithRetry：操作为空 '{operationName}'", LogHelper.LogType.Warning);
                 return false;
             }
 
@@ -1696,44 +1699,44 @@ namespace Ink_Canvas.Services
 
                 try
                 {
-                    LogHelper.WriteLogToFile($"ExecuteWithRetry[{operationName}]: Attempt {attemptCount}/{maxRetries}", LogHelper.LogType.Trace);
+                    LogHelper.WriteLogToFile($"ExecuteWithRetry[{operationName}]：第 {attemptCount}/{maxRetries} 次尝试", LogHelper.LogType.Trace);
 
                     operation();
 
-                    LogHelper.WriteLogToFile($"ExecuteWithRetry[{operationName}]: Successfully executed on attempt {attemptCount}", LogHelper.LogType.Trace);
+                    LogHelper.WriteLogToFile($"ExecuteWithRetry[{operationName}]：第 {attemptCount} 次执行成功", LogHelper.LogType.Trace);
                     return true;
                 }
                 catch (System.Runtime.InteropServices.COMException comEx)
                 {
                     lastException = comEx;
-                    LogHelper.WriteLogToFile($"ExecuteWithRetry[{operationName}]: COM exception on attempt {attemptCount}: HRESULT=0x{comEx.HResult:X8}, Message={comEx.Message}", LogHelper.LogType.Warning);
+                    LogHelper.WriteLogToFile($"ExecuteWithRetry[{operationName}]：第 {attemptCount} 次 COM 异常：HRESULT=0x{comEx.HResult:X8}，Message={comEx.Message}", LogHelper.LogType.Warning);
                 }
                 catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException binderEx)
                 {
                     lastException = binderEx;
-                    LogHelper.WriteLogToFile($"ExecuteWithRetry[{operationName}]: RuntimeBinder exception on attempt {attemptCount}: {binderEx.Message}", LogHelper.LogType.Warning);
+                    LogHelper.WriteLogToFile($"ExecuteWithRetry[{operationName}]：第 {attemptCount} 次 RuntimeBinder 异常：{binderEx.Message}", LogHelper.LogType.Warning);
                 }
                 catch (InvalidOperationException invalidOpEx)
                 {
                     lastException = invalidOpEx;
-                    LogHelper.WriteLogToFile($"ExecuteWithRetry[{operationName}]: InvalidOperation exception on attempt {attemptCount}: {invalidOpEx.Message}", LogHelper.LogType.Warning);
+                    LogHelper.WriteLogToFile($"ExecuteWithRetry[{operationName}]：第 {attemptCount} 次 InvalidOperation 异常：{invalidOpEx.Message}", LogHelper.LogType.Warning);
                 }
                 catch (Exception ex)
                 {
                     lastException = ex;
-                    LogHelper.WriteLogToFile($"ExecuteWithRetry[{operationName}]: Unexpected exception on attempt {attemptCount}: {ex.Message}", LogHelper.LogType.Warning);
+                    LogHelper.WriteLogToFile($"ExecuteWithRetry[{operationName}]：第 {attemptCount} 次发生异常：{ex.Message}", LogHelper.LogType.Warning);
                 }
 
                 // 如果还有重试机会，等待后重试
                 if (attemptCount < maxRetries)
                 {
-                    LogHelper.WriteLogToFile($"ExecuteWithRetry[{operationName}]: Waiting {retryDelayMs}ms before retry...", LogHelper.LogType.Trace);
+                    LogHelper.WriteLogToFile($"ExecuteWithRetry[{operationName}]：等待 {retryDelayMs}ms 后重试...", LogHelper.LogType.Trace);
                     System.Threading.Thread.Sleep(retryDelayMs);
                 }
             }
 
             // 所有重试都失败
-            LogHelper.WriteLogToFile($"ExecuteWithRetry[{operationName}]: Failed after {maxRetries} attempts. Last error: {lastException?.Message}", LogHelper.LogType.Error);
+            LogHelper.WriteLogToFile($"ExecuteWithRetry[{operationName}]：重试 {maxRetries} 次后仍失败。最后错误：{lastException?.Message}", LogHelper.LogType.Error);
             if (lastException != null)
             {
                 LogHelper.NewLog(lastException);
@@ -1757,14 +1760,14 @@ namespace Ink_Canvas.Services
         {
             if (action == null)
             {
-                LogHelper.WriteLogToFile($"SafeAccessDynamicProperty: Action is null for property '{propertyName}'", LogHelper.LogType.Warning);
+                LogHelper.WriteLogToFile($"SafeAccessDynamicProperty：属性 '{propertyName}' 的访问操作为空", LogHelper.LogType.Warning);
                 return defaultValue;
             }
 
             // 如果启用重试，使用 ExecuteWithRetry
             if (enableRetry)
             {
-                return ExecuteWithRetry(action, $"Access property '{propertyName}'", defaultValue, maxRetries, 50);
+                return ExecuteWithRetry(action, $"访问属性 '{propertyName}'", defaultValue, maxRetries, 50);
             }
 
             // 否则，单次尝试
@@ -1774,48 +1777,48 @@ namespace Ink_Canvas.Services
             }
             catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException ex)
             {
-                LogHelper.WriteLogToFile($"SafeAccessDynamicProperty: Property '{propertyName}' not found or inaccessible: {ex.Message}", LogHelper.LogType.Trace);
-                LogHelper.WriteLogToFile($"SafeAccessDynamicProperty: Returning default value for '{propertyName}'", LogHelper.LogType.Trace);
+                LogHelper.WriteLogToFile($"SafeAccessDynamicProperty：属性 '{propertyName}' 不存在或不可访问：{ex.Message}", LogHelper.LogType.Trace);
+                LogHelper.WriteLogToFile($"SafeAccessDynamicProperty：返回默认值 '{propertyName}'", LogHelper.LogType.Trace);
                 return defaultValue;
             }
             catch (System.Runtime.InteropServices.COMException ex)
             {
-                LogHelper.WriteLogToFile($"SafeAccessDynamicProperty: COM error accessing property '{propertyName}': HRESULT=0x{ex.HResult:X8}, Message={ex.Message}", LogHelper.LogType.Warning);
-                LogHelper.WriteLogToFile($"SafeAccessDynamicProperty: Returning default value for '{propertyName}'", LogHelper.LogType.Trace);
+                LogHelper.WriteLogToFile($"SafeAccessDynamicProperty：访问属性 '{propertyName}' 的 COM 错误：HRESULT=0x{ex.HResult:X8}，Message={ex.Message}", LogHelper.LogType.Warning);
+                LogHelper.WriteLogToFile($"SafeAccessDynamicProperty：返回默认值 '{propertyName}'", LogHelper.LogType.Trace);
                 
                 // 记录详细的 COM 错误信息
                 if (ex.HResult == unchecked((int)0x800706BA)) // RPC_S_SERVER_UNAVAILABLE
                 {
-                    LogHelper.WriteLogToFile($"SafeAccessDynamicProperty: COM server unavailable for '{propertyName}'", LogHelper.LogType.Error);
+                    LogHelper.WriteLogToFile($"SafeAccessDynamicProperty：COM 服务器不可用 '{propertyName}'", LogHelper.LogType.Error);
                 }
                 else if (ex.HResult == unchecked((int)0x80010001)) // RPC_E_CALL_REJECTED
                 {
-                    LogHelper.WriteLogToFile($"SafeAccessDynamicProperty: COM call rejected for '{propertyName}'", LogHelper.LogType.Error);
+                    LogHelper.WriteLogToFile($"SafeAccessDynamicProperty：COM 调用被拒绝 '{propertyName}'", LogHelper.LogType.Error);
                 }
                 else if (ex.HResult == unchecked((int)0x8001010A)) // RPC_E_SERVERCALL_RETRYLATER
                 {
-                    LogHelper.WriteLogToFile($"SafeAccessDynamicProperty: COM server busy for '{propertyName}', should retry", LogHelper.LogType.Warning);
+                    LogHelper.WriteLogToFile($"SafeAccessDynamicProperty：COM 服务器繁忙 '{propertyName}'，建议重试", LogHelper.LogType.Warning);
                 }
                 
                 return defaultValue;
             }
             catch (InvalidOperationException ex)
             {
-                LogHelper.WriteLogToFile($"SafeAccessDynamicProperty: Invalid operation accessing property '{propertyName}': {ex.Message}", LogHelper.LogType.Warning);
-                LogHelper.WriteLogToFile($"SafeAccessDynamicProperty: Returning default value for '{propertyName}'", LogHelper.LogType.Trace);
+                LogHelper.WriteLogToFile($"SafeAccessDynamicProperty：访问属性 '{propertyName}' 时发生无效操作：{ex.Message}", LogHelper.LogType.Warning);
+                LogHelper.WriteLogToFile($"SafeAccessDynamicProperty：返回默认值 '{propertyName}'", LogHelper.LogType.Trace);
                 return defaultValue;
             }
             catch (NullReferenceException ex)
             {
-                LogHelper.WriteLogToFile($"SafeAccessDynamicProperty: Null reference accessing property '{propertyName}': {ex.Message}", LogHelper.LogType.Warning);
-                LogHelper.WriteLogToFile($"SafeAccessDynamicProperty: Returning default value for '{propertyName}'", LogHelper.LogType.Trace);
+                LogHelper.WriteLogToFile($"SafeAccessDynamicProperty：访问属性 '{propertyName}' 时发生空引用：{ex.Message}", LogHelper.LogType.Warning);
+                LogHelper.WriteLogToFile($"SafeAccessDynamicProperty：返回默认值 '{propertyName}'", LogHelper.LogType.Trace);
                 return defaultValue;
             }
             catch (Exception ex)
             {
-                LogHelper.WriteLogToFile($"SafeAccessDynamicProperty: Unexpected error accessing property '{propertyName}': {ex.GetType().Name} - {ex.Message}", LogHelper.LogType.Error);
-                LogHelper.WriteLogToFile($"SafeAccessDynamicProperty: Stack trace: {ex.StackTrace}", LogHelper.LogType.Trace);
-                LogHelper.WriteLogToFile($"SafeAccessDynamicProperty: Returning default value for '{propertyName}'", LogHelper.LogType.Trace);
+                LogHelper.WriteLogToFile($"SafeAccessDynamicProperty：访问属性 '{propertyName}' 发生异常：{ex.GetType().Name} - {ex.Message}", LogHelper.LogType.Error);
+                LogHelper.WriteLogToFile($"SafeAccessDynamicProperty：堆栈：{ex.StackTrace}", LogHelper.LogType.Trace);
+                LogHelper.WriteLogToFile($"SafeAccessDynamicProperty：返回默认值 '{propertyName}'", LogHelper.LogType.Trace);
                 LogHelper.NewLog(ex);
                 return defaultValue;
             }
@@ -1833,14 +1836,14 @@ namespace Ink_Canvas.Services
         {
             if (action == null)
             {
-                LogHelper.WriteLogToFile($"SafeInvokeDynamicMethod: Action is null for method '{methodName}'", LogHelper.LogType.Warning);
+                LogHelper.WriteLogToFile($"SafeInvokeDynamicMethod：方法 '{methodName}' 的调用为空", LogHelper.LogType.Warning);
                 return false;
             }
 
             // 如果启用重试，使用 ExecuteWithRetry
             if (enableRetry)
             {
-                return ExecuteWithRetry(action, $"Invoke method '{methodName}'", maxRetries, 50);
+                return ExecuteWithRetry(action, $"调用方法 '{methodName}'", maxRetries, 50);
             }
 
             // 否则，单次尝试
@@ -1851,45 +1854,33 @@ namespace Ink_Canvas.Services
             }
             catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException ex)
             {
-                LogHelper.WriteLogToFile($"SafeInvokeDynamicMethod: Method '{methodName}' not found or inaccessible: {ex.Message}", LogHelper.LogType.Warning);
+                LogHelper.WriteLogToFile($"SafeInvokeDynamicMethod：方法 '{methodName}' 不存在或不可访问：{ex.Message}", LogHelper.LogType.Warning);
                 return false;
             }
             catch (System.Runtime.InteropServices.COMException ex)
             {
-                LogHelper.WriteLogToFile($"SafeInvokeDynamicMethod: COM error invoking method '{methodName}': HRESULT=0x{ex.HResult:X8}, Message={ex.Message}", LogHelper.LogType.Error);
+                LogHelper.WriteLogToFile($"SafeInvokeDynamicMethod：调用方法 '{methodName}' 时发生 COM 错误：HRESULT=0x{ex.HResult:X8}，Message={ex.Message}", LogHelper.LogType.Error);
                 
                 // 记录详细的 COM 错误信息
                 if (ex.HResult == unchecked((int)0x800706BA)) // RPC_S_SERVER_UNAVAILABLE
                 {
-                    LogHelper.WriteLogToFile($"SafeInvokeDynamicMethod: COM server unavailable for '{methodName}'", LogHelper.LogType.Error);
+                    LogHelper.WriteLogToFile($"SafeInvokeDynamicMethod：COM 服务器不可用 '{methodName}'", LogHelper.LogType.Error);
                 }
                 else if (ex.HResult == unchecked((int)0x80010001)) // RPC_E_CALL_REJECTED
                 {
-                    LogHelper.WriteLogToFile($"SafeInvokeDynamicMethod: COM call rejected for '{methodName}'", LogHelper.LogType.Error);
+                    LogHelper.WriteLogToFile($"SafeInvokeDynamicMethod：COM 调用被拒绝 '{methodName}'", LogHelper.LogType.Error);
                 }
                 else if (ex.HResult == unchecked((int)0x8001010A)) // RPC_E_SERVERCALL_RETRYLATER
                 {
-                    LogHelper.WriteLogToFile($"SafeInvokeDynamicMethod: COM server busy for '{methodName}', should retry", LogHelper.LogType.Warning);
+                    LogHelper.WriteLogToFile($"SafeInvokeDynamicMethod：COM 服务器繁忙 '{methodName}'，建议重试", LogHelper.LogType.Warning);
                 }
                 
-                LogHelper.NewLog(ex);
-                return false;
-            }
             catch (InvalidOperationException ex)
             {
-                LogHelper.WriteLogToFile($"SafeInvokeDynamicMethod: Invalid operation invoking method '{methodName}': {ex.Message}", LogHelper.LogType.Error);
+                LogHelper.WriteLogToFile($"SafeInvokeDynamicMethod：调用方法 '{methodName}' 时发生无效操作：{ex.Message}", LogHelper.LogType.Error);
                 LogHelper.NewLog(ex);
                 return false;
             }
-            catch (Exception ex)
-            {
-                LogHelper.WriteLogToFile($"SafeInvokeDynamicMethod: Unexpected error invoking method '{methodName}': {ex.GetType().Name} - {ex.Message}", LogHelper.LogType.Error);
-                LogHelper.WriteLogToFile($"SafeInvokeDynamicMethod: Stack trace: {ex.StackTrace}", LogHelper.LogType.Trace);
-                LogHelper.NewLog(ex);
-                return false;
-            }
-        }
-
         /// <summary>
         /// 检查 COM 异常是否为瞬时错误（可重试）
         /// </summary>
@@ -1917,7 +1908,7 @@ namespace Ink_Canvas.Services
             {
                 if (ex.HResult == errorCode)
                 {
-                    LogHelper.WriteLogToFile($"IsTransientCOMError: Detected transient COM error: HRESULT=0x{ex.HResult:X8}", LogHelper.LogType.Info);
+                    LogHelper.WriteLogToFile($"可重试 COM 错误：HRESULT=0x{ex.HResult:X8}", LogHelper.LogType.Info);
                     return true;
                 }
             }
@@ -1934,31 +1925,31 @@ namespace Ink_Canvas.Services
         {
             if (ex == null)
             {
-                return "Unknown COM error";
+                return "未知 COM 错误";
             }
 
             switch (ex.HResult)
             {
                 case unchecked((int)0x8001010A):
-                    return "COM server is busy, retry later (RPC_E_SERVERCALL_RETRYLATER)";
+                    return "COM 服务器繁忙，请稍后重试 (RPC_E_SERVERCALL_RETRYLATER)";
                 case unchecked((int)0x80010001):
-                    return "COM call was rejected (RPC_E_CALL_REJECTED)";
+                    return "COM 调用被拒绝 (RPC_E_CALL_REJECTED)";
                 case unchecked((int)0x80010007):
-                    return "COM server died or does not exist (RPC_E_SERVER_DIED_DNE)";
+                    return "COM 服务器已终止或不存在 (RPC_E_SERVER_DIED_DNE)";
                 case unchecked((int)0x800706BA):
-                    return "COM server is unavailable (RPC_S_SERVER_UNAVAILABLE)";
+                    return "COM 服务器不可用 (RPC_S_SERVER_UNAVAILABLE)";
                 case unchecked((int)0x800706BE):
-                    return "COM call failed (RPC_S_CALL_FAILED)";
+                    return "COM 调用失败 (RPC_S_CALL_FAILED)";
                 case unchecked((int)0x80004005):
-                    return "Unspecified COM error (E_FAIL)";
+                    return "未指定的 COM 错误 (E_FAIL)";
                 case unchecked((int)0x80020009):
-                    return "COM exception occurred (DISP_E_EXCEPTION)";
+                    return "发生 COM 异常 (DISP_E_EXCEPTION)";
                 case unchecked((int)0x8002000E):
-                    return "Invalid number of parameters (DISP_E_BADPARAMCOUNT)";
+                    return "参数数量无效 (DISP_E_BADPARAMCOUNT)";
                 case unchecked((int)0x80020003):
-                    return "Member not found (DISP_E_MEMBERNOTFOUND)";
+                    return "成员未找到 (DISP_E_MEMBERNOTFOUND)";
                 default:
-                    return $"COM error: HRESULT=0x{ex.HResult:X8}, Message={ex.Message}";
+                    return $"COM 错误：HRESULT=0x{ex.HResult:X8}，Message={ex.Message}";
             }
         }
 
@@ -1980,15 +1971,15 @@ namespace Ink_Canvas.Services
 
             if (app == null)
             {
-                LogHelper.WriteLogToFile("CalculatePriority: Application is null", LogHelper.LogType.Warning);
+                LogHelper.WriteLogToFile("CalculatePriority：Application 为空", LogHelper.LogType.Warning);
                 return target;
             }
 
             try
             {
                 // 尝试获取应用程序名称（用于 WPS 特殊处理）
-                target.ApplicationName = TryGetDynamicProperty(() => app.Name, "Unknown", "Name");
-                LogHelper.WriteLogToFile($"CalculatePriority: Application Name = {target.ApplicationName}", LogHelper.LogType.Trace);
+                target.ApplicationName = TryGetDynamicProperty(() => app.Name, "未知", "Name");
+                LogHelper.WriteLogToFile($"CalculatePriority：应用名称 = {target.ApplicationName}", LogHelper.LogType.Trace);
 
                 // 检查 ActivePresentation 是否存在
                 // 使用重试机制处理瞬时失效（在进入放映瞬间可能失效）
@@ -2002,18 +1993,18 @@ namespace Ink_Canvas.Services
                         target.Priority = PPTBindingPriority.Level1_Basic;
 
                         // 尝试获取演示文稿名称
-                        target.PresentationName = TryGetDynamicProperty(() => activePresentation.Name, "Unknown", "Presentation.Name");
-                        LogHelper.WriteLogToFile($"CalculatePriority: Found ActivePresentation: {target.PresentationName}, Priority = Level1_Basic", LogHelper.LogType.Info);
+                        target.PresentationName = TryGetDynamicProperty(() => activePresentation.Name, "未知", "Presentation.Name");
+                        LogHelper.WriteLogToFile($"CalculatePriority：发现 ActivePresentation：{target.PresentationName}，优先级 = Level1_Basic", LogHelper.LogType.Info);
                     }
                     else
                     {
-                        LogHelper.WriteLogToFile("CalculatePriority: ActivePresentation is null after retry", LogHelper.LogType.Trace);
+                        LogHelper.WriteLogToFile("CalculatePriority：重试后 ActivePresentation 仍为空", LogHelper.LogType.Trace);
                         return target;
                     }
                 }
                 catch (Exception ex)
                 {
-                    LogHelper.WriteLogToFile($"CalculatePriority: Failed to get ActivePresentation after retry: {ex.Message}", LogHelper.LogType.Trace);
+                    LogHelper.WriteLogToFile($"CalculatePriority：重试后获取 ActivePresentation 失败：{ex.Message}", LogHelper.LogType.Trace);
                     return target;
                 }
 
@@ -2029,7 +2020,7 @@ namespace Ink_Canvas.Services
                         {
                             target.SlideShowWindow = slideShowWindow;
                             target.Priority = PPTBindingPriority.Level2_HasSlideShow;
-                            LogHelper.WriteLogToFile("CalculatePriority: Found SlideShowWindow, Priority = Level2_HasSlideShow", LogHelper.LogType.Info);
+                            LogHelper.WriteLogToFile("CalculatePriority：发现 SlideShowWindow，优先级 = Level2_HasSlideShow", LogHelper.LogType.Info);
 
                             // 尝试获取窗口句柄
                             try
@@ -2038,16 +2029,16 @@ namespace Ink_Canvas.Services
                                 if (hwnd != IntPtr.Zero)
                                 {
                                     target.SlideShowWindowHWND = hwnd;
-                                    LogHelper.WriteLogToFile($"CalculatePriority: Got SlideShowWindow HWND = 0x{hwnd:X}", LogHelper.LogType.Trace);
+                                    LogHelper.WriteLogToFile($"CalculatePriority：获取 SlideShowWindow HWND = 0x{hwnd:X}", LogHelper.LogType.Trace);
                                 }
                                 else
                                 {
-                                    LogHelper.WriteLogToFile("CalculatePriority: Failed to get SlideShowWindow HWND", LogHelper.LogType.Trace);
+                                    LogHelper.WriteLogToFile("CalculatePriority：获取 SlideShowWindow HWND 失败", LogHelper.LogType.Trace);
                                 }
                             }
                             catch (Exception ex)
                             {
-                                LogHelper.WriteLogToFile($"CalculatePriority: Failed to get SlideShowWindow HWND: {ex.Message}", LogHelper.LogType.Trace);
+                                LogHelper.WriteLogToFile($"CalculatePriority：获取 SlideShowWindow HWND 失败：{ex.Message}", LogHelper.LogType.Trace);
                             }
 
                             // WPS 特殊处理: 修正窗口尺寸
@@ -2058,7 +2049,7 @@ namespace Ink_Canvas.Services
                             }
                             catch (Exception ex)
                             {
-                                LogHelper.WriteLogToFile($"CalculatePriority: Failed to correct WPS window size: {ex.Message}", LogHelper.LogType.Trace);
+                                LogHelper.WriteLogToFile($"CalculatePriority：修正 WPS 窗口尺寸失败：{ex.Message}", LogHelper.LogType.Trace);
                             }
 
                             // 检查放映窗口是否激活或为焦点
@@ -2066,7 +2057,7 @@ namespace Ink_Canvas.Services
                             if (isActivated)
                             {
                                 target.Priority = PPTBindingPriority.Level3_WindowActivated;
-                                LogHelper.WriteLogToFile("CalculatePriority: SlideShowWindow is activated, Priority = Level3_WindowActivated", LogHelper.LogType.Info);
+                                LogHelper.WriteLogToFile("CalculatePriority：放映窗口已激活，优先级 = Level3_WindowActivated", LogHelper.LogType.Info);
                             }
                         }
                         else
@@ -2077,7 +2068,7 @@ namespace Ink_Canvas.Services
                     }
                     else
                     {
-                        LogHelper.WriteLogToFile("CalculatePriority: No SlideShowWindows found", LogHelper.LogType.Trace);
+                        LogHelper.WriteLogToFile("CalculatePriority：未找到 SlideShowWindows", LogHelper.LogType.Trace);
                         // 释放 slideShowWindows（即使 Count 为 0）
                         if (slideShowWindows != null)
                         {
@@ -2087,7 +2078,7 @@ namespace Ink_Canvas.Services
                 }
                 catch (Exception ex)
                 {
-                    LogHelper.WriteLogToFile($"CalculatePriority: Failed to check SlideShowWindows: {ex.Message}", LogHelper.LogType.Trace);
+                    LogHelper.WriteLogToFile($"CalculatePriority：检查 SlideShowWindows 失败：{ex.Message}", LogHelper.LogType.Trace);
                     // 确保释放 slideShowWindows
                     if (slideShowWindows != null)
                     {
@@ -2097,7 +2088,7 @@ namespace Ink_Canvas.Services
             }
             catch (Exception ex)
             {
-                LogHelper.WriteLogToFile($"CalculatePriority: Unexpected error: {ex.Message}", LogHelper.LogType.Error);
+                LogHelper.WriteLogToFile($"CalculatePriority：发生异常：{ex.Message}", LogHelper.LogType.Error);
                 LogHelper.NewLog(ex);
             }
 
@@ -2112,6 +2103,7 @@ namespace Ink_Canvas.Services
         /// <param name="applicationName">应用程序名称（用于 WPS 特殊处理）</param>
         /// <param name="hwnd">窗口句柄</param>
         /// <returns>如果窗口激活或为焦点则返回 true</returns>
+        [RequiresUnmanagedCode("Uses Win32 API GetForegroundWindow to check if slide show window is activated.")]
         private bool CheckSlideShowWindowActivated(dynamic slideShowWindow, string applicationName, IntPtr hwnd)
         {
             if (slideShowWindow == null)
@@ -2125,7 +2117,7 @@ namespace Ink_Canvas.Services
                 bool isActive = TryGetDynamicProperty(() => slideShowWindow.Active == Microsoft.Office.Core.MsoTriState.msoTrue, false, "SlideShowWindow.Active");
                 if (isActive)
                 {
-                    LogHelper.WriteLogToFile("CheckSlideShowWindowActivated: Window is Active (via Active property)", LogHelper.LogType.Trace);
+                    LogHelper.WriteLogToFile("CheckSlideShowWindowActivated：窗口已激活（Active 属性）", LogHelper.LogType.Trace);
                     return true;
                 }
 
@@ -2135,18 +2127,18 @@ namespace Ink_Canvas.Services
                     IntPtr foregroundWindow = GetForegroundWindow();
                     if (foregroundWindow == hwnd)
                     {
-                        LogHelper.WriteLogToFile("CheckSlideShowWindowActivated: Window is foreground window", LogHelper.LogType.Trace);
+                        LogHelper.WriteLogToFile("CheckSlideShowWindowActivated：窗口为前台窗口", LogHelper.LogType.Trace);
                         return true;
                     }
 
                     // WPS 特殊处理: 非全屏放映时，焦点可能在框架窗口而非放映窗口
                     if (applicationName != null && applicationName.Contains("WPS"))
                     {
-                        LogHelper.WriteLogToFile("CheckSlideShowWindowActivated: Detected WPS, applying special focus detection logic", LogHelper.LogType.Trace);
+                        LogHelper.WriteLogToFile("CheckSlideShowWindowActivated：检测到 WPS，启用特殊焦点判断", LogHelper.LogType.Trace);
                         
                         // 检查是否为全屏放映
                         bool isFullScreen = IsWPSFullScreenMode(slideShowWindow);
-                        LogHelper.WriteLogToFile($"CheckSlideShowWindowActivated: WPS fullscreen mode = {isFullScreen}", LogHelper.LogType.Trace);
+                        LogHelper.WriteLogToFile($"CheckSlideShowWindowActivated：WPS 全屏模式 = {isFullScreen}", LogHelper.LogType.Trace);
                         
                         if (!isFullScreen)
                         {
@@ -2155,38 +2147,38 @@ namespace Ink_Canvas.Services
                             
                             if (frameWindow != IntPtr.Zero)
                             {
-                                LogHelper.WriteLogToFile($"CheckSlideShowWindowActivated: Found WPS frame window: 0x{frameWindow:X}", LogHelper.LogType.Trace);
+                                LogHelper.WriteLogToFile($"CheckSlideShowWindowActivated：找到 WPS 框架窗口：0x{frameWindow:X}", LogHelper.LogType.Trace);
                                 
                                 // 检查框架窗口是否为前台窗口
                                 if (foregroundWindow == frameWindow)
                                 {
-                                    LogHelper.WriteLogToFile("CheckSlideShowWindowActivated: WPS frame window is foreground (non-fullscreen mode)", LogHelper.LogType.Info);
+                                    LogHelper.WriteLogToFile("CheckSlideShowWindowActivated：WPS 框架窗口为前台（非全屏）", LogHelper.LogType.Info);
                                     
                                     // 进一步验证：检查 ActivePresentation 是否与当前放映窗口的演示文稿匹配
                                     if (VerifyWPSActivePresentationMatch(slideShowWindow))
                                     {
-                                        LogHelper.WriteLogToFile("CheckSlideShowWindowActivated: ActivePresentation matches, confirmed WPS window is active", LogHelper.LogType.Info);
+                                        LogHelper.WriteLogToFile("CheckSlideShowWindowActivated：ActivePresentation 匹配，确认 WPS 窗口为活动", LogHelper.LogType.Info);
                                         return true;
                                     }
                                     else
                                     {
-                                        LogHelper.WriteLogToFile("CheckSlideShowWindowActivated: ActivePresentation does not match, WPS window may not be truly active", LogHelper.LogType.Warning);
+                                        LogHelper.WriteLogToFile("CheckSlideShowWindowActivated：ActivePresentation 不匹配，WPS 窗口可能未激活", LogHelper.LogType.Warning);
                                     }
                                 }
                                 else
                                 {
-                                    LogHelper.WriteLogToFile($"CheckSlideShowWindowActivated: WPS frame window is not foreground. Foreground: 0x{foregroundWindow:X}, Frame: 0x{frameWindow:X}", LogHelper.LogType.Trace);
+                                    LogHelper.WriteLogToFile($"CheckSlideShowWindowActivated：WPS 框架窗口非前台。前台：0x{foregroundWindow:X}，框架：0x{frameWindow:X}", LogHelper.LogType.Trace);
                                 }
                             }
                             else
                             {
-                                LogHelper.WriteLogToFile("CheckSlideShowWindowActivated: WPS frame window not found, checking slideshow window directly", LogHelper.LogType.Trace);
+                                LogHelper.WriteLogToFile("CheckSlideShowWindowActivated：未找到 WPS 框架窗口，直接检查放映窗口", LogHelper.LogType.Trace);
                                 
                                 // 如果找不到框架窗口，可能是特殊情况，直接检查放映窗口
                                 // 结合 ActivePresentation 判断
                                 if (VerifyWPSActivePresentationMatch(slideShowWindow))
                                 {
-                                    LogHelper.WriteLogToFile("CheckSlideShowWindowActivated: ActivePresentation matches, treating as active", LogHelper.LogType.Info);
+                                    LogHelper.WriteLogToFile("CheckSlideShowWindowActivated：ActivePresentation 匹配，视为激活", LogHelper.LogType.Info);
                                     return true;
                                 }
                             }
@@ -2196,7 +2188,7 @@ namespace Ink_Canvas.Services
                             // 全屏模式下，如果放映窗口不是前台窗口，但 ActivePresentation 匹配，也可能是活动的
                             if (VerifyWPSActivePresentationMatch(slideShowWindow))
                             {
-                                LogHelper.WriteLogToFile("CheckSlideShowWindowActivated: WPS fullscreen mode, ActivePresentation matches, treating as active", LogHelper.LogType.Info);
+                                LogHelper.WriteLogToFile("CheckSlideShowWindowActivated：WPS 全屏模式且 ActivePresentation 匹配，视为激活", LogHelper.LogType.Info);
                                 return true;
                             }
                         }
@@ -2212,7 +2204,7 @@ namespace Ink_Canvas.Services
                     {
                         // 如果能成功访问 View，说明窗口可能是活动的
                         // 这是一个较弱的判断，但在某些情况下有用
-                        LogHelper.WriteLogToFile("CheckSlideShowWindowActivated: View is accessible", LogHelper.LogType.Trace);
+                        LogHelper.WriteLogToFile("CheckSlideShowWindowActivated：View 可访问", LogHelper.LogType.Trace);
                         
                         // 释放 View 对象
                         SafeReleaseComObject(view);
@@ -2220,7 +2212,7 @@ namespace Ink_Canvas.Services
                 }
                 catch (Exception ex)
                 {
-                    LogHelper.WriteLogToFile($"CheckSlideShowWindowActivated: View is not accessible: {ex.Message}", LogHelper.LogType.Trace);
+                    LogHelper.WriteLogToFile($"CheckSlideShowWindowActivated：View 不可访问：{ex.Message}", LogHelper.LogType.Trace);
                     // 确保释放 view（如果已创建）
                     if (view != null)
                     {
@@ -2230,7 +2222,7 @@ namespace Ink_Canvas.Services
             }
             catch (Exception ex)
             {
-                LogHelper.WriteLogToFile($"CheckSlideShowWindowActivated: Error checking activation: {ex.Message}", LogHelper.LogType.Warning);
+                LogHelper.WriteLogToFile($"CheckSlideShowWindowActivated：检查激活状态失败：{ex.Message}", LogHelper.LogType.Warning);
             }
 
             return false;
@@ -2501,6 +2493,7 @@ namespace Ink_Canvas.Services
         /// </summary>
         /// <param name="slideShowWindow">SlideShowWindow 对象（dynamic 类型）</param>
         /// <returns>窗口句柄，如果无法确定则返回 IntPtr.Zero</returns>
+        [RequiresUnmanagedCode("Uses Win32 API calls to enumerate windows and get window information.")]
         private IntPtr GetSlideShowWindowHWNDByMatching(dynamic slideShowWindow)
         {
             if (slideShowWindow == null)
@@ -2783,6 +2776,7 @@ namespace Ink_Canvas.Services
         /// <param name="slideShowWindow">SlideShowWindow 对象（dynamic 类型）</param>
         /// <param name="hwnd">窗口句柄（如果已获取）</param>
         /// <returns>修正后的窗口尺寸 (Left, Top, Width, Height)，如果失败则返回 null</returns>
+        [RequiresUnmanagedCode("Uses Win32 API GetWindowRect to get WPS slide show window size.")]
         private (int Left, int Top, int Width, int Height)? GetWPSSlideShowWindowSize(dynamic slideShowWindow, IntPtr hwnd)
         {
             if (slideShowWindow == null)
@@ -2909,6 +2903,7 @@ namespace Ink_Canvas.Services
         /// </summary>
         /// <param name="slideShowWindowHWND">放映窗口句柄</param>
         /// <returns>边框窗口句柄，如果不存在则返回 IntPtr.Zero</returns>
+        [RequiresUnmanagedCode("Uses Win32 API GetParent and IsWindowVisible to get WPS frame window.")]
         private IntPtr GetWPSFrameWindow(IntPtr slideShowWindowHWND)
         {
             if (slideShowWindowHWND == IntPtr.Zero)
@@ -2955,6 +2950,7 @@ namespace Ink_Canvas.Services
         /// </summary>
         /// <param name="slideShowWindow">SlideShowWindow 对象（dynamic 类型）</param>
         /// <returns>如果是全屏放映则返回 true</returns>
+        [RequiresUnmanagedCode("Uses Win32 API calls to check WPS full screen mode.")]
         private bool IsWPSFullScreenMode(dynamic slideShowWindow)
         {
             if (slideShowWindow == null)

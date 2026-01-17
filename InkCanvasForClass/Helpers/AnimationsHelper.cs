@@ -84,7 +84,7 @@ namespace Ink_Canvas.Helpers
                 sb.Begin((FrameworkElement)element);
             }
             catch (Exception ex) {
-                LogHelper.WriteLogToFile("Animation ShowWithSlideFromBottomAndFade failed: " + ex.Message, LogHelper.LogType.Trace);
+                LogHelper.WriteLogToFile("动画 ShowWithSlideFromBottomAndFade 执行失败：" + ex.Message, LogHelper.LogType.Trace);
             }
         }
 
@@ -122,7 +122,7 @@ namespace Ink_Canvas.Helpers
                 sb.Begin((FrameworkElement)element);
             }
             catch (Exception ex) {
-                LogHelper.WriteLogToFile("Animation ShowWithSlideFromLeftAndFade failed: " + ex.Message, LogHelper.LogType.Trace);
+                LogHelper.WriteLogToFile("动画 ShowWithSlideFromLeftAndFade 执行失败：" + ex.Message, LogHelper.LogType.Trace);
             }
         }
 
@@ -163,7 +163,7 @@ namespace Ink_Canvas.Helpers
                 sb.Begin((FrameworkElement)element);
             }
             catch (Exception ex) {
-                LogHelper.WriteLogToFile("Animation ShowWithScaleFromLeft failed: " + ex.Message, LogHelper.LogType.Trace);
+                LogHelper.WriteLogToFile("动画 ShowWithScaleFromLeft 执行失败：" + ex.Message, LogHelper.LogType.Trace);
             }
         }
 
@@ -204,7 +204,7 @@ namespace Ink_Canvas.Helpers
                 sb.Begin((FrameworkElement)element);
             }
             catch (Exception ex) {
-                LogHelper.WriteLogToFile("Animation ShowWithScaleFromRight failed: " + ex.Message, LogHelper.LogType.Trace);
+                LogHelper.WriteLogToFile("动画 ShowWithScaleFromRight 执行失败：" + ex.Message, LogHelper.LogType.Trace);
             }
         }
 
@@ -247,7 +247,7 @@ namespace Ink_Canvas.Helpers
                 sb.Begin((FrameworkElement)element);
             }
             catch (Exception ex) {
-                LogHelper.WriteLogToFile("Animation HideWithSlideAndFade failed: " + ex.Message, LogHelper.LogType.Trace);
+                LogHelper.WriteLogToFile("动画 HideWithSlideAndFade 执行失败：" + ex.Message, LogHelper.LogType.Trace);
             }
         }
 

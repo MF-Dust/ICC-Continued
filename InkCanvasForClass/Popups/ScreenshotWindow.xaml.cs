@@ -7,6 +7,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Security.Principal;
 using System.Text;
 using System.Threading;
@@ -40,6 +41,7 @@ namespace Ink_Canvas.Popups
         private MainWindow mainWindow;
         private Settings settings;
 
+        [RequiresUnmanagedCode("Uses DWM interop for transparent screenshot window setup.")]
         public ScreenshotWindow(MainWindow mainWin, Settings s) {
             InitializeComponent();
 

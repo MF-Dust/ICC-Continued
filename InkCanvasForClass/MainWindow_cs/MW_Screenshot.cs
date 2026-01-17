@@ -27,6 +27,7 @@ using System.Drawing.Imaging;
 using Ink_Canvas.Helpers;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -152,6 +153,7 @@ namespace Ink_Canvas {
 
         #endregion Win32 窗口环境（由 AlanCRL 测试）
 
+        [RequiresUnmanagedCode("Uses Win32 Magnification and user32 P/Invoke to capture screenshots.")]
         public void SaveScreenshotToDesktopByMagnificationAPI(HWND[] hwndsList,
             Action<Bitmap> callbackAction, bool isUsingCallback = false) {
             if (OSVersion.GetOperatingSystem() < OperatingSystem.Windows81) return;
@@ -306,6 +308,7 @@ namespace Ink_Canvas {
             return tcs.Task;
         }
 
+        [RequiresUnmanagedCode("Uses user32 DefWindowProc for Magnification host window proc.")]
         private static IntPtr WndHostProc(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam) {
             return DefWindowProc(hWnd, msg, wParam, lParam);
         }
@@ -317,6 +320,7 @@ namespace Ink_Canvas {
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = false)]
         static extern IntPtr SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
 
+        [RequiresUnmanagedCode("Uses user32 GetClassLongPtr for window class data.")]
         public static IntPtr GetClassLongPtr(IntPtr hWnd, int nIndex) {
             if (IntPtr.Size > 4)
                 return GetClassLongPtr64(hWnd, nIndex);
@@ -404,6 +408,7 @@ namespace Ink_Canvas {
             Last
         }
 
+        [RequiresUnmanagedCode("Uses user32 SendMessage/GetClassLongPtr for window icon retrieval.")]
         public Icon GetAppIcon(IntPtr hwnd) {
             IntPtr iconHandle = SendMessage(hwnd, 0x7F, 2, 0);
             if (iconHandle == IntPtr.Zero)
@@ -457,6 +462,7 @@ namespace Ink_Canvas {
 
         public delegate bool EnumDesktopWindowsDelegate(IntPtr hWnd, int lParam);
 
+        [RequiresUnmanagedCode("Uses user32/dwmapi interop to enumerate and inspect windows.")]
         public WindowInformation[] GetAllWindows(HWND[] excludedHwnds) {
             var windows = new List<WindowInformation>();
             IntPtr hShellWnd = GetShellWindow();
@@ -611,6 +617,7 @@ namespace Ink_Canvas {
             return versionInfo.FileDescription;
         }
 
+        [RequiresUnmanagedCode("Uses user32/dwmapi interop during window enumeration.")]
         public async Task<WindowInformation[]> GetAllWindowsAsync(HWND[] excludedHwnds) {
             try
             {
@@ -738,6 +745,7 @@ namespace Ink_Canvas {
             return null;
         }
 
+        [RequiresUnmanagedCode("Uses user32 ShowWindow and Magnification API for screenshots.")]
         public async Task<Bitmap> FullscreenSnapshot(SnapshotConfig config) {
             Bitmap bitmap = new Bitmap(1, 1);
             var excludedHwnds = new List<HWND>() { new HWND(new WindowInteropHelper(this).Handle) };

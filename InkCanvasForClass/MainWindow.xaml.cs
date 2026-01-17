@@ -16,6 +16,7 @@ using System.Windows.Controls;
 using System.Windows.Ink;
 using System.Windows.Media;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using File = System.IO.File;
 using MessageBox = System.Windows.MessageBox;
 using System.Runtime.InteropServices;
@@ -128,11 +129,11 @@ namespace Ink_Canvas {
                 // 初始化外观设置事件监听
                 InitializeAppearanceSettingsHandler();
 
-                LogHelper.WriteLogToFile("ViewModels initialized successfully", LogHelper.LogType.Info);
+                LogHelper.WriteLogToFile("ViewModel 初始化完成", LogHelper.LogType.Info);
             }
             catch (Exception ex)
             {
-                LogHelper.WriteLogToFile("Failed to initialize ViewModels: " + ex.Message, LogHelper.LogType.Error);
+                LogHelper.WriteLogToFile("ViewModel 初始化失败：" + ex.Message, LogHelper.LogType.Error);
                 throw;
             }
         }
@@ -252,11 +253,11 @@ namespace Ink_Canvas {
                         ViewModel.ToggleHideCommand.Execute(null);
                 });
 
-                LogHelper.WriteLogToFile("Default hotkeys registered successfully", LogHelper.LogType.Info);
+                LogHelper.WriteLogToFile("默认热键注册成功", LogHelper.LogType.Info);
             }
             catch (Exception ex)
             {
-                LogHelper.WriteLogToFile("Failed to register default hotkeys: " + ex.Message, LogHelper.LogType.Error);
+                LogHelper.WriteLogToFile("默认热键注册失败：" + ex.Message, LogHelper.LogType.Error);
             }
         }
 
@@ -455,7 +456,7 @@ namespace Ink_Canvas {
             }
             catch (Exception ex)
             {
-                LogHelper.WriteLogToFile("OnClearCanvasRequested failed: " + ex.Message, LogHelper.LogType.Error);
+                LogHelper.WriteLogToFile("处理清空画布请求失败：" + ex.Message, LogHelper.LogType.Error);
             }
         }
 
@@ -472,7 +473,7 @@ namespace Ink_Canvas {
             }
             catch (Exception ex)
             {
-                LogHelper.WriteLogToFile("OnCaptureRequested failed: " + ex.Message, LogHelper.LogType.Error);
+                LogHelper.WriteLogToFile("处理截图请求失败：" + ex.Message, LogHelper.LogType.Error);
             }
         }
 
@@ -488,7 +489,7 @@ namespace Ink_Canvas {
             }
             catch (Exception ex)
             {
-                LogHelper.WriteLogToFile("OnToggleHideRequested failed: " + ex.Message, LogHelper.LogType.Error);
+                LogHelper.WriteLogToFile("处理隐藏/显示请求失败：" + ex.Message, LogHelper.LogType.Error);
             }
         }
 
@@ -505,7 +506,7 @@ namespace Ink_Canvas {
             }
             catch (Exception ex)
             {
-                LogHelper.WriteLogToFile("OnExitAppRequested failed: " + ex.Message, LogHelper.LogType.Error);
+                LogHelper.WriteLogToFile("处理退出应用请求失败：" + ex.Message, LogHelper.LogType.Error);
             }
         }
 
@@ -521,7 +522,7 @@ namespace Ink_Canvas {
             }
             catch (Exception ex)
             {
-                LogHelper.WriteLogToFile("OnChangeToPenRequested failed: " + ex.Message, LogHelper.LogType.Error);
+                LogHelper.WriteLogToFile("处理画笔切换请求失败：" + ex.Message, LogHelper.LogType.Error);
             }
         }
 
@@ -537,7 +538,7 @@ namespace Ink_Canvas {
             }
             catch (Exception ex)
             {
-                LogHelper.WriteLogToFile("OnDrawLineRequested failed: " + ex.Message, LogHelper.LogType.Error);
+                LogHelper.WriteLogToFile("处理绘制直线请求失败：" + ex.Message, LogHelper.LogType.Error);
             }
         }
 
@@ -552,7 +553,7 @@ namespace Ink_Canvas {
             }
             catch (Exception ex)
             {
-                LogHelper.WriteLogToFile("OnPreviousWhiteboardPageRequested failed: " + ex.Message, LogHelper.LogType.Error);
+                LogHelper.WriteLogToFile("处理白板上一页请求失败：" + ex.Message, LogHelper.LogType.Error);
             }
         }
 
@@ -567,7 +568,7 @@ namespace Ink_Canvas {
             }
             catch (Exception ex)
             {
-                LogHelper.WriteLogToFile("OnNextWhiteboardPageRequested failed: " + ex.Message, LogHelper.LogType.Error);
+                LogHelper.WriteLogToFile("处理白板下一页请求失败：" + ex.Message, LogHelper.LogType.Error);
             }
         }
 
@@ -582,7 +583,7 @@ namespace Ink_Canvas {
             }
             catch (Exception ex)
             {
-                LogHelper.WriteLogToFile("OnAddWhiteboardPageRequested failed: " + ex.Message, LogHelper.LogType.Error);
+                LogHelper.WriteLogToFile("处理添加白板页请求失败：" + ex.Message, LogHelper.LogType.Error);
             }
         }
 
@@ -597,7 +598,7 @@ namespace Ink_Canvas {
             }
             catch (Exception ex)
             {
-                LogHelper.WriteLogToFile("OnDeleteWhiteboardPageRequested failed: " + ex.Message, LogHelper.LogType.Error);
+                LogHelper.WriteLogToFile("处理删除白板页请求失败：" + ex.Message, LogHelper.LogType.Error);
             }
         }
 
@@ -612,7 +613,7 @@ namespace Ink_Canvas {
             }
             catch (Exception ex)
             {
-                LogHelper.WriteLogToFile("OnShowWhiteboardPageListRequested failed: " + ex.Message, LogHelper.LogType.Error);
+                LogHelper.WriteLogToFile("处理显示白板页列表请求失败：" + ex.Message, LogHelper.LogType.Error);
             }
         }
 
@@ -627,7 +628,7 @@ namespace Ink_Canvas {
             }
             catch (Exception ex)
             {
-                LogHelper.WriteLogToFile("OnSetBoardBackgroundColorRequested failed: " + ex.Message, LogHelper.LogType.Error);
+                LogHelper.WriteLogToFile("处理设置白板背景颜色请求失败：" + ex.Message, LogHelper.LogType.Error);
             }
         }
 
@@ -645,7 +646,7 @@ namespace Ink_Canvas {
             }
             catch (Exception ex)
             {
-                LogHelper.WriteLogToFile("OnSetBoardBackgroundPatternRequested failed: " + ex.Message, LogHelper.LogType.Error);
+                LogHelper.WriteLogToFile("处理设置白板背景图案请求失败：" + ex.Message, LogHelper.LogType.Error);
             }
         }
 
@@ -668,7 +669,7 @@ namespace Ink_Canvas {
             }
             catch (Exception ex)
             {
-                LogHelper.WriteLogToFile("OnToggleBoardBackgroundPanelRequested failed: " + ex.Message, LogHelper.LogType.Error);
+                LogHelper.WriteLogToFile("处理切换白板背景面板失败：" + ex.Message, LogHelper.LogType.Error);
             }
         }
 
@@ -909,6 +910,7 @@ namespace Ink_Canvas {
 
         #endregion
 
+        [RequiresUnmanagedCode("Uses user32 SetWindowPos for forced fullscreen behavior.")]
         protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
         {
             base.OnPropertyChanged(e);
@@ -980,12 +982,12 @@ namespace Ink_Canvas {
                         try {
                             File.Delete("Log.txt");
                             LogHelper.WriteLogToFile(
-                                "The Log.txt file has been successfully deleted. Original file size: " + fileSizeInKB +
+                                "Log.txt 已删除，原文件大小：" + fileSizeInKB +
                                 " KB", LogHelper.LogType.Info);
                         }
                         catch (Exception ex) {
                             LogHelper.WriteLogToFile(
-                                ex + " | Can not delete the Log.txt file. File size: " + fileSizeInKB + " KB",
+                                ex + " | 无法删除 Log.txt，文件大小：" + fileSizeInKB + " KB",
                                 LogHelper.LogType.Error);
                         }
                 }
@@ -1061,7 +1063,7 @@ namespace Ink_Canvas {
                 //inkCanvas.Gesture += InkCanvas_Gesture;
             }
             catch (Exception ex) {
-                LogHelper.WriteLogToFile("Failed to initialize pen canvas: " + ex.Message, LogHelper.LogType.Error);
+                LogHelper.WriteLogToFile("初始化画笔画布失败：" + ex.Message, LogHelper.LogType.Error);
             }
         }
 
@@ -1117,13 +1119,14 @@ namespace Ink_Canvas {
             try {
                 // 使用新的 Windows.UI.Input.Inking.Analysis API 预热
                 _ = InkRecognizeHelper.PreloadAsync();
-                LogHelper.WriteLogToFile("Ink Analysis API preload initiated", LogHelper.LogType.Info);
+                LogHelper.WriteLogToFile("墨迹分析 API 预热已启动", LogHelper.LogType.Info);
             }
             catch (Exception ex) {
-                LogHelper.WriteLogToFile("PreloadIALibrary failed: " + ex.Message, LogHelper.LogType.Error);
+                LogHelper.WriteLogToFile("预热 IA 库失败：" + ex.Message, LogHelper.LogType.Error);
             }
         }
 
+        [RequiresUnmanagedCode("Uses user32 GetSystemMenu/EnableMenuItem for window system menu adjustments.")]
         private void Window_Loaded(object sender, RoutedEventArgs e) {
             loadPenCanvas();
             //加载设置
@@ -1149,7 +1152,7 @@ namespace Ink_Canvas {
             SystemEvents_UserPreferenceChanged(null, null);
 
             //TextBlockVersion.Text = Assembly.GetExecutingAssembly().GetName().Version.ToString();
-            LogHelper.WriteLogToFile("Ink Canvas Loaded", LogHelper.LogType.Event);
+            LogHelper.WriteLogToFile("Ink Canvas 已加载", LogHelper.LogType.Event);
 
             isLoaded = true;
 
@@ -1172,7 +1175,7 @@ namespace Ink_Canvas {
                     PreloadIALibrary();
                 }
                 catch (Exception ex) {
-                    LogHelper.WriteLogToFile("Failed to preload IA library in background: " + ex.Message, LogHelper.LogType.Error);
+                    LogHelper.WriteLogToFile("后台预热 IA 库失败：" + ex.Message, LogHelper.LogType.Error);
                 }
             });
 
@@ -1404,7 +1407,7 @@ namespace Ink_Canvas {
             }
             catch (Exception ex)
             {
-                 LogHelper.WriteLogToFile("Error in PerformStartupTasks: " + ex.Message, LogHelper.LogType.Error);
+                 LogHelper.WriteLogToFile("执行启动任务失败：" + ex.Message, LogHelper.LogType.Error);
             }
         }
 
@@ -1580,7 +1583,7 @@ namespace Ink_Canvas {
                 isLoaded = true;
             }
             catch (Exception ex) {
-                LogHelper.WriteLogToFile("Error in ApplySpecialVersionSettings: " + ex.Message, LogHelper.LogType.Error);
+                LogHelper.WriteLogToFile("应用特殊版本设置失败：" + ex.Message, LogHelper.LogType.Error);
             }
         }
 
@@ -1631,12 +1634,12 @@ namespace Ink_Canvas {
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
-            LogHelper.WriteLogToFile("Ink Canvas closing", LogHelper.LogType.Event);
+            LogHelper.WriteLogToFile("Ink Canvas 正在关闭", LogHelper.LogType.Event);
             if (!CloseIsFromButton) {
                 e.Cancel = true;
             }
 
-            if (e.Cancel) LogHelper.WriteLogToFile("Ink Canvas closing cancelled", LogHelper.LogType.Event);
+            if (e.Cancel) LogHelper.WriteLogToFile("Ink Canvas 关闭已取消", LogHelper.LogType.Event);
             else {
                 // 使用 Task 包装清理操作，设置超时以避免卡住
                 var cleanupTask = Task.Run(() => {
@@ -1716,7 +1719,7 @@ namespace Ink_Canvas {
                 }
                 catch { /* 忽略错误 */ }
 
-                LogHelper.WriteLogToFile("Ink Canvas closing: Finished cleanup", LogHelper.LogType.Event);
+                LogHelper.WriteLogToFile("Ink Canvas 关闭：清理完成", LogHelper.LogType.Event);
 
                 Application.Current.Shutdown();
             }
@@ -1788,6 +1791,7 @@ namespace Ink_Canvas {
         [DllImport("user32.dll", SetLastError = true)]
         public static extern bool MoveWindow(IntPtr hWnd, int X, int Y, int nWidth, int nHeight, bool bRepaint);
 
+        [RequiresUnmanagedCode("Uses user32 MoveWindow for forced fullscreen behavior.")]
         private void MainWindow_OnSizeChanged(object sender, SizeChangedEventArgs e) {
             if (Settings.Advanced.IsEnableForceFullScreen) {
                 if (isLoaded) ShowNotification(
@@ -1800,7 +1804,7 @@ namespace Ink_Canvas {
         }
 
         private void Window_Closed(object sender, EventArgs e) {
-            LogHelper.WriteLogToFile("Ink Canvas closed", LogHelper.LogType.Event);
+            LogHelper.WriteLogToFile("Ink Canvas 已关闭", LogHelper.LogType.Event);
         }
 
         private void DisplayWelcomePopup() {

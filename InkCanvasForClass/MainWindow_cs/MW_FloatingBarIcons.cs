@@ -1438,7 +1438,7 @@ namespace Ink_Canvas {
                                         InkCanvasForInkReplay.Strokes.Remove(s);
                                     }
                                     catch (Exception ex) {
-                                        LogHelper.WriteLogToFile("Exception in MW_FloatingBarIcons.cs: " + ex.Message, LogHelper.LogType.Error);
+                                        LogHelper.WriteLogToFile("浮动工具栏回放异常：" + ex.Message, LogHelper.LogType.Error);
                                     }
 
                                     stylusPoints.Add(stylusPoint);
@@ -1468,7 +1468,7 @@ namespace Ink_Canvas {
                                         InkCanvasForInkReplay.Strokes.Remove(s);
                                     }
                                     catch (Exception ex) {
-                                        LogHelper.WriteLogToFile("Exception in MW_FloatingBarIcons.cs: " + ex.Message, LogHelper.LogType.Error);
+                                        LogHelper.WriteLogToFile("浮动工具栏回放异常：" + ex.Message, LogHelper.LogType.Error);
                                     }
 
                                     stylusPoints.Add(stylusPoint);
@@ -1883,7 +1883,7 @@ namespace Ink_Canvas {
                     ((UIElement)((Button)sender).Content).Opacity = 0.25;
             }
             catch (Exception ex) {
-                LogHelper.WriteLogToFile("Exception in MW_FloatingBarIcons.cs (Btn_IsEnabledChanged): " + ex.Message, LogHelper.LogType.Error);
+                LogHelper.WriteLogToFile("浮动工具栏按钮状态更新异常：" + ex.Message, LogHelper.LogType.Error);
             }
         }
 

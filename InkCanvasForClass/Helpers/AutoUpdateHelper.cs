@@ -28,26 +28,26 @@ namespace Ink_Canvas.Helpers
                     Version remote = new Version(remoteVersion);
                     if (remote > local)
                     {
-                        LogHelper.WriteLogToFile("AutoUpdate | New version Availble: " + remoteVersion, LogHelper.LogType.Info);
+                        LogHelper.WriteLogToFile("自动更新 | 检测到新版本：" + remoteVersion, LogHelper.LogType.Info);
                         return remoteVersion;
                     }
                     else return null;
                 }
                 else
                 {
-                    LogHelper.WriteLogToFile("Failed to retrieve remote version.", LogHelper.LogType.Error);
+                    LogHelper.WriteLogToFile("获取远程版本失败。", LogHelper.LogType.Error);
                     return null;
                 }
             }
             catch (FormatException ex)
             {
-                LogHelper.WriteLogToFile($"AutoUpdate | Invalid version format: {ex.Message}", LogHelper.LogType.Error);
+                LogHelper.WriteLogToFile($"自动更新 | 版本格式无效：{ex.Message}", LogHelper.LogType.Error);
                 LogHelper.NewLog(ex);
                 return null;
             }
             catch (Exception ex)
             {
-                LogHelper.WriteLogToFile($"AutoUpdate | Unexpected error checking for updates: {ex.Message}", LogHelper.LogType.Error);
+                LogHelper.WriteLogToFile($"自动更新 | 检查更新时发生异常：{ex.Message}", LogHelper.LogType.Error);
                 LogHelper.NewLog(ex);
                 return null;
             }
@@ -60,7 +60,7 @@ namespace Ink_Canvas.Helpers
                 // Ensure TLS 1.2/1.3 are supported
                 System.Net.ServicePointManager.SecurityProtocol |= System.Net.SecurityProtocolType.Tls12 | System.Net.SecurityProtocolType.Tls13;
             } catch (Exception ex) {
-                LogHelper.WriteLogToFile($"Failed to set security protocols: {ex.Message}", LogHelper.LogType.Warning);
+                LogHelper.WriteLogToFile($"设置安全协议失败：{ex.Message}", LogHelper.LogType.Warning);
             }
 
             using (HttpClient client = new HttpClient())
@@ -74,11 +74,11 @@ namespace Ink_Canvas.Helpers
                 }
                 catch (HttpRequestException ex)
                 {
-                    LogHelper.WriteLogToFile($"AutoUpdate | HTTP request error (SSL/TLS?): {ex.Message} | Inner: {ex.InnerException?.Message}", LogHelper.LogType.Error);
+                    LogHelper.WriteLogToFile($"自动更新 | HTTP 请求错误（SSL/TLS？）：{ex.Message} | 内部异常：{ex.InnerException?.Message}", LogHelper.LogType.Error);
                 }
                 catch (Exception ex)
                 {
-                    LogHelper.WriteLogToFile($"AutoUpdate | Error: {ex.Message}", LogHelper.LogType.Error);
+                    LogHelper.WriteLogToFile($"自动更新 | 请求失败：{ex.Message}", LogHelper.LogType.Error);
                 }
 
                 return null;
@@ -96,7 +96,7 @@ namespace Ink_Canvas.Helpers
 
                 if (File.Exists(statusFilePath) && File.ReadAllText(statusFilePath).Trim().ToLower() == "true")
                 {
-                    LogHelper.WriteLogToFile("AutoUpdate | Setup file already downloaded.");
+                    LogHelper.WriteLogToFile("自动更新 | 安装包已下载，跳过重复下载。");
                     return true;
                 }
 
@@ -106,12 +106,12 @@ namespace Ink_Canvas.Helpers
                 await DownloadFile(downloadUrl, $"{updatesFolderPath}\\Ink.Canvas.Annotation.V{version}.Setup.exe");
                 SaveDownloadStatus(true);
 
-                LogHelper.WriteLogToFile("AutoUpdate | Setup file successfully downloaded.");
+                LogHelper.WriteLogToFile("自动更新 | 安装包下载完成。");
                 return true;
             }
             catch (Exception ex)
             {
-                LogHelper.WriteLogToFile($"AutoUpdate | Error downloading and installing update: {ex.Message}", LogHelper.LogType.Error);
+                LogHelper.WriteLogToFile($"自动更新 | 下载或安装更新失败：{ex.Message}", LogHelper.LogType.Error);
 
                 SaveDownloadStatus(false);
                 return false;
@@ -137,19 +137,19 @@ namespace Ink_Canvas.Helpers
                     }
                     catch (HttpRequestException ex)
                     {
-                        LogHelper.WriteLogToFile($"AutoUpdate | HTTP request error: {ex.Message}", LogHelper.LogType.Error);
+                        LogHelper.WriteLogToFile($"自动更新 | HTTP 请求错误：{ex.Message}", LogHelper.LogType.Error);
                         LogHelper.NewLog(ex);
                         throw;
                     }
                     catch (IOException ex)
                     {
-                        LogHelper.WriteLogToFile($"AutoUpdate | File I/O error: {ex.Message}", LogHelper.LogType.Error);
+                        LogHelper.WriteLogToFile($"自动更新 | 文件读写错误：{ex.Message}", LogHelper.LogType.Error);
                         LogHelper.NewLog(ex);
                         throw;
                     }
                     catch (Exception ex)
                     {
-                        LogHelper.WriteLogToFile($"AutoUpdate | Unexpected error downloading file: {ex.Message}", LogHelper.LogType.Error);
+                        LogHelper.WriteLogToFile($"自动更新 | 下载文件时发生异常：{ex.Message}", LogHelper.LogType.Error);
                         LogHelper.NewLog(ex);
                         throw;
                     }
@@ -157,7 +157,7 @@ namespace Ink_Canvas.Helpers
             }
             catch (ObjectDisposedException ex)
             {
-                LogHelper.WriteLogToFile($"AutoUpdate | HttpClient disposed prematurely: {ex.Message}", LogHelper.LogType.Error);
+                LogHelper.WriteLogToFile($"自动更新 | HttpClient 被提前释放：{ex.Message}", LogHelper.LogType.Error);
                 LogHelper.NewLog(ex);
                 throw;
             }
@@ -179,7 +179,7 @@ namespace Ink_Canvas.Helpers
             }
             catch (Exception ex)
             {
-                LogHelper.WriteLogToFile($"AutoUpdate | Error saving download status: {ex.Message}", LogHelper.LogType.Error);
+                LogHelper.WriteLogToFile($"自动更新 | 保存下载状态失败：{ex.Message}", LogHelper.LogType.Error);
             }
         }
 

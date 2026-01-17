@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Input;
@@ -25,6 +26,7 @@ namespace Ink_Canvas
         /// <param name="fsModifiers">组合键</param>
         /// <param name="key">快捷键</param>
         /// <param name="callBack">回调函数</param>
+        [RequiresUnmanagedCode("Uses user32 RegisterHotKey for global hotkeys.")]
         public static bool Regist(Window window, HotkeyModifiers fsModifiers, Key key, HotKeyCallBackHanlder callBack)
         {
             var hwnd = new WindowInteropHelper(window).Handle;
@@ -68,6 +70,7 @@ namespace Ink_Canvas
         /// </summary> 
         /// <param name="hWnd">持有快捷键窗口的句柄</param> 
         /// <param name="callBack">回调函数</param> 
+        [RequiresUnmanagedCode("Uses user32 UnregisterHotKey for global hotkeys.")]
         public static void UnRegist(IntPtr hWnd, HotKeyCallBackHanlder callBack)
         {
             foreach (KeyValuePair<int, HotKeyCallBackHanlder> var in keymap)

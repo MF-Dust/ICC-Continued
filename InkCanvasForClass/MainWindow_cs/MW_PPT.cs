@@ -26,6 +26,7 @@ using Ink_Canvas.Dialogs;
 using Microsoft.Office.Interop.PowerPoint;
 using System;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -84,6 +85,7 @@ namespace Ink_Canvas {
         [DllImport("oleaut32.dll", PreserveSig = false)]
         private static extern void GetActiveObject(ref Guid rclsid, IntPtr pvReserved, [MarshalAs(UnmanagedType.IUnknown)] out object ppunk);
 
+        [RequiresUnmanagedCode("Uses ole32/oleaut32 COM interop to fetch running PowerPoint instance.")]
         public static object GetActiveObject(string progId) {
             Guid clsid;
             CLSIDFromProgIDEx(progId, out clsid);
@@ -487,17 +489,17 @@ namespace Ink_Canvas {
                     return operation();
                 }
                 catch (COMException ex) when (ex.ErrorCode == RPC_E_CALL_REJECTED) {
-                    LogHelper.WriteLogToFile($"COM operation '{operationName}' rejected (attempt {attempt}/{COM_RETRY_COUNT}), retrying...", LogHelper.LogType.Warning);
+                    LogHelper.WriteLogToFile($"COM 操作 '{operationName}' 被拒绝（第 {attempt}/{COM_RETRY_COUNT} 次），正在重试...", LogHelper.LogType.Warning);
                     if (attempt < COM_RETRY_COUNT) {
                         Thread.Sleep(COM_RETRY_DELAY_MS * attempt); // 递增延迟
                     }
                     else {
-                        LogHelper.WriteLogToFile($"COM operation '{operationName}' failed after {COM_RETRY_COUNT} attempts: {ex.Message}", LogHelper.LogType.Error);
+                        LogHelper.WriteLogToFile($"COM 操作 '{operationName}' 在重试 {COM_RETRY_COUNT} 次后失败：{ex.Message}", LogHelper.LogType.Error);
                         return defaultValue;
                     }
                 }
                 catch (Exception ex) {
-                    LogHelper.WriteLogToFile($"COM operation '{operationName}' failed: {ex.Message}", LogHelper.LogType.Error);
+                    LogHelper.WriteLogToFile($"COM 操作 '{operationName}' 失败：{ex.Message}", LogHelper.LogType.Error);
                     return defaultValue;
                 }
             }
@@ -538,7 +540,7 @@ namespace Ink_Canvas {
 
             isStopInkReplay = true;
 
-            LogHelper.WriteLogToFile("PowerPoint Application Slide Show Begin", LogHelper.LogType.Event);
+            LogHelper.WriteLogToFile("PowerPoint 放映开始", LogHelper.LogType.Event);
 
             // 等待COM对象准备就绪
             await Task.Delay(50);
@@ -548,7 +550,7 @@ namespace Ink_Canvas {
                     // 使用重试机制获取Presentation对象
                     var presentationObj = ExecuteComOperationWithRetry(() => Wn.Presentation, "GetPresentation");
                     if (presentationObj == null) {
-                        LogHelper.WriteLogToFile("Failed to get Presentation object, aborting SlideShowBegin", LogHelper.LogType.Error);
+                        LogHelper.WriteLogToFile("获取 Presentation 对象失败，终止放映开始处理", LogHelper.LogType.Error);
                         return;
                     }
 
@@ -568,16 +570,16 @@ namespace Ink_Canvas {
                     previousSlideID = 0;
                     memoryStreams = new MemoryStream[slidescount + 2];
 
-                    pptName = ExecuteComOperationWithRetry(() => presentationObj.Name, "GetPresentationName", "Unknown");
-                    LogHelper.NewLog("Name: " + pptName);
-                    LogHelper.NewLog("Slides Count: " + slidescount.ToString());
+                    pptName = ExecuteComOperationWithRetry(() => presentationObj.Name, "GetPresentationName", "未知");
+                    LogHelper.NewLog("课件名称：" + pptName);
+                    LogHelper.NewLog("幻灯片数量：" + slidescount.ToString());
 
                 //检查是否有已有墨迹，并加载
                 if (Settings.PowerPointSettings.IsAutoSaveStrokesInPowerPoint)
                     if (Directory.Exists(Settings.Automation.AutoSavedStrokesLocation +
                                          @"\Auto Saved - Presentations\" + pptName + "_" +
                                          slidescount)) {
-                        LogHelper.WriteLogToFile("Found saved strokes", LogHelper.LogType.Trace);
+                        LogHelper.WriteLogToFile("检测到已保存的墨迹", LogHelper.LogType.Trace);
                         var files = new DirectoryInfo(Settings.Automation.AutoSavedStrokesLocation +
                                                       @"\Auto Saved - Presentations\" + pptName + "_" +
                                                       slidescount).GetFiles();
@@ -593,12 +595,12 @@ namespace Ink_Canvas {
                                 }
                                 catch (Exception ex) {
                                     LogHelper.WriteLogToFile(
-                                        $"Failed to load strokes on Slide {i}\n{ex.ToString()}",
+                                        $"加载第 {i} 张幻灯片墨迹失败\n{ex}",
                                         LogHelper.LogType.Error);
                                 }
                             }
 
-                        LogHelper.WriteLogToFile($"Loaded {count.ToString()} saved strokes");
+                        LogHelper.WriteLogToFile($"已加载保存的墨迹：{count.ToString()} 份");
                     }
 
                 BorderFloatingBarExitPPTBtn.Visibility = Visibility.Visible;
@@ -662,7 +664,7 @@ namespace Ink_Canvas {
                 var currentPos = ExecuteComOperationWithRetry(() => Wn.View.CurrentShowPosition, "GetCurrentShowPosition", 1);
                 PPTBtnPageNow.Text = $"{currentPos}";
                 PPTBtnPageTotal.Text = $"/ {slidescount}";
-                LogHelper.NewLog("PowerPoint Slide Show Loading process complete");
+                LogHelper.NewLog("PowerPoint 放映加载流程完成");
 
                 if (!isFloatingBarFolded) {
                     // 优化：使用Task.Delay代替Thread.Sleep
@@ -675,10 +677,10 @@ namespace Ink_Canvas {
                 }
                 }
                 catch (COMException ex) {
-                    LogHelper.WriteLogToFile($"COM Exception in SlideShowBegin: {ex.Message} (ErrorCode: 0x{ex.ErrorCode:X8})", LogHelper.LogType.Error);
+                    LogHelper.WriteLogToFile($"SlideShowBegin 中的 COM 异常：{ex.Message}（错误码：0x{ex.ErrorCode:X8}）", LogHelper.LogType.Error);
                 }
                 catch (Exception ex) {
-                    LogHelper.WriteLogToFile($"Exception in SlideShowBegin: {ex.Message}", LogHelper.LogType.Error);
+                    LogHelper.WriteLogToFile($"SlideShowBegin 异常：{ex.Message}", LogHelper.LogType.Error);
                 }
             });
         }
@@ -688,9 +690,9 @@ namespace Ink_Canvas {
         private async void PptApplication_SlideShowEnd(Presentation Pres) {
             if (isFloatingBarFolded) await UnFoldFloatingBar(new object());
 
-            LogHelper.WriteLogToFile(string.Format("PowerPoint Slide Show End"), LogHelper.LogType.Event);
+            LogHelper.WriteLogToFile(string.Format("PowerPoint 放映结束"), LogHelper.LogType.Event);
             if (isEnteredSlideShowEndEvent) {
-                LogHelper.WriteLogToFile("Detected previous entrance, returning");
+                LogHelper.WriteLogToFile("检测到已进入放映结束流程，直接返回");
                 return;
             }
 
@@ -717,7 +719,7 @@ namespace Ink_Canvas {
                         streamsToSave = memoryStreams;
                     }
                     catch (Exception ex) {
-                        LogHelper.WriteLogToFile("Error saving strokes to memory stream: " + ex.Message, LogHelper.LogType.Error);
+                        LogHelper.WriteLogToFile("保存墨迹到内存流失败：" + ex.Message, LogHelper.LogType.Error);
                     }
                 });
 
@@ -729,7 +731,7 @@ namespace Ink_Canvas {
                         if (!string.IsNullOrEmpty(drive) && !Directory.Exists(drive)) {
                             string fallbackRoot = Path.Combine(App.RootPath, "FallbackPresentations");
                             actualFolderPath = Path.Combine(fallbackRoot, folderName);
-                            LogHelper.WriteLogToFile($"Drive {drive} not found. Falling back to {actualFolderPath}", LogHelper.LogType.Warning);
+                            LogHelper.WriteLogToFile($"未找到驱动器 {drive}，已回退到 {actualFolderPath}", LogHelper.LogType.Warning);
                         }
 
                         if (!Directory.Exists(actualFolderPath)) Directory.CreateDirectory(actualFolderPath);
@@ -745,7 +747,7 @@ namespace Ink_Canvas {
                                             var byteLength = streamsToSave[i].Read(srcBuf, 0, srcBuf.Length);
                                             File.WriteAllBytes(actualFolderPath + @"\" + i.ToString("0000") + ".icstk", srcBuf);
                                             LogHelper.WriteLogToFile(string.Format(
-                                                "Saved strokes for Slide {0}, size={1}, byteLength={2}", i.ToString(),
+                                                "已保存第 {0} 张幻灯片墨迹，大小={1}, 读取字节={2}", i.ToString(),
                                                 streamsToSave[i].Length, byteLength));
                                         } else {
                                             var filePath = actualFolderPath + @"\" + i.ToString("0000") + ".icstk";
@@ -754,7 +756,7 @@ namespace Ink_Canvas {
                                     }
                                     catch (Exception ex) {
                                         LogHelper.WriteLogToFile(
-                                            $"Failed to save strokes for Slide {i}\n{ex.ToString()}",
+                                            $"保存第 {i} 张幻灯片墨迹失败\n{ex}",
                                             LogHelper.LogType.Error);
                                     }
                                 }
@@ -762,7 +764,7 @@ namespace Ink_Canvas {
                         }
                     }
                     catch (Exception ex) {
-                        LogHelper.WriteLogToFile("Error during stroke saving process: " + ex.Message, LogHelper.LogType.Error);
+                        LogHelper.WriteLogToFile("保存墨迹文件过程中发生错误：" + ex.Message, LogHelper.LogType.Error);
                     }
                 });
             }
@@ -1015,7 +1017,7 @@ namespace Ink_Canvas {
                 pptApplication.SlideShowWindows[1].SlideNavigation.Visible = true;
             }
             catch (Exception ex) {
-                LogHelper.WriteLogToFile("Error showing slide navigation: " + ex.Message, LogHelper.LogType.Error);
+                LogHelper.WriteLogToFile("显示幻灯片导航失败：" + ex.Message, LogHelper.LogType.Error);
             }
 
             // 控制居中

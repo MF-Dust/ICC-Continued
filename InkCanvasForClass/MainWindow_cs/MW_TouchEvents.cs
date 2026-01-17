@@ -190,7 +190,7 @@ namespace Ink_Canvas {
                     }
                 }
                 catch (Exception ex) {
-                    LogHelper.WriteLogToFile("Error in MainWindow_StylusDown (Init Stroke): " + ex.Message,
+                    LogHelper.WriteLogToFile("MainWindow_StylusDown 初始化笔迹失败：" + ex.Message,
                         LogHelper.LogType.Error);
                 }
             }
@@ -223,7 +223,7 @@ namespace Ink_Canvas {
                     }
                 }
                 catch (Exception ex) {
-                    LogHelper.WriteLogToFile("Error in MainWindow_StylusUp (Cleanup): " + ex.Message, LogHelper.LogType.Error);
+                    LogHelper.WriteLogToFile("MainWindow_StylusUp 清理失败：" + ex.Message, LogHelper.LogType.Error);
                 }
 
                 ViewboxFloatingBar.IsHitTestVisible = true;
@@ -246,7 +246,7 @@ namespace Ink_Canvas {
                             e.StylusDevice.StylusButtons[1].StylusButtonState == StylusButtonState.Down) return;
                     }
                     catch (Exception ex) {
-                        LogHelper.WriteLogToFile("Error in MainWindow_StylusMove (Button Check): " + ex.Message, LogHelper.LogType.Error);
+                        LogHelper.WriteLogToFile("MainWindow_StylusMove 按钮状态检查失败：" + ex.Message, LogHelper.LogType.Error);
                     }
 
                     var strokeVisual = GetStrokeVisual(e.StylusDevice.Id);
@@ -264,7 +264,7 @@ namespace Ink_Canvas {
                     }
                 }
                 catch (Exception ex) {
-                    LogHelper.WriteLogToFile("Error in MainWindow_StylusMove: " + ex.Message, LogHelper.LogType.Error);
+                    LogHelper.WriteLogToFile("MainWindow_StylusMove 处理失败：" + ex.Message, LogHelper.LogType.Error);
                 }
             }
         }
@@ -519,7 +519,7 @@ namespace Ink_Canvas {
                 inkCanvas.EditingMode = InkCanvasEditingMode.Ink;
             }
 
-            LogHelper.WriteLogToFile("Palm eraser ended", LogHelper.LogType.Trace);
+            LogHelper.WriteLogToFile("掌擦结束", LogHelper.LogType.Trace);
         }
 
         /// <summary>
@@ -760,7 +760,7 @@ namespace Ink_Canvas {
                             stroke.DrawingAttributes.Height *= scaleY;
                         }
                         catch (Exception ex) {
-                            LogHelper.WriteLogToFile("Error in Main_Grid_ManipulationDelta (Stroke Attributes): " + ex.Message, LogHelper.LogType.Error);
+                            LogHelper.WriteLogToFile("Main_Grid_ManipulationDelta 修改笔迹属性失败：" + ex.Message, LogHelper.LogType.Error);
                         }
                     }
                 } else {
@@ -772,7 +772,7 @@ namespace Ink_Canvas {
                                 stroke.DrawingAttributes.Height *= scaleY;
                             }
                             catch (Exception ex) {
-                                LogHelper.WriteLogToFile("Error in Main_Grid_ManipulationDelta (Batch Stroke Attributes): " + ex.Message, LogHelper.LogType.Error);
+                                LogHelper.WriteLogToFile("Main_Grid_ManipulationDelta 批量修改笔迹属性失败：" + ex.Message, LogHelper.LogType.Error);
                             }
                         }
                     }

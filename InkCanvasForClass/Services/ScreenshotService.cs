@@ -3,6 +3,7 @@ using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows;
@@ -212,6 +213,7 @@ namespace Ink_Canvas.Services
         /// <summary>
         /// 窗口截图实现
         /// </summary>
+        [RequiresUnmanagedCode("Uses user32 GetWindowRect to capture window bounds.")]
         private async Task<Bitmap> CaptureWindowAsync(IntPtr windowHandle, IScreenshotService.SnapshotConfig config)
         {
             try

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -62,6 +63,7 @@ namespace Ink_Canvas
             if (mainWin.IsLoaded) mainWin.BtnRestart_Click(null,null);
         }
 
+        [RequiresUnmanagedCode("Uses user32 MoveWindow for forced fullscreen behavior.")]
         private void ForceFullScreenTrayIconMenuItem_Clicked(object sender, RoutedEventArgs e) {
             var mainWin = (MainWindow)Application.Current.MainWindow;
             if (mainWin.IsLoaded) {
