@@ -92,4 +92,28 @@ namespace Ink_Canvas.Converter
             throw new NotImplementedException();
         }
     }
+
+    public class FileSizeConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is double size)
+            {
+                string[] sizes = { "B", "KB", "MB", "GB", "TB" };
+                int order = 0;
+                while (size >= 1024 && order < sizes.Length - 1)
+                {
+                    order++;
+                    size = size / 1024;
+                }
+                return string.Format("{0:0.##} {1}", size, sizes[order]);
+            }
+            return "0 B";
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

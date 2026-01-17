@@ -4,8 +4,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
+             xmlns:converters="clr-namespace:Ink_Canvas.Converter"
+             xmlns:wc="clr-namespace:System.Windows.Controls;assembly=PresentationFramework"
              mc:Ignorable="d"
-             d:DesignHeight="800" d:DesignWidth="600"
+             d:DesignHeight="1200" d:DesignWidth="600"
              Background="Transparent"
              Foreground="#FAFAFA"
              ui:ThemeManager.RequestedTheme="Dark">
@@ -15,64 +17,298 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="SettingsPageStyles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+            <converters:FileSizeConverter x:Key="FileSizeConverter"/>
+            <wc:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <StackPanel>
-        <TextBlock Text="存储" Style="{StaticResource PageTitleStyle}"/>
+    <ScrollViewer VerticalScrollBarVisibility="Auto" PanningMode="VerticalOnly">
+        <StackPanel Margin="0,0,12,24">
+            <TextBlock Text="存储位置" Style="{StaticResource PageTitleStyle}"/>
 
-        <!-- 存储位置设置 -->
-        <TextBlock Text="存储位置" Style="{StaticResource SettingsGroupTitleStyle}"/>
+            <TextBlock Text="# 设置的存储位置用于存放手动保存的墨迹、自动保存的墨迹、手动保存的板书、缓存文件、部分功能的配置文件和屏幕截图。注意icc的设置档存放在icc的安装目录下，无法迁移到设置的存储目录。"
+                       Style="{StaticResource SettingsDescriptionStyle}" Margin="0,0,0,16"/>
 
-        <!-- 存储位置选择 -->
-        <Border Style="{StaticResource SettingsCardStyle}">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="200"/>
-                </Grid.ColumnDefinitions>
-                <ui:FontIcon Glyph="&#xE74E;" Style="{StaticResource SettingsIconStyle}"/>
-                <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                    <TextBlock Text="数据存储位置" Style="{StaticResource SettingsTitleStyle}"/>
-                    <TextBlock Text="选择应用程序数据的存储位置" Style="{StaticResource SettingsDescriptionStyle}"/>
+            <!-- Storage Location Selection -->
+            <Border Style="{StaticResource SettingsCardStyle}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <ui:FontIcon Glyph="&#xE8B7;" Foreground="#FBBF24" FontSize="24" Margin="0,0,16,0" VerticalAlignment="Center"/>
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                        <TextBlock Text="数据存储目录" Style="{StaticResource SettingsTitleStyle}"/>
+                        <TextBlock Text="{Binding Storage.CurrentStoragePath}" Style="{StaticResource SettingsDescriptionStyle}" TextTrimming="CharacterEllipsis"/>
+                    </StackPanel>
+                    <ComboBox Grid.Column="2" VerticalAlignment="Center" Width="300"
+                              ItemsSource="{Binding Storage.StorageLocationOptions}"
+                              SelectedValue="{Binding Storage.StorageLocation, Mode=TwoWay}"
+                              SelectedValuePath="Tag">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <ui:FontIcon Glyph="{Binding Icon}" Margin="0,0,8,0" FontSize="16" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding Name}" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding Path}" Margin="8,0,0,0" Foreground="{StaticResource SecondaryTextBrush}"
+                                               TextTrimming="CharacterEllipsis" MaxWidth="150" VerticalAlignment="Center"
+                                               ToolTip="{Binding Path}"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </Grid>
+            </Border>
+
+            <!-- Custom Path Input -->
+            <Border>
+                <Border.Style>
+                    <Style TargetType="Border" BasedOn="{StaticResource SettingsCardStyle}">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Storage.StorageLocation}" Value="custom">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <ui:FontIcon Glyph="&#xE8B7;" Style="{StaticResource SettingsIconStyle}"/>
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                        <TextBlock Text="自定义路径" Style="{StaticResource SettingsTitleStyle}"/>
+                        <TextBox Text="{Binding Storage.UserStorageLocation, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,0"/>
+                    </StackPanel>
+                    <Button Grid.Column="2" Content="浏览" Margin="16,0,0,0" VerticalAlignment="Bottom"
+                            Command="{Binding Storage.BrowseFolderCommand}"/>
+                </Grid>
+            </Border>
+
+            <!-- Storage Analysis -->
+            <TextBlock Text="存储分析" Style="{StaticResource SettingsGroupTitleStyle}"/>
+
+            <Border Style="{StaticResource SettingsCardStyle}">
+                <StackPanel>
+                    <!-- Disk Usage Bar -->
+                    <Grid Height="24" Margin="0,0,0,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="3*"/> <!-- Other Used -->
+                            <ColumnDefinition Width="1*"/> <!-- ICC Data -->
+                            <ColumnDefinition Width="6*"/> <!-- Free -->
+                        </Grid.ColumnDefinitions>
+                        <Rectangle Grid.Column="0" Fill="#0099FF"/>
+                        <Rectangle Grid.Column="1" Fill="#FF3333"/>
+                        <Rectangle Grid.Column="2" Fill="#333333"/>
+                    </Grid>
+
+                    <!-- Legend -->
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                        <Rectangle Width="12" Height="12" Fill="#0099FF" Margin="0,0,4,0"/>
+                        <TextBlock Text="硬盘其他占用" Margin="0,0,16,0"/>
+                        <Rectangle Width="12" Height="12" Fill="#FF3333" Margin="0,0,4,0"/>
+                        <TextBlock Text="ICC数据占用" Margin="0,0,16,0"/>
+                        <Rectangle Width="12" Height="12" Fill="#333333" Margin="0,0,4,0"/>
+                        <TextBlock Text="空闲空间"/>
+                    </StackPanel>
+
+                    <TextBlock Text="{Binding Storage.CurrentStoragePath, StringFormat='当前位置：{0}'}" Foreground="{StaticResource SecondaryTextBrush}" Margin="0,0,0,4"/>
+                    <TextBlock Text="{Binding Storage.UsedSpace, Converter={StaticResource FileSizeConverter}, StringFormat='磁盘使用情况：已用 {0}'}" Foreground="{StaticResource SecondaryTextBrush}" Margin="0,0,0,4"/>
+                    <TextBlock Text="{Binding Storage.ICCDataSpace, Converter={StaticResource FileSizeConverter}, StringFormat='目录占用情况：已用 {0}，共 5 个文件'}" Foreground="{StaticResource SecondaryTextBrush}" Margin="0,0,0,16"/>
+
+                    <!-- ICC Data Breakdown Bar -->
+                    <Grid Height="16" Margin="0,0,0,16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="1*"/>
+                        </Grid.ColumnDefinitions>
+                        <Rectangle Grid.Column="0" Fill="#F97316"/> <!-- Auto Saved Ink -->
+                        <Rectangle Grid.Column="1" Fill="#EAB308"/> <!-- Board Image Ref -->
+                        <Rectangle Grid.Column="2" Fill="#22C55E"/> <!-- Exported Board -->
+                        <Rectangle Grid.Column="3" Fill="#0EA5E9"/> <!-- Cache -->
+                        <Rectangle Grid.Column="4" Fill="#A855F7"/> <!-- Auto Saved Screenshot -->
+                    </Grid>
+
+                    <!-- Legend 2 -->
+                    <WrapPanel Margin="0,0,0,16">
+                        <StackPanel Orientation="Horizontal" Margin="0,0,16,4">
+                            <Rectangle Width="12" Height="12" Fill="#F97316" Margin="0,0,4,0"/>
+                            <TextBlock Text="自动保存的墨迹"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,16,4">
+                            <Rectangle Width="12" Height="12" Fill="#EAB308" Margin="0,0,4,0"/>
+                            <TextBlock Text="板书的图片引用"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,16,4">
+                            <Rectangle Width="12" Height="12" Fill="#22C55E" Margin="0,0,4,0"/>
+                            <TextBlock Text="导出的板书文件"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,16,4">
+                            <Rectangle Width="12" Height="12" Fill="#0EA5E9" Margin="0,0,4,0"/>
+                            <TextBlock Text="缓存文件"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,16,4">
+                            <Rectangle Width="12" Height="12" Fill="#A855F7" Margin="0,0,4,0"/>
+                            <TextBlock Text="自动保存的截图文件"/>
+                        </StackPanel>
+                    </WrapPanel>
+
+                    <!-- Data Type List -->
+                    <ui:SimpleStackPanel Spacing="12">
+                        <!-- Auto Saved Ink -->
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <ui:FontIcon Glyph="&#xE7C3;" FontSize="24" Margin="0,0,16,0"/>
+                            <StackPanel Grid.Column="1">
+                                <TextBlock Text="自动保存的墨迹" FontWeight="Bold" FontSize="16"/>
+                                <TextBlock Text="0% 、 0 B" Foreground="{StaticResource SecondaryTextBrush}"/>
+                            </StackPanel>
+                            <Button Grid.Column="2" Content="&#xE8B7;" FontFamily="Segoe MDL2 Assets" Background="Transparent" BorderThickness="0" FontSize="20"/>
+                        </Grid>
+
+                        <!-- Board Image Ref -->
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <ui:FontIcon Glyph="&#xEB9F;" FontSize="24" Margin="0,0,16,0"/>
+                            <StackPanel Grid.Column="1">
+                                <TextBlock Text="板书的图片引用" FontWeight="Bold" FontSize="16"/>
+                                <TextBlock Text="0% 、 0 B" Foreground="{StaticResource SecondaryTextBrush}"/>
+                            </StackPanel>
+                            <Button Grid.Column="2" Content="&#xE8B7;" FontFamily="Segoe MDL2 Assets" Background="Transparent" BorderThickness="0" FontSize="20"/>
+                        </Grid>
+
+                        <!-- Exported Board -->
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <ui:FontIcon Glyph="&#xE7C3;" FontSize="24" Margin="0,0,16,0"/>
+                            <StackPanel Grid.Column="1">
+                                <TextBlock Text="导出的板书文件" FontWeight="Bold" FontSize="16"/>
+                                <TextBlock Text="0% 、 0 B" Foreground="{StaticResource SecondaryTextBrush}"/>
+                            </StackPanel>
+                            <Button Grid.Column="2" Content="&#xE8B7;" FontFamily="Segoe MDL2 Assets" Background="Transparent" BorderThickness="0" FontSize="20"/>
+                        </Grid>
+
+                        <!-- Cache -->
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <ui:FontIcon Glyph="&#xE8B7;" FontSize="24" Margin="0,0,16,0"/>
+                            <StackPanel Grid.Column="1">
+                                <TextBlock Text="缓存文件" FontWeight="Bold" FontSize="16"/>
+                                <TextBlock Text="0% 、 0 B" Foreground="{StaticResource SecondaryTextBrush}"/>
+                            </StackPanel>
+                            <Button Grid.Column="2" Content="&#xE8B7;" FontFamily="Segoe MDL2 Assets" Background="Transparent" BorderThickness="0" FontSize="20"/>
+                        </Grid>
+
+                        <!-- Auto Saved Screenshot -->
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <ui:FontIcon Glyph="&#xEB9F;" FontSize="24" Margin="0,0,16,0"/>
+                            <StackPanel Grid.Column="1">
+                                <TextBlock Text="自动保存的截图文件" FontWeight="Bold" FontSize="16"/>
+                                <TextBlock Text="0% 、 0 B" Foreground="{StaticResource SecondaryTextBrush}"/>
+                            </StackPanel>
+                            <Button Grid.Column="2" Content="&#xE8B7;" FontFamily="Segoe MDL2 Assets" Background="Transparent" BorderThickness="0" FontSize="20"/>
+                        </Grid>
+                    </ui:SimpleStackPanel>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,16,0,0">
+                        <Button Content="清理缓存文件" Command="{Binding Storage.ClearCacheCommand}" Margin="0,0,16,0"/>
+                        <Button Content="清理自动保存的截图" Command="{Binding Storage.ClearAutoSavedScreenshotsCommand}"/>
+                    </StackPanel>
+
                 </StackPanel>
-                <ComboBox Grid.Column="2" VerticalAlignment="Center"
-                          SelectedValue="{Binding Storage.StorageLocation, Mode=TwoWay}"
-                          SelectedValuePath="Tag">
-                    <ComboBoxItem Content="自动选择 (默认)" Tag="a-"/>
-                    <ComboBoxItem Content="自定义位置" Tag="custom"/>
-                </ComboBox>
-            </Grid>
-        </Border>
+            </Border>
 
-        <!-- 自定义路径输入 -->
-        <Border>
-            <Border.Style>
-                <Style TargetType="Border" BasedOn="{StaticResource SettingsCardStyle}">
-                    <Setter Property="Visibility" Value="Collapsed"/>
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding Storage.StorageLocation}" Value="custom">
-                            <Setter Property="Visibility" Value="Visible"/>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </Border.Style>
-             <!-- Note: Visibility controlled by DataTrigger above. -->
-             <Grid>
-                 <Grid.ColumnDefinitions>
-                     <ColumnDefinition Width="Auto"/>
-                     <ColumnDefinition Width="*"/>
-                 </Grid.ColumnDefinitions>
-                 <ui:FontIcon Glyph="&#xE8B7;" Style="{StaticResource SettingsIconStyle}"/>
-                 <ui:SimpleStackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="5">
-                     <TextBlock Text="自定义路径" Style="{StaticResource SettingsTitleStyle}"/>
-                     <TextBox Text="{Binding Storage.UserStorageLocation, UpdateSourceTrigger=PropertyChanged}"/>
-                     <TextBlock Text="请输入有效的文件夹路径作为存储位置"
-                                FontSize="12" Foreground="Gray"/>
-                 </ui:SimpleStackPanel>
-             </Grid>
-        </Border>
+            <!-- Auto Cleanup -->
+            <TextBlock Text="自动清理" Style="{StaticResource SettingsGroupTitleStyle}"/>
 
-    </StackPanel>
+            <Border Style="{StaticResource SettingsCardStyle}">
+                <StackPanel>
+                    <Grid Margin="0,0,0,12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="定期自动删除超过保存时间的墨迹、截图文件" Style="{StaticResource SettingsTitleStyle}"/>
+                        </StackPanel>
+                        <ui:ToggleSwitch Grid.Column="1" IsOn="{Binding Automation.AutoDelSavedFiles, Mode=TwoWay}"/>
+                    </Grid>
+
+                    <TextBlock Text="# 请注意如果开启自动删除功能，将会删除自动保存目录下所有后缀名为 .icstk、.iccink 和 .png 的文件！手动保存不受影响！"
+                               Style="{StaticResource SettingsDescriptionStyle}" Margin="0,0,0,16"/>
+
+                    <Grid Margin="0,0,0,12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="保存时长" VerticalAlignment="Center" FontSize="14" FontWeight="SemiBold"/>
+                        <ComboBox Grid.Column="1" Margin="16,0" SelectedValue="{Binding Automation.AutoDelSavedFilesDaysThreshold, Mode=TwoWay}" SelectedValuePath="Tag">
+                            <ComboBoxItem Content="7" Tag="7"/>
+                            <ComboBoxItem Content="15" Tag="15"/>
+                            <ComboBoxItem Content="30" Tag="30"/>
+                            <ComboBoxItem Content="90" Tag="90"/>
+                        </ComboBox>
+                        <TextBlock Grid.Column="2" Text="天" VerticalAlignment="Center" FontSize="14" FontWeight="SemiBold"/>
+                    </Grid>
+
+                    <Grid Margin="0,0,0,12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="限制自动保存的墨迹数量" Style="{StaticResource SettingsTitleStyle}"/>
+                        <ui:ToggleSwitch Grid.Column="1" IsOn="{Binding Automation.IsEnableLimitAutoSaveAmount, Mode=TwoWay}"/>
+                    </Grid>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="最多保存" VerticalAlignment="Center" FontSize="14" FontWeight="SemiBold"/>
+                        <ComboBox Grid.Column="1" Margin="16,0" SelectedValue="{Binding Automation.LimitAutoSaveAmount, Mode=TwoWay}" SelectedValuePath="Tag">
+                            <ComboBoxItem Content="10" Tag="10"/>
+                            <ComboBoxItem Content="20" Tag="20"/>
+                            <ComboBoxItem Content="50" Tag="50"/>
+                            <ComboBoxItem Content="100" Tag="100"/>
+                        </ComboBox>
+                        <TextBlock Grid.Column="2" Text="份墨迹" VerticalAlignment="Center" FontSize="14" FontWeight="SemiBold"/>
+                    </Grid>
+
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
 </UserControl>
