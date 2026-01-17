@@ -13,99 +13,14 @@
 
     <UserControl.Resources>
         <ResourceDictionary>
-            <!-- 颜色定义 -->
-            <Color x:Key="CardBackgroundColor">#2D2D30</Color>
-            <Color x:Key="AccentColor">#60A5FA</Color>
-            <Color x:Key="PrimaryTextColor">#FAFAFA</Color>
-            <Color x:Key="SecondaryTextColor">#A1A1AA</Color>
-            <Color x:Key="TertiaryTextColor">#71717A</Color>
-            <Color x:Key="BorderColor">#3F3F46</Color>
-
-            <!-- 画刷定义 -->
-            <SolidColorBrush x:Key="CardBackgroundBrush" Color="{StaticResource CardBackgroundColor}"/>
-            <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource AccentColor}"/>
-            <SolidColorBrush x:Key="PrimaryTextBrush" Color="{StaticResource PrimaryTextColor}"/>
-            <SolidColorBrush x:Key="SecondaryTextBrush" Color="{StaticResource SecondaryTextColor}"/>
-            <SolidColorBrush x:Key="TertiaryTextBrush" Color="{StaticResource TertiaryTextColor}"/>
-            <SolidColorBrush x:Key="BorderBrush" Color="{StaticResource BorderColor}"/>
-
-            <!-- 页面标题样式 -->
-            <Style x:Key="PageTitleStyle" TargetType="TextBlock">
-                <Setter Property="FontSize" Value="28"/>
-                <Setter Property="FontWeight" Value="SemiBold"/>
-                <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}"/>
-                <Setter Property="Margin" Value="0,0,0,24"/>
-            </Style>
-
-            <!-- 设置卡片容器样式 -->
-            <Style x:Key="SettingsCardStyle" TargetType="Border">
-                <Setter Property="Background" Value="{StaticResource CardBackgroundBrush}"/>
-                <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
-                <Setter Property="BorderThickness" Value="1"/>
-                <Setter Property="CornerRadius" Value="8"/>
-                <Setter Property="Padding" Value="16"/>
-                <Setter Property="Margin" Value="0,0,0,8"/>
-            </Style>
-
-            <!-- 设置项标题样式 -->
-            <Style x:Key="SettingsTitleStyle" TargetType="TextBlock">
-                <Setter Property="FontSize" Value="14"/>
-                <Setter Property="FontWeight" Value="SemiBold"/>
-                <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}"/>
-                <Setter Property="VerticalAlignment" Value="Center"/>
-            </Style>
-
-            <!-- 设置项描述样式 -->
-            <Style x:Key="SettingsDescriptionStyle" TargetType="TextBlock">
-                <Setter Property="FontSize" Value="12"/>
-                <Setter Property="Foreground" Value="{StaticResource SecondaryTextBrush}"/>
-                <Setter Property="TextWrapping" Value="Wrap"/>
-                <Setter Property="Margin" Value="0,4,0,0"/>
-            </Style>
-
-            <!-- 设置分组标题样式 -->
-            <Style x:Key="SettingsGroupTitleStyle" TargetType="TextBlock">
-                <Setter Property="FontSize" Value="13"/>
-                <Setter Property="FontWeight" Value="SemiBold"/>
-                <Setter Property="Margin" Value="0,20,0,12"/>
-                <Setter Property="Foreground" Value="{StaticResource AccentBrush}"/>
-            </Style>
-
-            <!-- 图标样式 -->
-            <Style x:Key="SettingsIconStyle" TargetType="ui:FontIcon">
-                <Setter Property="FontSize" Value="20"/>
-                <Setter Property="Foreground" Value="{StaticResource AccentBrush}"/>
-                <Setter Property="Margin" Value="0,0,16,0"/>
-                <Setter Property="VerticalAlignment" Value="Center"/>
-            </Style>
-
-            <!-- 值显示样式 -->
-            <Style x:Key="SettingsValueStyle" TargetType="TextBlock">
-                <Setter Property="FontSize" Value="14"/>
-                <Setter Property="FontWeight" Value="SemiBold"/>
-                <Setter Property="Foreground" Value="{StaticResource AccentBrush}"/>
-                <Setter Property="VerticalAlignment" Value="Center"/>
-                <Setter Property="HorizontalAlignment" Value="Right"/>
-            </Style>
-
-            <!-- 提示文本样式 -->
-            <Style x:Key="HintTextStyle" TargetType="TextBlock">
-                <Setter Property="FontSize" Value="11"/>
-                <Setter Property="Foreground" Value="{StaticResource TertiaryTextBrush}"/>
-                <Setter Property="FontStyle" Value="Italic"/>
-                <Setter Property="Margin" Value="0,8,0,0"/>
-            </Style>
-
-            <!-- 复选框样式 -->
-            <Style x:Key="SettingsCheckBoxStyle" TargetType="CheckBox">
-                <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}"/>
-                <Setter Property="FontSize" Value="13"/>
-                <Setter Property="Margin" Value="0,8,0,0"/>
-            </Style>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="SettingsPageStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <StackPanel>
+    <ScrollViewer VerticalScrollBarVisibility="Auto" PanningMode="VerticalOnly">
+        <StackPanel Margin="0,0,12,24">
         <TextBlock Text="书写" Style="{StaticResource PageTitleStyle}"/>
 
         <!-- ==================== 画板和墨迹 ==================== -->
@@ -260,4 +175,5 @@
         <!-- 底部间距 -->
         <Border Height="40"/>
     </StackPanel>
+    </ScrollViewer>
 </UserControl>

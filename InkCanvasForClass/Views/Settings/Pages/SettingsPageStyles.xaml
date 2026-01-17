@@ -156,4 +156,21 @@
         <Setter Property="Foreground" Value="#EF4444"/>
     </Style>
 
+    <!-- 提示文本样式 -->
+    <Style x:Key="HintTextStyle" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="11"/>
+        <Setter Property="Foreground" Value="{StaticResource TertiaryTextBrush}"/>
+        <Setter Property="FontStyle" Value="Italic"/>
+        <Setter Property="TextWrapping" Value="Wrap"/>
+        <Setter Property="Margin" Value="0,8,0,0"/>
+    </Style>
+
+    <!-- 复选框样式 -->
+    <Style x:Key="SettingsCheckBoxStyle" TargetType="CheckBox">
+        <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="Margin" Value="0,4"/>
+        <Setter Property="MinWidth" Value="140"/>
+    </Style>
+
 </ResourceDictionary>

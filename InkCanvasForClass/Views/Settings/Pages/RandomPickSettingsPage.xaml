@@ -29,16 +29,6 @@
             <!-- Settings -->
             <Border Style="{StaticResource SettingsCardStyle}">
                 <StackPanel>
-                    <!-- Enable Machine Learning -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="为 ICC 启用机器学习以提升渲染性能" Style="{StaticResource SettingsTitleStyle}"/>
-                        <ui:ToggleSwitch Grid.Column="1" IsOn="{Binding RandomPick.EnableMachineLearning, Mode=TwoWay}"/>
-                    </Grid>
-
                     <!-- Show Switch List Button -->
                     <Grid Margin="0,0,0,12">
                         <Grid.ColumnDefinitions>
