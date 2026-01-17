@@ -16,6 +16,7 @@ using Lierda.WPFHelper;
 using System.Windows.Shell;
 using Newtonsoft.Json.Linq;
 using Sentry;
+using System.Runtime.CompilerServices;
 
 namespace Ink_Canvas
 {
@@ -142,8 +143,8 @@ namespace Ink_Canvas
                 try {
                     SentryHelper.Close(500);
                 }
-                catch {
-                    // 忽略 Sentry 关闭错误
+                catch (Exception ex) {
+                    LogHelper.WriteLogToFile("Application Exit: Error closing Sentry - " + ex.Message, LogHelper.LogType.Warning);
                 }
 
                 // 强制终止进程，确保不会残留
@@ -266,6 +267,7 @@ namespace Ink_Canvas
         private TaskbarIcon _taskbar;
         private MainWindow mainWin = null;
 
+        [RequiresUnmanagedCode("Uses DWM APIs for WindowChrome configuration.")]
         void App_Startup(object sender, StartupEventArgs e)
         {
             RootPath = Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase, "Data") + "\\";

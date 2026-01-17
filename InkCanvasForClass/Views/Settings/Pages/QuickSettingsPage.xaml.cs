@@ -41,8 +41,9 @@ namespace Ink_Canvas.Views.Settings.Pages
                 string shortcutPath = Path.Combine(startupPath, AppName + ".lnk");
                 return File.Exists(shortcutPath);
             }
-            catch
+            catch (Exception ex)
             {
+                LogHelper.WriteLogToFile($"检查开机自启动状态失败：{ex.Message}", LogHelper.LogType.Warning);
                 return false;
             }
         }

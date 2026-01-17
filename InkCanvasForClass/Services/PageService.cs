@@ -329,7 +329,11 @@ namespace Ink_Canvas.Services
                 }
                 return JsonConvert.SerializeObject(exportData, Formatting.Indented);
             }
-            catch { return null; }
+            catch (Exception ex)
+            {
+                LogHelper.WriteLogToFile($"导出页面失败：{ex.Message}", LogHelper.LogType.Error);
+                return null;
+            }
         }
 
         public bool ImportPages(string data)
@@ -352,7 +356,7 @@ namespace Ink_Canvas.Services
                         Strokes = DeserializeStrokes(pageExport.StrokesData),
                         BackgroundColor = pageExport.BackgroundColor,
                         BackgroundPattern = pageExport.BackgroundPattern,
-                        ThumbnailData = !string.IsNullOrEmpty(pageExport.ThumbnailData) 
+                        ThumbnailData = !string.IsNullOrEmpty(pageExport.ThumbnailData)
                             ? Convert.FromBase64String(pageExport.ThumbnailData) : null
                     });
                 }
@@ -362,7 +366,11 @@ namespace Ink_Canvas.Services
                 if (_currentPageIndex < 0 && _pages.Count > 0) _currentPageIndex = 0;
                 return true;
             }
-            catch { return false; }
+            catch (Exception ex)
+            {
+                LogHelper.WriteLogToFile($"导入页面失败：{ex.Message}", LogHelper.LogType.Error);
+                return false;
+            }
         }
         #endregion
 
@@ -379,23 +387,29 @@ namespace Ink_Canvas.Services
                     return Convert.ToBase64String(ms.ToArray());
                 }
             }
-            catch { return null; }
+            catch (Exception ex)
+            {
+                LogHelper.WriteLogToFile($"序列化墨迹失败：{ex.Message}", LogHelper.LogType.Error);
+                return null;
+            }
         }
 
-        private StrokeCollection DeserializeStrokes(string data)
+        private StrokeCollection DeserializeStrokes(string strokesData)
         {
-            if (string.IsNullOrEmpty(data)) return new StrokeCollection();
+            if (string.IsNullOrEmpty(strokesData)) return new StrokeCollection();
             try
             {
-                var bytes = Convert.FromBase64String(data);
+                var bytes = Convert.FromBase64String(strokesData);
                 using (var ms = new MemoryStream(bytes))
                     return new StrokeCollection(ms);
             }
-            catch { return new StrokeCollection(); }
+            catch (Exception ex)
+            {
+                LogHelper.WriteLogToFile($"反序列化墨迹失败：{ex.Message}", LogHelper.LogType.Error);
+                return new StrokeCollection();
+            }
         }
-        #endregion
 
-        #region Export Data Classes
         private class PageExportData
         {
             public List<PageExportInfo> Pages { get; set; }

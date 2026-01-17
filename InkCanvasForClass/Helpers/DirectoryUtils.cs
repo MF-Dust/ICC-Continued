@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -33,6 +34,7 @@ namespace Ink_Canvas.Helpers {
         private const int FILE_FLAG_BACKUP_SEMANTICS = 0x02000000;
         private const int OPEN_EXISTING = 3;
 
+        [RequiresUnmanagedCode("Uses kernel32 P/Invoke to update directory timestamps.")]
         public static bool SetDirectoryLastWriteUtc(string dirPath, DateTime lastWriteDate) {
             using (var hDir = CreateFile(dirPath, FILE_ACCESS_GENERIC_READ | FILE_ACCESS_GENERIC_WRITE,
                 FileShare.ReadWrite, IntPtr.Zero, (FileMode) OPEN_EXISTING,

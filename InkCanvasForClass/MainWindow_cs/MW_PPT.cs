@@ -115,7 +115,7 @@ namespace Ink_Canvas {
                     }
                     catch (Exception ex) {
                         // 在阅读模式下出现异常时，通过下面的方式来获得当前选中的幻灯片对象
-                        LogHelper.WriteLogToFile("Error getting slide in normal view: " + ex.Message, LogHelper.LogType.Trace);
+                        LogHelper.WriteLogToFile("普通视图获取幻灯片失败：" + ex.Message, LogHelper.LogType.Trace);
                         slide = pptApplication.SlideShowWindows[1].View.Slide;
                     }
                 }
@@ -124,14 +124,23 @@ namespace Ink_Canvas {
                 //BtnCheckPPT.Visibility = Visibility.Collapsed;
                 BorderFloatingBarExitPPTBtn.Visibility = Visibility.Visible;
             }
-            catch {
-                //BtnCheckPPT.Visibility = Visibility.Visible;
+            catch (COMException ex) {
+                LogHelper.WriteLogToFile("检查 PPT 时发生 COM 错误：" + ex.Message, LogHelper.LogType.Warning);
                 BorderFloatingBarExitPPTBtn.Visibility = Visibility.Collapsed;
                 LeftBottomPanelForPPTNavigation.Visibility = Visibility.Collapsed;
                 RightBottomPanelForPPTNavigation.Visibility = Visibility.Collapsed;
                 LeftSidePanelForPPTNavigation.Visibility = Visibility.Collapsed;
                 RightSidePanelForPPTNavigation.Visibility = Visibility.Collapsed;
                 MessageBox.Show("未找到幻灯片");
+            }
+            catch (Exception ex) {
+                LogHelper.WriteLogToFile("检查 PPT 失败：" + ex.Message, LogHelper.LogType.Warning);
+                //BtnCheckPPT.Visibility = Visibility.Visible;
+                BorderFloatingBarExitPPTBtn.Visibility = Visibility.Collapsed;
+                LeftBottomPanelForPPTNavigation.Visibility = Visibility.Collapsed;
+                RightBottomPanelForPPTNavigation.Visibility = Visibility.Collapsed;
+                LeftSidePanelForPPTNavigation.Visibility = Visibility.Collapsed;
+                RightSidePanelForPPTNavigation.Visibility = Visibility.Collapsed;
             }
         }
 
@@ -174,7 +183,7 @@ namespace Ink_Canvas {
                     }
                     catch (Exception ex) {
                         // 在阅读模式下出现异常时，通过下面的方式来获得当前选中的幻灯片对象
-                        LogHelper.WriteLogToFile("Error getting slide in normal view: " + ex.Message, LogHelper.LogType.Trace);
+                        LogHelper.WriteLogToFile("普通视图获取幻灯片失败：" + ex.Message, LogHelper.LogType.Trace);
                         slide = pptApplication.SlideShowWindows[1].View.Slide;
                     }
 
@@ -195,7 +204,13 @@ namespace Ink_Canvas {
                 if (pptApplication.SlideShowWindows.Count >= 1)
                     PptApplication_SlideShowBegin(pptApplication.SlideShowWindows[1]);
             }
-            catch {
+            catch (COMException ex) {
+                LogHelper.WriteLogToFile("轮询 PPT 时发生 COM 错误：" + ex.Message, LogHelper.LogType.Warning);
+                Application.Current.Dispatcher.Invoke(() => { BorderFloatingBarExitPPTBtn.Visibility = Visibility.Collapsed; });
+                timerCheckPPT.Start();
+            }
+            catch (Exception ex) {
+                LogHelper.WriteLogToFile("轮询 PPT 失败：" + ex.Message, LogHelper.LogType.Warning);
                 //StackPanelPPTControls.Visibility = Visibility.Collapsed;
                 Application.Current.Dispatcher.Invoke(() => { BorderFloatingBarExitPPTBtn.Visibility = Visibility.Collapsed; });
                 timerCheckPPT.Start();
@@ -818,7 +833,7 @@ namespace Ink_Canvas {
                     currentShowPosition = Wn.View.CurrentShowPosition;
                 }
                 catch (Exception ex) {
-                    LogHelper.WriteLogToFile("Exception in MW_PPT.cs (previously ignored): " + ex.Message, LogHelper.LogType.Error);
+                    LogHelper.WriteLogToFile("MW_PPT.cs 异常（此前忽略）：" + ex.Message, LogHelper.LogType.Error);
                 }
 
                 PPTBtnPageNow.Text = $"{Wn.View.CurrentShowPosition}";
@@ -834,7 +849,12 @@ namespace Ink_Canvas {
             try {
                 return pptApplication != null && pptApplication.SlideShowWindows != null && pptApplication.SlideShowWindows.Count > 0;
             }
-            catch {
+            catch (COMException ex) {
+                LogHelper.WriteLogToFile("检查放映状态时发生 COM 错误：" + ex.Message, LogHelper.LogType.Trace);
+                return false;
+            }
+            catch (Exception ex) {
+                LogHelper.WriteLogToFile("检查放映状态失败：" + ex.Message, LogHelper.LogType.Trace);
                 return false;
             }
         }
@@ -854,7 +874,7 @@ namespace Ink_Canvas {
                     SavePPTScreenshot(pptApplication.SlideShowWindows[1].Presentation.Name + "/" + pptApplication.SlideShowWindows[1].View.CurrentShowPosition);
             }
             catch (Exception ex) {
-                LogHelper.WriteLogToFile("Exception in MW_PPT.cs (BtnPPTSlidesUp_Click SavePPTScreenshot): " + ex.Message, LogHelper.LogType.Error);
+                LogHelper.WriteLogToFile("保存 PPT 截图失败（上一张）：" + ex.Message, LogHelper.LogType.Error);
             }
 
             // 优化：使用线程池代替new Thread
@@ -863,15 +883,18 @@ namespace Ink_Canvas {
                     try {
                         pptApplication.SlideShowWindows[1].Activate();
                     }
-                    catch {
+                    catch (COMException) {
                         // ignored
+                    }
+                    catch (Exception ex) {
+                        LogHelper.WriteLogToFile("激活放映窗口失败：" + ex.Message, LogHelper.LogType.Trace);
                     }
 
                     try {
                         pptApplication.SlideShowWindows[1].View.Previous();
                     }
                     catch (Exception ex) {
-                        LogHelper.WriteLogToFile("Exception in MW_PPT.cs (BtnPPTSlidesUp_Click View.Previous): " + ex.Message, LogHelper.LogType.Error);
+                        LogHelper.WriteLogToFile("切换到上一张幻灯片失败：" + ex.Message, LogHelper.LogType.Error);
                     }
                 }
             });
@@ -891,7 +914,7 @@ namespace Ink_Canvas {
                     SavePPTScreenshot(pptApplication.SlideShowWindows[1].Presentation.Name + "/" + pptApplication.SlideShowWindows[1].View.CurrentShowPosition);
             }
             catch (Exception ex) {
-                LogHelper.WriteLogToFile("Exception in MW_PPT.cs (BtnPPTSlidesDown_Click SavePPTScreenshot): " + ex.Message, LogHelper.LogType.Error);
+                LogHelper.WriteLogToFile("保存 PPT 截图失败（下一张）：" + ex.Message, LogHelper.LogType.Error);
             }
 
             // 优化：使用线程池代替new Thread
@@ -900,15 +923,21 @@ namespace Ink_Canvas {
                     try {
                         pptApplication.SlideShowWindows[1].Activate();
                     }
-                    catch {
+                    catch (COMException) {
                         // ignored
+                    }
+                    catch (Exception ex) {
+                        LogHelper.WriteLogToFile("激活放映窗口失败：" + ex.Message, LogHelper.LogType.Trace);
                     }
 
                     try {
                         pptApplication.SlideShowWindows[1].View.Next();
                     }
-                    catch {
+                    catch (COMException) {
                         // ignored
+                    }
+                    catch (Exception ex) {
+                        LogHelper.WriteLogToFile("切换到下一张幻灯片失败：" + ex.Message, LogHelper.LogType.Trace);
                     }
                 }
             });
@@ -1003,7 +1032,7 @@ namespace Ink_Canvas {
                     presentation.SlideShowSettings.Run();
                 }
                 catch (Exception ex) {
-                    LogHelper.WriteLogToFile("Exception in MW_PPT.cs: " + ex.Message, LogHelper.LogType.Error);
+                    LogHelper.WriteLogToFile("MW_PPT.cs 异常：" + ex.Message, LogHelper.LogType.Error);
                 }
             });
         }
@@ -1019,7 +1048,7 @@ namespace Ink_Canvas {
                     timeMachine.ClearStrokeHistory();
                 }
                 catch (Exception ex) {
-                    LogHelper.WriteLogToFile("Exception in MW_PPT.cs (previously ignored): " + ex.Message, LogHelper.LogType.Error);
+                    LogHelper.WriteLogToFile("MW_PPT.cs 异常（此前忽略）：" + ex.Message, LogHelper.LogType.Error);
                 }
             });
 
@@ -1029,7 +1058,7 @@ namespace Ink_Canvas {
                     pptApplication.SlideShowWindows[1].View.Exit();
                 }
                 catch (Exception ex) {
-                    LogHelper.WriteLogToFile("Exception in MW_PPT.cs (previously ignored): " + ex.Message, LogHelper.LogType.Error);
+                    LogHelper.WriteLogToFile("MW_PPT.cs 异常（此前忽略）：" + ex.Message, LogHelper.LogType.Error);
                 }
             });
 

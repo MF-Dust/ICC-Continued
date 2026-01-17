@@ -56,7 +56,7 @@ namespace Ink_Canvas {
             openFileDialog.Title = "打开墨迹文件";
             openFileDialog.Filter = "Ink Canvas Strokes File (*.icstk)|*.icstk";
             if (openFileDialog.ShowDialog() != true) return;
-            LogHelper.WriteLogToFile($"Strokes Insert: Name: {openFileDialog.FileName}",
+            LogHelper.WriteLogToFile($"导入墨迹文件：{openFileDialog.FileName}",
                 LogHelper.LogType.Event);
             try {
                 var fileStreamHasNoStroke = false;
@@ -67,7 +67,7 @@ namespace Ink_Canvas {
                         ClearStrokes(true);
                         timeMachine.ClearStrokeHistory();
                         inkCanvas.Strokes.Add(strokes);
-                        LogHelper.NewLog($"Strokes Insert: Strokes Count: {inkCanvas.Strokes.Count.ToString()}");
+                        LogHelper.NewLog($"导入墨迹数：{inkCanvas.Strokes.Count.ToString()}");
                     }
                 }
 
@@ -78,13 +78,14 @@ namespace Ink_Canvas {
                         ClearStrokes(true);
                         timeMachine.ClearStrokeHistory();
                         inkCanvas.Strokes.Add(strokes);
-                        LogHelper.NewLog($"Strokes Insert (2): Strokes Count: {strokes.Count.ToString()}");
+                        LogHelper.NewLog($"导入墨迹数（备用流）：{strokes.Count.ToString()}");
                     }
 
                 if (inkCanvas.Visibility != Visibility.Visible) SymbolIconCursor_Click(sender, null);
             }
-            catch {
+            catch (Exception ex) {
                 ShowNewToast("墨迹打开失败！", MW_Toast.ToastType.Error, 3000);
+                LogHelper.WriteLogToFile("打开墨迹文件失败 | " + ex, LogHelper.LogType.Error);
             }
         }
     }

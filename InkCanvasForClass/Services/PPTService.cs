@@ -1382,14 +1382,15 @@ namespace Ink_Canvas.Services
                         null);
                     return true;
                 }
-                catch
+                catch (Exception ex)
                 {
+                    LogHelper.WriteLogToFile($"HasProperty: 无法访问属性 '{propertyName}': {ex.Message}", LogHelper.LogType.Trace);
                     return false;
                 }
             }
             catch (Exception ex)
             {
-                LogHelper.WriteLogToFile($"HasProperty: Error checking property '{propertyName}': {ex.Message}", LogHelper.LogType.Trace);
+                LogHelper.WriteLogToFile($"HasProperty: 检查属性 '{propertyName}' 出错：{ex.Message}", LogHelper.LogType.Trace);
                 return false;
             }
         }
@@ -3126,11 +3127,11 @@ namespace Ink_Canvas.Services
                             {
                                 int width = (int)slideShowWindow.Width;
                                 canAccessWidth = true;
-                                LogHelper.WriteLogToFile("DetectWPSVersion: Can access SlideShowWindow.Width", LogHelper.LogType.Trace);
+                                LogHelper.WriteLogToFile("DetectWPSVersion: 可以访问 SlideShowWindow.Width", LogHelper.LogType.Trace);
                             }
-                            catch
+                            catch (Exception ex)
                             {
-                                LogHelper.WriteLogToFile("DetectWPSVersion: Cannot access SlideShowWindow.Width", LogHelper.LogType.Trace);
+                                LogHelper.WriteLogToFile($"DetectWPSVersion: 无法访问 SlideShowWindow.Width: {ex.Message}", LogHelper.LogType.Trace);
                             }
 
                             // 尝试访问 View 属性
@@ -3142,13 +3143,13 @@ namespace Ink_Canvas.Services
                                 if (view != null)
                                 {
                                     canAccessView = true;
-                                    LogHelper.WriteLogToFile("DetectWPSVersion: Can access SlideShowWindow.View", LogHelper.LogType.Trace);
+                                    LogHelper.WriteLogToFile("DetectWPSVersion: 可以访问 SlideShowWindow.View", LogHelper.LogType.Trace);
                                     SafeReleaseComObject(view);
                                 }
                             }
-                            catch
+                            catch (Exception ex)
                             {
-                                LogHelper.WriteLogToFile("DetectWPSVersion: Cannot access SlideShowWindow.View", LogHelper.LogType.Trace);
+                                LogHelper.WriteLogToFile($"DetectWPSVersion: 无法访问 SlideShowWindow.View: {ex.Message}", LogHelper.LogType.Trace);
                                 if (view != null)
                                 {
                                     SafeReleaseComObject(view);
@@ -4461,7 +4462,7 @@ namespace Ink_Canvas.Services
                     catch (Exception ex)
                     {
                         // 在阅读模式下出现异常时，通过下面的方式来获得当前选中的幻灯片对象
-                        LogHelper.WriteLogToFile("Error getting slide in normal view: " + ex.Message, LogHelper.LogType.Trace);
+                        LogHelper.WriteLogToFile("普通视图获取幻灯片失败：" + ex.Message, LogHelper.LogType.Trace);
                         
                         // 释放可能已创建的对象
                         SafeReleaseComObject(slideRange);
