@@ -6,7 +6,7 @@
              xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
              xmlns:local="clr-namespace:Ink_Canvas.Views.Settings.Pages"
              mc:Ignorable="d"
-             d:DesignHeight="800" d:DesignWidth="600"
+             d:DesignHeight="1000" d:DesignWidth="600"
              Background="Transparent"
              Foreground="#FAFAFA"
              ui:ThemeManager.RequestedTheme="Dark">
@@ -18,14 +18,18 @@
             <Color x:Key="AccentColor">#60A5FA</Color>
             <Color x:Key="PrimaryTextColor">#FAFAFA</Color>
             <Color x:Key="SecondaryTextColor">#A1A1AA</Color>
+            <Color x:Key="TertiaryTextColor">#71717A</Color>
             <Color x:Key="BorderColor">#3F3F46</Color>
+            <Color x:Key="NewFeatureColor">#10B981</Color>
 
             <!-- 画刷定义 -->
             <SolidColorBrush x:Key="CardBackgroundBrush" Color="{StaticResource CardBackgroundColor}"/>
             <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource AccentColor}"/>
             <SolidColorBrush x:Key="PrimaryTextBrush" Color="{StaticResource PrimaryTextColor}"/>
             <SolidColorBrush x:Key="SecondaryTextBrush" Color="{StaticResource SecondaryTextColor}"/>
+            <SolidColorBrush x:Key="TertiaryTextBrush" Color="{StaticResource TertiaryTextColor}"/>
             <SolidColorBrush x:Key="BorderBrush" Color="{StaticResource BorderColor}"/>
+            <SolidColorBrush x:Key="NewFeatureBrush" Color="{StaticResource NewFeatureColor}"/>
 
             <!-- 页面标题样式 -->
             <Style x:Key="PageTitleStyle" TargetType="TextBlock">
@@ -76,16 +80,101 @@
                 <Setter Property="Margin" Value="0,0,16,0"/>
                 <Setter Property="VerticalAlignment" Value="Center"/>
             </Style>
+
+            <!-- 提示文本样式 -->
+            <Style x:Key="HintTextStyle" TargetType="TextBlock">
+                <Setter Property="FontSize" Value="11"/>
+                <Setter Property="Foreground" Value="{StaticResource TertiaryTextBrush}"/>
+                <Setter Property="FontStyle" Value="Italic"/>
+                <Setter Property="Margin" Value="0,8,0,0"/>
+            </Style>
+
+            <!-- 新功能标签样式 -->
+            <Style x:Key="NewFeatureTagStyle" TargetType="Border">
+                <Setter Property="Background" Value="#1A10B981"/>
+                <Setter Property="BorderBrush" Value="{StaticResource NewFeatureBrush}"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="CornerRadius" Value="4"/>
+                <Setter Property="Padding" Value="6,2"/>
+                <Setter Property="Margin" Value="8,0,0,0"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
+            </Style>
+
+            <!-- 新功能标签文本样式 -->
+            <Style x:Key="NewFeatureTagTextStyle" TargetType="TextBlock">
+                <Setter Property="FontSize" Value="10"/>
+                <Setter Property="FontWeight" Value="SemiBold"/>
+                <Setter Property="Foreground" Value="{StaticResource NewFeatureBrush}"/>
+            </Style>
         </ResourceDictionary>
     </UserControl.Resources>
 
     <StackPanel>
         <TextBlock Text="手势" Style="{StaticResource PageTitleStyle}"/>
 
-        <!-- 触摸手势 -->
-        <TextBlock Text="触摸手势" Style="{StaticResource SettingsGroupTitleStyle}"/>
+        <!-- ==================== 触摸手势 ==================== -->
 
-        <!-- 启用鼠标手势 -->
+        <!-- 进退白板模式自动开关双指移动功能 -->
+        <Border Style="{StaticResource SettingsCardStyle}">
+            <StackPanel>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                        <TextBlock Text="进退白板模式自动开关双指移动功能" Style="{StaticResource SettingsTitleStyle}"/>
+                    </StackPanel>
+                    <ui:ToggleSwitch Grid.Column="1" VerticalAlignment="Center"
+                                     IsOn="{Binding Gesture.AutoSwitchTwoFingerGesture, Mode=TwoWay}"/>
+                </Grid>
+                <TextBlock Text="开启后退出画板模式时自动关闭双指移动手势，进入白板模式时自动开启双指移动手势"
+                           Style="{StaticResource HintTextStyle}"/>
+            </StackPanel>
+        </Border>
+
+        <!-- 允许双指旋转与缩放选中的墨迹 -->
+        <Border Style="{StaticResource SettingsCardStyle}">
+            <StackPanel>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                        <TextBlock Text="允许双指旋转与缩放选中的墨迹" Style="{StaticResource SettingsTitleStyle}"/>
+                    </StackPanel>
+                    <ui:ToggleSwitch Grid.Column="1" VerticalAlignment="Center"
+                                     IsOn="{Binding Gesture.IsEnableTwoFingerRotationOnSelection, Mode=TwoWay}"/>
+                </Grid>
+                <TextBlock Text="允许选中墨迹后对墨迹进行双指或多指缩放操作（此设置不受&quot;允许双指旋转&quot;设置的影响）"
+                           Style="{StaticResource HintTextStyle}"/>
+            </StackPanel>
+        </Border>
+
+        <!-- 禁用手势橡皮 -->
+        <Border Style="{StaticResource SettingsCardStyle}">
+            <StackPanel>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0" VerticalAlignment="Center" Orientation="Horizontal">
+                        <TextBlock Text="禁用手势橡皮" Style="{StaticResource SettingsTitleStyle}"/>
+                        <Border Style="{StaticResource NewFeatureTagStyle}">
+                            <TextBlock Text="✦ 新功能" Style="{StaticResource NewFeatureTagTextStyle}"/>
+                        </Border>
+                    </StackPanel>
+                    <ui:ToggleSwitch Grid.Column="1" VerticalAlignment="Center"
+                                     IsOn="{Binding Gesture.DisableGestureEraser, Mode=TwoWay}"/>
+                </Grid>
+                <TextBlock Text="禁用Ink Canvas祖传的手势橡皮，禁用后，高级选项中的&quot;特殊屏幕模式&quot;、&quot;BoundsWidth&quot;、&quot;橡皮擦触摸大小倍数&quot;、&quot;四边红外模式&quot;等选项将被禁用，同时也不能使用手指和手掌擦除墨迹。"
+                           Style="{StaticResource HintTextStyle}"/>
+            </StackPanel>
+        </Border>
+
+        <!-- 多指书写功能 -->
         <Border Style="{StaticResource SettingsCardStyle}">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -93,17 +182,107 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <ui:FontIcon Glyph="&#xE962;" Style="{StaticResource SettingsIconStyle}"/>
-                <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                    <TextBlock Text="启用鼠标手势" Style="{StaticResource SettingsTitleStyle}"/>
-                    <TextBlock Text="使用鼠标右键拖动触发手势操作" Style="{StaticResource SettingsDescriptionStyle}"/>
-                </StackPanel>
-                <ui:ToggleSwitch Grid.Column="2" VerticalAlignment="Center"
-                                 IsOn="{Binding Gesture.EnableMouseGesture, Mode=TwoWay}"/>
+                <TextBlock Grid.Column="0" Text="多指书写功能" Style="{StaticResource SettingsTitleStyle}"
+                           VerticalAlignment="Center" Margin="0,0,16,0"/>
+                <ComboBox Grid.Column="2" Width="140"
+                          SelectedIndex="{Binding Gesture.DefaultMultiPointHandWritingMode, Mode=TwoWay}">
+                    <ComboBoxItem Content="禁用"/>
+                    <ComboBoxItem Content="只开启触摸"/>
+                    <ComboBoxItem Content="保持上次选择"/>
+                </ComboBox>
             </Grid>
         </Border>
 
-        <!-- 启用双指手势 -->
+        <!-- 触摸书写时隐藏鼠标指针 -->
+        <Border Style="{StaticResource SettingsCardStyle}">
+            <StackPanel>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0" VerticalAlignment="Center" Orientation="Horizontal">
+                        <TextBlock Text="触摸书写时隐藏鼠标指针" Style="{StaticResource SettingsTitleStyle}"/>
+                        <Border Style="{StaticResource NewFeatureTagStyle}">
+                            <TextBlock Text="✦ 新功能" Style="{StaticResource NewFeatureTagTextStyle}"/>
+                        </Border>
+                    </StackPanel>
+                    <ui:ToggleSwitch Grid.Column="1" VerticalAlignment="Center"
+                                     IsOn="{Binding Gesture.HideCursorWhenUsingTouchDevice, Mode=TwoWay}"/>
+                </Grid>
+                <TextBlock Text="会在使用触摸屏时隐藏鼠标指针，这样就可以去掉触摸指针。若出现问题，请尝试快捷键&quot;Alt + C&quot;来强制显示鼠标指针并关闭该功能。"
+                           Style="{StaticResource HintTextStyle}"/>
+            </StackPanel>
+        </Border>
+
+        <!-- ==================== 鼠标手势 ==================== -->
+        <TextBlock Text="鼠标手势" Style="{StaticResource SettingsGroupTitleStyle}"/>
+
+        <!-- 鼠标手势总开关 -->
+        <Border Style="{StaticResource SettingsCardStyle}">
+            <StackPanel>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0" VerticalAlignment="Center" Orientation="Horizontal">
+                        <TextBlock Text="鼠标手势总开关" Style="{StaticResource SettingsTitleStyle}"/>
+                        <Border Style="{StaticResource NewFeatureTagStyle}">
+                            <TextBlock Text="✦ 新功能" Style="{StaticResource NewFeatureTagTextStyle}"/>
+                        </Border>
+                    </StackPanel>
+                    <ui:ToggleSwitch Grid.Column="1" VerticalAlignment="Center"
+                                     IsOn="{Binding Gesture.EnableMouseGesture, Mode=TwoWay}"/>
+                </Grid>
+                <TextBlock Text="鼠标手势可以帮助您在使用鼠标进行批注书写时更加方便"
+                           Style="{StaticResource HintTextStyle}"/>
+            </StackPanel>
+        </Border>
+
+        <!-- 按住鼠标右键移动画布 -->
+        <Border Style="{StaticResource SettingsCardStyle}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" VerticalAlignment="Center" Orientation="Horizontal">
+                    <TextBlock Text="按住鼠标右键移动画布" Style="{StaticResource SettingsTitleStyle}"/>
+                    <Border Style="{StaticResource NewFeatureTagStyle}">
+                        <TextBlock Text="✦ 新功能" Style="{StaticResource NewFeatureTagTextStyle}"/>
+                    </Border>
+                </StackPanel>
+                <ui:ToggleSwitch Grid.Column="1" VerticalAlignment="Center"
+                                 IsOn="{Binding Gesture.EnableMouseRightBtnGesture, Mode=TwoWay}"/>
+            </Grid>
+        </Border>
+
+        <!-- 滑动鼠标滚轮 -->
+        <Border Style="{StaticResource SettingsCardStyle}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" VerticalAlignment="Center" Orientation="Horizontal" Margin="0,0,16,0">
+                    <TextBlock Text="滑动鼠标滚轮" Style="{StaticResource SettingsTitleStyle}"/>
+                    <Border Style="{StaticResource NewFeatureTagStyle}">
+                        <TextBlock Text="✦ 新功能" Style="{StaticResource NewFeatureTagTextStyle}"/>
+                    </Border>
+                </StackPanel>
+                <ComboBox Grid.Column="2" Width="120" Margin="0,0,16,0"
+                          SelectedIndex="{Binding Gesture.MouseWheelAction, Mode=TwoWay}">
+                    <ComboBoxItem Content="缩放画布"/>
+                </ComboBox>
+                <ui:ToggleSwitch Grid.Column="3" VerticalAlignment="Center"
+                                 IsOn="{Binding Gesture.EnableMouseWheelGesture, Mode=TwoWay}"/>
+            </Grid>
+        </Border>
+
+        <!-- 鼠标滚轮正方向 -->
         <Border Style="{StaticResource SettingsCardStyle}">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -111,50 +290,17 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <ui:FontIcon Glyph="&#xED5F;" Style="{StaticResource SettingsIconStyle}"/>
-                <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                    <TextBlock Text="启用双指手势" Style="{StaticResource SettingsTitleStyle}"/>
-                    <TextBlock Text="使用双指进行缩放和移动操作" Style="{StaticResource SettingsDescriptionStyle}"/>
-                </StackPanel>
-                <ui:ToggleSwitch Grid.Column="2" VerticalAlignment="Center"
-                                 IsOn="{Binding Gesture.IsEnableMultiTouchMode, Mode=TwoWay}"/>
+                <TextBlock Grid.Column="0" Text="鼠标滚轮正方向" Style="{StaticResource SettingsTitleStyle}"
+                           VerticalAlignment="Center" Margin="0,0,16,0"/>
+                <ComboBox Grid.Column="2" Width="120"
+                          SelectedIndex="{Binding Gesture.MouseWheelDirection, Mode=TwoWay}">
+                    <ComboBoxItem Content="滚轮向上"/>
+                    <ComboBoxItem Content="滚轮向下"/>
+                </ComboBox>
             </Grid>
         </Border>
 
-        <!-- 双指缩放画布 -->
-        <Border Style="{StaticResource SettingsCardStyle}">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <ui:FontIcon Glyph="&#xE71E;" Style="{StaticResource SettingsIconStyle}"/>
-                <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                    <TextBlock Text="双指缩放画布" Style="{StaticResource SettingsTitleStyle}"/>
-                    <TextBlock Text="双指捏合可以缩放画布大小" Style="{StaticResource SettingsDescriptionStyle}"/>
-                </StackPanel>
-                <ui:ToggleSwitch Grid.Column="2" VerticalAlignment="Center"
-                                 IsOn="{Binding Gesture.IsEnableTwoFingerZoom, Mode=TwoWay}"/>
-            </Grid>
-        </Border>
-
-        <!-- 双指旋转画布 -->
-        <Border Style="{StaticResource SettingsCardStyle}">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <ui:FontIcon Glyph="&#xE7AD;" Style="{StaticResource SettingsIconStyle}"/>
-                <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                    <TextBlock Text="双指旋转画布" Style="{StaticResource SettingsTitleStyle}"/>
-                    <TextBlock Text="双指旋转可以旋转画布" Style="{StaticResource SettingsDescriptionStyle}"/>
-                </StackPanel>
-                <ui:ToggleSwitch Grid.Column="2" VerticalAlignment="Center"
-                                 IsOn="{Binding Gesture.IsEnableTwoFingerRotation, Mode=TwoWay}"/>
-            </Grid>
-        </Border>
+        <!-- 底部间距 -->
+        <Border Height="40"/>
     </StackPanel>
 </UserControl>

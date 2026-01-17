@@ -370,7 +370,7 @@ namespace Ink_Canvas {
                     "Startup" => SettingsStartupGroupBox,
                     "Canvas" => SettingsCanvasGroupBox,
                     "Gesture" => SettingsGestureGroupBox,
-                    "Appearance" => SettingsAppearanceGroupBox,
+
                     "PowerPoint" => SettingsPPTGroupBox,
                     "Advanced" => SettingsAdvancedGroupBox,
                     "Automation" => SettingsAutomationGroupBox,

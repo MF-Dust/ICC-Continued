@@ -211,18 +211,7 @@ namespace Ink_Canvas {
 
         #region Appearance
 
-        private void ToggleSwitchEnableDisPlayNibModeToggle_Toggled(object sender, RoutedEventArgs e) { }
-        private void ToggleSwitchEnableQuickPanel_Toggled(object sender, RoutedEventArgs e) { }
-        private void ViewboxFloatingBarScaleTransformValueSlider_ValueChanged(object sender, RoutedEventArgs e) { }
-        private void ViewboxFloatingBarOpacityValueSlider_ValueChanged(object sender, RoutedEventArgs e) { }
-        private void ViewboxFloatingBarOpacityInPPTValueSlider_ValueChanged(object sender, RoutedEventArgs e) { }
-        private void ToggleSwitchEnableTrayIcon_Toggled(object sender, RoutedEventArgs e) { }
-        private void ComboBoxUnFoldBtnImg_SelectionChanged(object sender, RoutedEventArgs e) { }
-        private void ComboBoxChickenSoupSource_SelectionChanged(object sender, RoutedEventArgs e) { }
-        private void ToggleSwitchEnableViewboxBlackBoardScaleTransform_Toggled(object sender, RoutedEventArgs e) { }
-        public void ComboBoxFloatingBarImg_SelectionChanged(object sender, RoutedEventArgs e) { }
-        private void ToggleSwitchEnableTimeDisplayInWhiteboardMode_Toggled(object sender, RoutedEventArgs e) { }
-        private void ToggleSwitchEnableChickenSoupInWhiteboardMode_Toggled(object sender, RoutedEventArgs e) { }
+
 
         private void ToggleSwitchShowPPTButton_OnToggled(object sender, RoutedEventArgs e) {
             if (!isLoaded) return;
@@ -1810,7 +1799,7 @@ namespace Ink_Canvas {
                 SettingsCanvasGroupBox,
                 SettingsGestureGroupBox,
                 SettingsInkRecognitionGroupBox,
-                SettingsAppearanceGroupBox,
+
                 SettingsPPTGroupBox,
                 SettingsAdvancedGroupBox,
                 SettingsAutomationGroupBox,

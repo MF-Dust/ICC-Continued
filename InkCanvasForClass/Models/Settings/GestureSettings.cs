@@ -19,6 +19,8 @@ namespace Ink_Canvas.Models.Settings
         private bool _enableMouseGesture = true;
         private bool _enableMouseRightBtnGesture = true;
         private bool _enableMouseWheelGesture = true;
+        private int _mouseWheelAction = 0;
+        private int _mouseWheelDirection = 0;
 
         /// <summary>
         /// 是否启用双指手势（缩放、平移或旋转）
@@ -150,6 +152,26 @@ namespace Ink_Canvas.Models.Settings
         {
             get => _enableMouseWheelGesture;
             set => SetProperty(ref _enableMouseWheelGesture, value);
+        }
+
+        /// <summary>
+        /// 鼠标滚轮操作类型（0=缩放画布）
+        /// </summary>
+        [JsonProperty("mouseWheelAction")]
+        public int MouseWheelAction
+        {
+            get => _mouseWheelAction;
+            set => SetProperty(ref _mouseWheelAction, value);
+        }
+
+        /// <summary>
+        /// 鼠标滚轮正方向（0=滚轮向上，1=滚轮向下）
+        /// </summary>
+        [JsonProperty("mouseWheelDirection")]
+        public int MouseWheelDirection
+        {
+            get => _mouseWheelDirection;
+            set => SetProperty(ref _mouseWheelDirection, value);
         }
     }
 }

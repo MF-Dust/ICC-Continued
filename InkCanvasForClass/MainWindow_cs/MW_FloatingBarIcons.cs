@@ -1262,9 +1262,7 @@ namespace Ink_Canvas {
                  || (SelectedMode == ICCToolsEnum.EraseByGeometryMode &&
                      Settings.Appearance.EraserButtonsVisibility == 2)) && isLoaded) PenIconFakeClickForToolBarSettings();
 
-            SettingsOnlyDisplayEraserBtnPanel.Visibility = Settings.Appearance.EraserButtonsVisibility == 0
-                ? Visibility.Collapsed
-                : Visibility.Visible;
+
 
             if (Settings.Appearance.OnlyDisplayEraserBtn && Settings.Appearance.EraserButtonsVisibility != 0) {
                 InkEraserToolbarTextBlock.Text = "橡皮";
