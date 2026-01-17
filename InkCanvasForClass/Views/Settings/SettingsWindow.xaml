@@ -16,31 +16,39 @@
 
     <Window.Resources>
         <ResourceDictionary>
-            <!-- 优化的颜色定义 - 现代深色主题 -->
+            <!-- 优化的颜色定义 - 现代深色主题（匹配图片风格） -->
             <Color x:Key="PrimaryBackgroundColor">#1A1A1A</Color>
             <Color x:Key="SecondaryBackgroundColor">#252525</Color>
+            <Color x:Key="NavigationBackgroundColor">#252525</Color>
             <Color x:Key="CardBackgroundColor">#2D2D30</Color>
             <Color x:Key="CardHoverBackgroundColor">#3A3A3D</Color>
             <Color x:Key="AccentColor">#60A5FA</Color>
             <Color x:Key="AccentHoverColor">#93C5FD</Color>
+            <Color x:Key="SelectedIndicatorColor">#60A5FA</Color>
             <Color x:Key="PrimaryTextColor">#FAFAFA</Color>
             <Color x:Key="SecondaryTextColor">#A1A1AA</Color>
             <Color x:Key="TertiaryTextColor">#71717A</Color>
             <Color x:Key="BorderColor">#3F3F46</Color>
             <Color x:Key="DividerColor">#27272A</Color>
+            <Color x:Key="NavigationItemHoverColor">#2A2A2A</Color>
+            <Color x:Key="NavigationItemSelectedColor">#1E3A5F</Color>
 
             <!-- 画刷定义 -->
             <SolidColorBrush x:Key="PrimaryBackgroundBrush" Color="{StaticResource PrimaryBackgroundColor}"/>
             <SolidColorBrush x:Key="SecondaryBackgroundBrush" Color="{StaticResource SecondaryBackgroundColor}"/>
+            <SolidColorBrush x:Key="NavigationBackgroundBrush" Color="{StaticResource NavigationBackgroundColor}"/>
             <SolidColorBrush x:Key="CardBackgroundBrush" Color="{StaticResource CardBackgroundColor}"/>
             <SolidColorBrush x:Key="CardHoverBackgroundBrush" Color="{StaticResource CardHoverBackgroundColor}"/>
             <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource AccentColor}"/>
             <SolidColorBrush x:Key="AccentHoverBrush" Color="{StaticResource AccentHoverColor}"/>
+            <SolidColorBrush x:Key="SelectedIndicatorBrush" Color="{StaticResource SelectedIndicatorColor}"/>
             <SolidColorBrush x:Key="PrimaryTextBrush" Color="{StaticResource PrimaryTextColor}"/>
             <SolidColorBrush x:Key="SecondaryTextBrush" Color="{StaticResource SecondaryTextColor}"/>
             <SolidColorBrush x:Key="TertiaryTextBrush" Color="{StaticResource TertiaryTextColor}"/>
             <SolidColorBrush x:Key="BorderBrush" Color="{StaticResource BorderColor}"/>
             <SolidColorBrush x:Key="DividerBrush" Color="{StaticResource DividerColor}"/>
+            <SolidColorBrush x:Key="NavigationItemHoverBrush" Color="{StaticResource NavigationItemHoverColor}"/>
+            <SolidColorBrush x:Key="NavigationItemSelectedBrush" Color="{StaticResource NavigationItemSelectedColor}"/>
 
             <!-- 页面标题样式 -->
             <Style x:Key="PageTitleStyle" TargetType="TextBlock">
@@ -95,6 +103,40 @@
             <Style TargetType="TextBlock">
                 <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}"/>
             </Style>
+
+            <!-- NavigationView 样式覆盖 -->
+            <Style TargetType="ui:NavigationView">
+                <Setter Property="Background" Value="{StaticResource NavigationBackgroundBrush}"/>
+            </Style>
+
+            <!-- NavigationViewItem 样式 - 匹配图片中的左侧高亮条 -->
+            <Style TargetType="ui:NavigationViewItem">
+                <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}"/>
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                <Setter Property="Padding" Value="20,10,16,10"/>
+                <Setter Property="Margin" Value="0,1"/>
+                <Setter Property="MinHeight" Value="44"/>
+                <Style.Triggers>
+                    <Trigger Property="IsSelected" Value="True">
+                        <Setter Property="Background" Value="{StaticResource NavigationItemSelectedBrush}"/>
+                        <Setter Property="Foreground" Value="{StaticResource AccentBrush}"/>
+                    </Trigger>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background" Value="{StaticResource NavigationItemHoverBrush}"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+
+            <!-- NavigationViewItem 图标样式 - 使用 Fluent UI System Icons -->
+            <Style TargetType="ui:FontIcon">
+                <Setter Property="FontSize" Value="16"/>
+                <Setter Property="Width" Value="18"/>
+                <Setter Property="Height" Value="18"/>
+                <Setter Property="Margin" Value="0"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="HorizontalAlignment" Value="Center"/>
+            </Style>
         </ResourceDictionary>
     </Window.Resources>
 
@@ -103,96 +145,103 @@
                            IsBackButtonVisible="Collapsed"
                            IsPaneToggleButtonVisible="True"
                            PaneDisplayMode="Left"
-                           OpenPaneLength="200"
+                           OpenPaneLength="260"
+                           CompactPaneLength="60"
                            IsSettingsVisible="False"
-                           SelectionChanged="NavView_SelectionChanged">
+                           SelectionChanged="NavView_SelectionChanged"
+                           Background="{StaticResource NavigationBackgroundBrush}">
 
             <!-- 页眉 -->
             <ui:NavigationView.PaneHeader>
-                <TextBlock Text="设置"
-                           FontSize="16"
-                           FontWeight="SemiBold"
-                           Margin="12,8,0,8"/>
+                <Grid>
+                    <TextBlock Text="设置"
+                               FontSize="20"
+                               FontWeight="SemiBold"
+                               Foreground="{StaticResource PrimaryTextBrush}"
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Left"
+                               Margin="16,20,16,24"/>
+                </Grid>
             </ui:NavigationView.PaneHeader>
 
-            <!-- 导航菜单项 -->
+            <!-- 导航菜单项 - 使用 Fluent UI System Icons (Segoe Fluent Icons) -->
             <ui:NavigationView.MenuItems>
-                <!-- 快速设置 -->
+                <!-- 快速设置 - Fluent: Lightning (闪电) -->
                 <ui:NavigationViewItem Content="快速设置" Tag="QuickSettings">
                     <ui:NavigationViewItem.Icon>
-                        <ui:FontIcon Glyph="&#xE115;"/>
+                        <ui:FontIcon Glyph="&#xE945;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"/>
                     </ui:NavigationViewItem.Icon>
                 </ui:NavigationViewItem>
 
-                <!-- 外观设置 -->
+                <!-- 外观设置 - Fluent: Color (调色板) -->
                 <ui:NavigationViewItem Content="外观" Tag="Appearance">
                     <ui:NavigationViewItem.Icon>
-                        <ui:FontIcon Glyph="&#xE790;"/>
+                        <ui:FontIcon Glyph="&#xE790;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"/>
                     </ui:NavigationViewItem.Icon>
                 </ui:NavigationViewItem>
 
-                <!-- 手势设置 -->
+                <!-- 手势设置 - Fluent: Hand (手部) -->
                 <ui:NavigationViewItem Content="手势" Tag="Gesture">
                     <ui:NavigationViewItem.Icon>
-                        <ui:FontIcon Glyph="&#xE7C9;"/>
+                        <ui:FontIcon Glyph="&#xE7C9;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"/>
                     </ui:NavigationViewItem.Icon>
                 </ui:NavigationViewItem>
 
-                <!-- 书写设置（包含墨迹识别） -->
+                <!-- 书写设置 - Fluent: Edit (编辑/笔) -->
                 <ui:NavigationViewItem Content="书写" Tag="Writing">
                     <ui:NavigationViewItem.Icon>
-                        <ui:FontIcon Glyph="&#xEE56;"/>
+                        <ui:FontIcon Glyph="&#xE70F;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"/>
                     </ui:NavigationViewItem.Icon>
                 </ui:NavigationViewItem>
 
-                <!-- 白板设置 -->
+                <!-- 白板设置 - Fluent: Board (白板) -->
                 <ui:NavigationViewItem Content="白板" Tag="Whiteboard">
                     <ui:NavigationViewItem.Icon>
-                        <ui:FontIcon Glyph="&#xE7AC;"/>
+                        <ui:FontIcon Glyph="&#xE7AC;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"/>
                     </ui:NavigationViewItem.Icon>
                 </ui:NavigationViewItem>
 
-                <!-- PowerPoint支持 -->
+                <!-- PowerPoint支持 - Fluent: Slide (演示文稿) -->
                 <ui:NavigationViewItem Content="PowerPoint支持" Tag="PowerPoint">
                     <ui:NavigationViewItem.Icon>
-                        <ui:FontIcon Glyph="&#xE8A1;"/>
+                        <ui:FontIcon Glyph="&#xE8A5;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"/>
                     </ui:NavigationViewItem.Icon>
                 </ui:NavigationViewItem>
 
-                <!-- 存储设置 -->
+                <!-- 存储设置 - Fluent: HardDrive (存储) -->
                 <ui:NavigationViewItem Content="存储" Tag="Storage">
                     <ui:NavigationViewItem.Icon>
-                        <ui:FontIcon Glyph="&#xE74E;"/>
+                        <ui:FontIcon Glyph="&#xEDA2;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"/>
                     </ui:NavigationViewItem.Icon>
                 </ui:NavigationViewItem>
 
                 <ui:NavigationViewItemSeparator/>
 
-                <!-- 高级设置 -->
+                <!-- 高级设置 - Fluent: Settings (设置齿轮) -->
                 <ui:NavigationViewItem Content="高级" Tag="Advanced">
                     <ui:NavigationViewItem.Icon>
-                        <ui:FontIcon Glyph="&#xE713;"/>
+                        <ui:FontIcon Glyph="&#xE713;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"/>
                     </ui:NavigationViewItem.Icon>
                 </ui:NavigationViewItem>
 
-                <!-- 自动化设置 -->
+                <!-- 自动化设置 - Fluent: Code (代码/自动化) -->
                 <ui:NavigationViewItem Content="自动化" Tag="Automation">
                     <ui:NavigationViewItem.Icon>
-                        <ui:FontIcon Glyph="&#xE945;"/>
+                        <ui:FontIcon Glyph="&#xE943;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"/>
                     </ui:NavigationViewItem.Icon>
                 </ui:NavigationViewItem>
 
-                <!-- 截图设置 -->
+                <!-- 截图设置 - Fluent: Camera (相机) -->
                 <ui:NavigationViewItem Content="截图" Tag="Snapshot">
                     <ui:NavigationViewItem.Icon>
-                        <ui:FontIcon Glyph="&#xE722;"/>
+                        <ui:FontIcon Glyph="&#xE722;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"/>
                     </ui:NavigationViewItem.Icon>
                 </ui:NavigationViewItem>
 
-                <!-- 随机点名 -->
+                <!-- 随机点名 - Fluent: Person (人员) -->
                 <ui:NavigationViewItem Content="随机点名" Tag="RandomPick">
                     <ui:NavigationViewItem.Icon>
-                        <ui:FontIcon Glyph="&#xE8FA;"/>
+                        <ui:FontIcon Glyph="&#xE77B;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"/>
                     </ui:NavigationViewItem.Icon>
                 </ui:NavigationViewItem>
             </ui:NavigationView.MenuItems>
@@ -201,15 +250,16 @@
             <ui:NavigationView.FooterMenuItems>
                 <ui:NavigationViewItem Content="关于" Tag="About">
                     <ui:NavigationViewItem.Icon>
-                        <ui:FontIcon Glyph="&#xE946;"/>
+                        <ui:FontIcon Glyph="&#xE946;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"/>
                     </ui:NavigationViewItem.Icon>
                 </ui:NavigationViewItem>
             </ui:NavigationView.FooterMenuItems>
 
             <!-- 内容区域 -->
             <ui:ScrollViewerEx x:Name="ContentScrollViewer"
-                               Padding="36,24,36,24">
-                <Frame x:Name="ContentFrame" NavigationUIVisibility="Hidden"/>
+                               Padding="40,32,40,32"
+                               Background="{StaticResource PrimaryBackgroundBrush}">
+                <Frame x:Name="ContentFrame" NavigationUIVisibility="Hidden" Background="Transparent"/>
             </ui:ScrollViewerEx>
         </ui:NavigationView>
     </Grid>

@@ -117,7 +117,9 @@ namespace Ink_Canvas {
 
         private Task<bool> CheckIsDrawingShapesInMultiTouchMode() {
             if (isInMultiTouchMode) {
-                ToggleSwitchEnableMultiTouchMode.IsOn = false;
+                isInMultiTouchMode = false;
+                Settings.Gesture.DefaultMultiPointHandWritingMode = 1;
+                SaveSettings();
                 lastIsInMultiTouchMode = true;
             }
 
@@ -850,7 +852,9 @@ namespace Ink_Canvas {
                 }
 
                 if (lastIsInMultiTouchMode) {
-                    ToggleSwitchEnableMultiTouchMode.IsOn = true;
+                    isInMultiTouchMode = true;
+                    Settings.Gesture.DefaultMultiPointHandWritingMode = 0;
+                    SaveSettings();
                     lastIsInMultiTouchMode = false;
                 }
             }
@@ -860,9 +864,11 @@ namespace Ink_Canvas {
                     else {
                         BtnPen_Click(null, null);
                         if (lastIsInMultiTouchMode) {
-                        ToggleSwitchEnableMultiTouchMode.IsOn = true;
-                        lastIsInMultiTouchMode = false;
-                    }
+                            isInMultiTouchMode = true;
+                            Settings.Gesture.DefaultMultiPointHandWritingMode = 0;
+                            SaveSettings();
+                            lastIsInMultiTouchMode = false;
+                        }
                 }
             }
 
@@ -886,7 +892,9 @@ namespace Ink_Canvas {
                 else {
                     BtnPen_Click(null, null);
                     if (lastIsInMultiTouchMode) {
-                        ToggleSwitchEnableMultiTouchMode.IsOn = true;
+                        isInMultiTouchMode = true;
+                        Settings.Gesture.DefaultMultiPointHandWritingMode = 0;
+                        SaveSettings();
                         lastIsInMultiTouchMode = false;
                     }
 
@@ -932,7 +940,9 @@ namespace Ink_Canvas {
 
                     BtnPen_Click(null, null);
                     if (lastIsInMultiTouchMode) {
-                        ToggleSwitchEnableMultiTouchMode.IsOn = true;
+                        isInMultiTouchMode = true;
+                        Settings.Gesture.DefaultMultiPointHandWritingMode = 0;
+                        SaveSettings();
                         lastIsInMultiTouchMode = false;
                     }
                 }

@@ -235,15 +235,25 @@ namespace Ink_Canvas
         /// </summary>
         private void ApplyNibModeTogglerVisibility()
         {
-            if (!Settings.Appearance.IsEnableDisPlayNibModeToggler)
+            // 检查控件是否存在，如果不存在则跳过
+            var nibModePanel = this.FindName("NibModeSimpleStackPanel") as FrameworkElement;
+            var boardNibModePanel = this.FindName("BoardNibModeSimpleStackPanel") as FrameworkElement;
+            
+            if (nibModePanel != null || boardNibModePanel != null)
             {
-                NibModeSimpleStackPanel.Visibility = Visibility.Collapsed;
-                BoardNibModeSimpleStackPanel.Visibility = Visibility.Collapsed;
-            }
-            else
-            {
-                NibModeSimpleStackPanel.Visibility = Visibility.Visible;
-                BoardNibModeSimpleStackPanel.Visibility = Visibility.Visible;
+                var visibility = Settings.Appearance.IsEnableDisPlayNibModeToggler 
+                    ? Visibility.Visible 
+                    : Visibility.Collapsed;
+                
+                if (nibModePanel != null)
+                {
+                    nibModePanel.Visibility = visibility;
+                }
+                
+                if (boardNibModePanel != null)
+                {
+                    boardNibModePanel.Visibility = visibility;
+                }
             }
         }
 

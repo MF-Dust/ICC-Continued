@@ -52,8 +52,8 @@
         <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="CornerRadius" Value="8"/>
-        <Setter Property="Padding" Value="16"/>
-        <Setter Property="Margin" Value="0,0,0,8"/>
+        <Setter Property="Padding" Value="20"/>
+        <Setter Property="Margin" Value="0,0,0,12"/>
     </Style>
 
     <!-- 设置项标题样式 -->
@@ -89,10 +89,12 @@
 
     <!-- 图标样式 -->
     <Style x:Key="SettingsIconStyle" TargetType="ui:FontIcon">
-        <Setter Property="FontSize" Value="20"/>
+        <Setter Property="FontSize" Value="22"/>
         <Setter Property="Foreground" Value="{StaticResource AccentBrush}"/>
         <Setter Property="Margin" Value="0,0,16,0"/>
         <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Width" Value="24"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
     </Style>
 
     <!-- 值显示样式 -->

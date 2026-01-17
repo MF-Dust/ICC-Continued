@@ -1350,25 +1350,25 @@ namespace Ink_Canvas {
             SelectionV2.ApplyScaleToStylusTipChanged += (sender, args) => {
                 if (!isLoaded) return;
                 Settings.Canvas.ApplyScaleToStylusTip = SelectionV2.ApplyScaleToStylusTip;
-                ToggleSwitchApplyScaleToStylusTip.IsOn = SelectionV2.ApplyScaleToStylusTip;
+                // ToggleSwitchApplyScaleToStylusTip.IsOn = SelectionV2.ApplyScaleToStylusTip; // Removed
                 SaveSettings();
             };
             SelectionV2.OnlyHitTestFullyContainedStrokesChanged += (sender, args) => {
                 if (!isLoaded) return;
                 Settings.Canvas.OnlyHitTestFullyContainedStrokes = SelectionV2.OnlyHitTestFullyContainedStrokes;
-                ToggleSwitchOnlyHitTestFullyContainedStrokes.IsOn = SelectionV2.OnlyHitTestFullyContainedStrokes;
+                // ToggleSwitchOnlyHitTestFullyContainedStrokes.IsOn = SelectionV2.OnlyHitTestFullyContainedStrokes; // Removed
                 SaveSettings();
             };
             SelectionV2.AllowClickToSelectLockedStrokeChanged += (sender, args) => {
                 if (!isLoaded) return;
                 Settings.Canvas.AllowClickToSelectLockedStroke = SelectionV2.AllowClickToSelectLockedStroke;
-                ToggleSwitchAllowClickToSelectLockedStroke.IsOn = SelectionV2.AllowClickToSelectLockedStroke;
+                // ToggleSwitchAllowClickToSelectLockedStroke.IsOn = SelectionV2.AllowClickToSelectLockedStroke; // Removed
                 SaveSettings();
             };
             SelectionV2.SelectionModeChanged += (sender, args) => {
                 if (!isLoaded) return;
                 Settings.Canvas.SelectionMethod = (int)args.NowMode;
-                ComboBoxSelectionMethod.SelectedIndex = (int)args.NowMode;
+                // ComboBoxSelectionMethod.SelectedIndex = (int)args.NowMode; // Removed
                 SaveSettings();
             };
             SelectionV2.SelectionPopupShouldCloseEvent += (sender, args) => {

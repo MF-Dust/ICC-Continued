@@ -56,7 +56,7 @@ namespace Ink_Canvas.Popups
             WindowIcon.IsHitTestVisible = OSVersion.GetOperatingSystem() >= OperatingSystem.Windows10;
             WindowIcon.Opacity = OSVersion.GetOperatingSystem() >= OperatingSystem.Windows10 ? 1 : 0.5;
 
-            
+
             foreach (var b in iconList) {
                 b.MouseLeave += IconMouseLeave;
                 b.MouseUp += IconMouseUp;
@@ -134,7 +134,7 @@ namespace Ink_Canvas.Popups
 
         private bool AllOneColor(Bitmap bmp)
         {
-            // Lock the bitmap's bits.  
+            // Lock the bitmap's bits.
             System.Drawing.Rectangle rect = new System.Drawing.Rectangle(0, 0, bmp.Width, bmp.Height);
             BitmapData bmpData = bmp.LockBits(rect, ImageLockMode.ReadWrite, bmp.PixelFormat);
 
@@ -215,12 +215,14 @@ namespace Ink_Canvas.Popups
 
         private void ToggleSwitchCopyToClipBoard_CheckChanged(object sender, RoutedEventArgs e) {
             if (!mainWindow.isLoaded) return;
-            mainWindow.ToggleSwitchCopyScreenshotToClipboard.IsOn = ToggleSwitchCopyToClipBoard.IsChecked ?? true;
+            settings.Snapshot.CopyScreenshotToClipboard = ToggleSwitchCopyToClipBoard.IsChecked ?? true;
+            mainWindow.SaveSettings();
         }
 
         private void ToggleSwitchAttachInk_CheckChanged(object sender, RoutedEventArgs e) {
             if (!mainWindow.isLoaded) return;
-            mainWindow.ToggleSwitchAttachInkWhenScreenshot.IsOn = ToggleSwitchAttachInk.IsChecked ?? true;
+            settings.Snapshot.AttachInkWhenScreenshot = ToggleSwitchAttachInk.IsChecked ?? true;
+            mainWindow.SaveSettings();
         }
 
         private void ReArrangeWindowPosition() {
@@ -246,7 +248,7 @@ namespace Ink_Canvas.Popups
                 // 隐藏截图窗口以确保不会被截取到
                 Hide();
                 await Task.Delay(100); // 等待窗口完全隐藏
-                
+
                 var config = new MainWindow.SnapshotConfig() {
                     BitmapSavePath =
                         new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory)),
@@ -259,7 +261,7 @@ namespace Ink_Canvas.Popups
                     AttachInk = settings.Snapshot.AttachInkWhenScreenshot,
                 };
                 var bm = await mainWindow.FullscreenSnapshot(config);
-                
+
                 // 显示保存路径
                 string message = "已保存截图";
                 if (!string.IsNullOrEmpty(config.SavedFilePath)) {
@@ -316,7 +318,7 @@ namespace Ink_Canvas.Popups
                 try {
                     _screenshotGridWindow.Close();
                 } catch (Exception ex) { }
-                
+
             }*/
 
             if (Array.IndexOf(iconList, (Border)sender) == 0) {
@@ -437,7 +439,7 @@ namespace Ink_Canvas.Popups
         /// </summary>
         private void OnSelectionCancelled(object sender, EventArgs e) {
             _selectionOverlay = null;
-            
+
             // 重新显示截图窗口
             Show();
         }
@@ -451,14 +453,14 @@ namespace Ink_Canvas.Popups
             if (_selectionOverlay != null) {
                 _selectionOverlay.SelectionCompleted -= OnSelectionCompleted;
                 _selectionOverlay.SelectionCancelled -= OnSelectionCancelled;
-                try { 
-                    _selectionOverlay.Close(); 
+                try {
+                    _selectionOverlay.Close();
                 } catch (Exception ex) {
                     Helpers.LogHelper.WriteLogToFile($"Failed to close selection overlay: {ex.Message}", Helpers.LogHelper.LogType.Warning);
                 }
                 _selectionOverlay = null;
             }
-            
+
             // 只有当主窗口仍然有效时才尝试显示它
             try {
                 if (mainWindow != null && mainWindow.IsLoaded) {
@@ -468,7 +470,7 @@ namespace Ink_Canvas.Popups
             catch (InvalidOperationException) {
                 // 主窗口已关闭，忽略此错误
             }
-            
+
             base.OnClosed(e);
         }
 
@@ -476,7 +478,7 @@ namespace Ink_Canvas.Popups
             if (e.Key == Key.Escape) {
                 // 如果正在窗口截图加载中，不处理
                 if (isWindowsSnapshotLoaded == false) return;
-                
+
                 // 如果在窗口截图视图中，返回主菜单
                 if (WindowScreenshotOverlay.Visibility == Visibility.Visible) {
                     ScreenshotPanel.Visibility = Visibility.Visible;
@@ -550,8 +552,8 @@ namespace Ink_Canvas.Popups
                 };
 
                 // 使用 ContentRect 裁剪后的位图保存
-                var croppedBitmap = winInfo.OriginBitmap.Clone(winInfo.OriginBitmap.Width > 0 && winInfo.OriginBitmap.Height > 0 
-                    ? new System.Drawing.Rectangle(0, 0, winInfo.OriginBitmap.Width, winInfo.OriginBitmap.Height) 
+                var croppedBitmap = winInfo.OriginBitmap.Clone(winInfo.OriginBitmap.Width > 0 && winInfo.OriginBitmap.Height > 0
+                    ? new System.Drawing.Rectangle(0, 0, winInfo.OriginBitmap.Width, winInfo.OriginBitmap.Height)
                     : new System.Drawing.Rectangle(0, 0, 1, 1), winInfo.OriginBitmap.PixelFormat);
 
                 // 保存截图
@@ -559,17 +561,17 @@ namespace Ink_Canvas.Popups
 
                 LoadingOverlay.Visibility = Visibility.Collapsed;
                 MainFuncPanel.Effect = null;
-                
+
                 // 显示保存路径
                 string message = "已保存窗口截图";
                 if (!string.IsNullOrEmpty(config.SavedFilePath)) {
                     message = $"已保存窗口截图到：{config.SavedFilePath}";
                 }
                 mainWindow.ShowNewToast(message, MW_Toast.ToastType.Success, 3000);
-                
+
                 // 清理资源
                 _winInfos.Clear();
-                
+
                 // 关闭窗口
                 await Task.Delay(100);
                 Close();
@@ -578,7 +580,7 @@ namespace Ink_Canvas.Popups
                 LoadingOverlay.Visibility = Visibility.Collapsed;
                 MainFuncPanel.Effect = null;
                 mainWindow.ShowNewToast($"窗口截图失败！{ex.Message}", MW_Toast.ToastType.Error, 3000);
-                
+
                 // 返回窗口列表
                 ScreenshotPanel.Visibility = Visibility.Collapsed;
                 WindowScreenshotOverlay.Visibility = Visibility.Visible;

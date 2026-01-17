@@ -177,6 +177,10 @@ namespace Ink_Canvas.Services
                         Settings = loadedSettings;
                         IsLoaded = true;
                         loadedFromFile = true;
+                        
+                        // 检查并迁移路径
+                        CheckAndMigratePaths();
+                        
                         LogHelper.WriteLogToFile($"Settings loaded successfully from {SettingsFilePath}", LogHelper.LogType.Info);
                         OnSettingsLoaded(SettingsFilePath, loadedFromFile, isDefault);
                         return true;
@@ -188,6 +192,10 @@ namespace Ink_Canvas.Services
                     Settings = new Settings();
                     IsLoaded = true;
                     isDefault = true;
+                    
+                    // 检查并迁移路径 (即使是默认设置也需要检查路径是否正确)
+                    CheckAndMigratePaths();
+                    
                     LogHelper.WriteLogToFile($"Settings file not found, using defaults: {SettingsFilePath}", LogHelper.LogType.Info);
                     OnSettingsLoaded(SettingsFilePath, loadedFromFile, isDefault);
                     return true;
@@ -215,6 +223,138 @@ namespace Ink_Canvas.Services
         }
 
         /// <summary>
+        /// 检查并迁移旧的路径设置
+        /// </summary>
+        private void CheckAndMigratePaths()
+        {
+            try
+            {
+                // Migration: 确保 AutoSavedStrokesLocation 和 StorageLocation 同步
+                string programDir = AppDomain.CurrentDomain.BaseDirectory.TrimEnd('\\');
+                string oldDefaultPath1 = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Ink Canvas");
+                string oldDefaultPath2 = Path.Combine(programDir, "InkCanvasForClass");
+                string newDefaultPath = Path.Combine(programDir, "Data");
+
+                bool needSave = false;
+                
+                // 确保对象不为空
+                if (Settings.Automation == null) Settings.Automation = new AutomationSettings();
+                if (Settings.Storage == null) Settings.Storage = new StorageSettings();
+
+                // 检查并迁移旧的默认路径
+                string currentPath = Settings.Automation.AutoSavedStrokesLocation?.TrimEnd('\\') ?? "";
+                string storageLocation = Settings.Storage.StorageLocation ?? "fr";
+
+                // 处理默认的自动选择标识 "a-"，将其设置为 "fr"（icc安装目录）
+                if (storageLocation == "a-")
+                {
+                    storageLocation = "fr";
+                    Settings.Storage.StorageLocation = "fr";
+                    needSave = true;
+                }
+
+                // 获取 StorageLocation 对应的预期路径
+                string expectedPath = GetExpectedPathFromStorageLocation(storageLocation, programDir);
+
+                // 如果是自定义存储位置，使用 UserStorageLocation
+                if (storageLocation == "c-" && !string.IsNullOrEmpty(Settings.Storage.UserStorageLocation))
+                {
+                    expectedPath = Settings.Storage.UserStorageLocation.TrimEnd('\\');
+                }
+
+                // 只迁移旧的默认路径（Ink Canvas 或 InkCanvasForClass）
+                if (currentPath.Equals(oldDefaultPath2, StringComparison.OrdinalIgnoreCase) ||
+                    currentPath.Equals(oldDefaultPath1, StringComparison.OrdinalIgnoreCase))
+                {
+                    Settings.Automation.AutoSavedStrokesLocation = newDefaultPath;
+                    Settings.Storage.StorageLocation = "fr";
+                    needSave = true;
+                    LogHelper.WriteLogToFile($"Migrated old default path from '{currentPath}' to '{newDefaultPath}'", LogHelper.LogType.Info);
+                }
+                // 特殊处理：如果当前路径包含 "InkCanvasForClass" 且存储位置是 "fr"，强制更新为 Data 目录
+                // 这解决了用户反馈的路径卡在旧默认值的问题，即使路径不完全匹配 oldDefaultPath2
+                else if (storageLocation == "fr" && currentPath.IndexOf("InkCanvasForClass", StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    Settings.Automation.AutoSavedStrokesLocation = newDefaultPath;
+                    needSave = true;
+                    LogHelper.WriteLogToFile($"Forced migration from '{currentPath}' to '{newDefaultPath}' because it contains 'InkCanvasForClass'", LogHelper.LogType.Info);
+                }
+                // 强制同步 AutoSavedStrokesLocation 与 StorageLocation
+                // 始终以 StorageLocation 为准
+                else if (!string.IsNullOrEmpty(expectedPath) &&
+                        !string.Equals(currentPath, expectedPath.TrimEnd('\\'), StringComparison.OrdinalIgnoreCase))
+                {
+                    Settings.Automation.AutoSavedStrokesLocation = expectedPath;
+                    needSave = true;
+                    LogHelper.WriteLogToFile($"Synced AutoSavedStrokesLocation from '{currentPath}' to '{expectedPath}' based on StorageLocation '{storageLocation}'", LogHelper.LogType.Info);
+                }
+
+                if (needSave)
+                {
+                    Save();
+                }
+            }
+            catch (Exception ex)
+            {
+                LogHelper.WriteLogToFile($"Error in CheckAndMigratePaths: {ex.Message}", LogHelper.LogType.Error);
+            }
+        }
+
+        /// <summary>
+        /// 根据 StorageLocation 获取期望的存储路径
+        /// </summary>
+        private static string GetExpectedPathFromStorageLocation(string storageLocation, string programDir)
+        {
+            if (string.IsNullOrEmpty(storageLocation))
+            {
+                return Path.Combine(programDir, "Data");
+            }
+
+            if (storageLocation == "c-")
+            {
+                // 自定义存储位置，由 UserStorageLocation 决定，不在此处处理
+                return null;
+            }
+            else if (storageLocation.StartsWith("d"))
+            {
+                // 磁盘驱动器存储
+                var driveLetter = storageLocation.Substring(1).ToUpper();
+                return driveLetter + ":\\InkCanvasForClass";
+            }
+            else if (storageLocation == "fw")
+            {
+                // 文档文件夹
+                var docfolder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                return Path.Combine(docfolder, "InkCanvasForClass");
+            }
+            else if (storageLocation == "fr")
+            {
+                // icc安装目录
+                return Path.Combine(programDir, "Data");
+            }
+            else if (storageLocation == "fu")
+            {
+                // 当前用户目录
+                var usrfolder = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+                return Path.Combine(usrfolder, "InkCanvasForClass");
+            }
+            else if (storageLocation == "fd")
+            {
+                // 桌面文件夹
+                var dskfolder = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
+                return Path.Combine(dskfolder, "InkCanvasForClass");
+            }
+            else if (storageLocation == "a-")
+            {
+                // 自动选择，默认使用安装目录
+                return Path.Combine(programDir, "Data");
+            }
+
+            // 默认使用安装目录
+            return Path.Combine(programDir, "Data");
+        }
+
+        /// <summary>
         /// 异步从文件加载设置
         /// </summary>
         /// <returns>是否加载成功</returns>
@@ -235,6 +375,10 @@ namespace Ink_Canvas.Services
                         Settings = loadedSettings;
                         IsLoaded = true;
                         loadedFromFile = true;
+                        
+                        // 检查并迁移路径
+                        CheckAndMigratePaths();
+                        
                         LogHelper.WriteLogToFile($"Settings loaded successfully from {SettingsFilePath}", LogHelper.LogType.Info);
                         OnSettingsLoaded(SettingsFilePath, loadedFromFile, isDefault);
                         return true;
@@ -245,6 +389,10 @@ namespace Ink_Canvas.Services
                     Settings = new Settings();
                     IsLoaded = true;
                     isDefault = true;
+                    
+                    // 检查并迁移路径
+                    CheckAndMigratePaths();
+                    
                     LogHelper.WriteLogToFile($"Settings file not found, using defaults: {SettingsFilePath}", LogHelper.LogType.Info);
                     OnSettingsLoaded(SettingsFilePath, loadedFromFile, isDefault);
                     return true;

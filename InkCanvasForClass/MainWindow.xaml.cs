@@ -5,6 +5,9 @@ using Ink_Canvas.ViewModels;
 using Ink_Canvas.Views.Settings;
 using Ink_Canvas.Services.Events;
 using iNKORE.UI.WPF.Modern;
+using Ink_Canvas.Models.Settings;
+using OSVersionExtension;
+using Ookii.Dialogs.Wpf;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -50,6 +53,16 @@ namespace Ink_Canvas {
     /// - 白板页面管理已通过 ViewModel 事件处理
     /// </summary>
     public partial class MainWindow : Window {
+        public Services.ISettingsService SettingsService => (Services.ISettingsService)((App)Application.Current).Services.GetService(typeof(Services.ISettingsService));
+        public Settings Settings => SettingsService.Settings;
+
+        public void SaveSettings() {
+            SettingsService.Save();
+        }
+
+        private void LoadSettings() {
+            SettingsService.Load();
+        }
 
         #region ViewModel Properties
 
@@ -297,19 +310,10 @@ namespace Ink_Canvas {
         }
 
         /// <summary>
-        /// 订阅 SettingsView 事件
+        /// 订阅设置相关事件
         /// </summary>
         private void SubscribeSettingsViewEvents()
         {
-            // SettingsView 的导航事件已在 XAML 中绑定到 SettingsView_NavigateToCategory
-            // 这里可以添加其他需要在代码中订阅的事件
-
-            // 如果 SettingsViewControl 存在，设置其 ViewModel
-            if (SettingsViewControl != null && SettingsVM != null)
-            {
-                SettingsViewControl.ViewModel = SettingsVM;
-            }
-
             // 订阅 SettingsViewModel 的事件
             if (SettingsVM != null)
             {
@@ -334,72 +338,6 @@ namespace Ink_Canvas {
             BtnExit_Click(null, null);
         }
 
-        /// <summary>
-        /// 处理 SettingsView 导航事件
-        /// </summary>
-        private void SettingsView_NavigateToCategory(object sender, Views.Settings.SettingsNavigationEventArgs e)
-        {
-            // 处理设置分类导航
-            // 当用户点击设置面板左侧导航按钮时触发
-            try
-            {
-                var categoryName = e.CategoryName;
-                LogHelper.WriteLogToFile($"Settings navigation to category: {categoryName}", LogHelper.LogType.Info);
-
-                // 调用现有的设置导航逻辑
-                // 这里可以根据分类名称滚动到对应的设置组
-                ScrollToSettingsCategory(categoryName);
-            }
-            catch (Exception ex)
-            {
-                LogHelper.WriteLogToFile($"SettingsView_NavigateToCategory failed: {ex.Message}", LogHelper.LogType.Error);
-            }
-        }
-
-        /// <summary>
-        /// 滚动到指定的设置分类
-        /// </summary>
-        private void ScrollToSettingsCategory(string categoryName)
-        {
-            // 根据分类名称找到对应的 GroupBox 并滚动到该位置
-            // 这里复用现有的设置导航逻辑
-            try
-            {
-                FrameworkElement targetElement = categoryName switch
-                {
-                    "Startup" => SettingsStartupGroupBox,
-                    "Canvas" => SettingsCanvasGroupBox,
-                    "Gesture" => SettingsGestureGroupBox,
-
-                    "PowerPoint" => SettingsPPTGroupBox,
-                    "Advanced" => SettingsAdvancedGroupBox,
-                    "Automation" => SettingsAutomationGroupBox,
-                    "About" => SettingsAboutGroupBox,
-                    "Storage" => SettingsStorageGroupBox,
-                    "Snapshot" => SettingsSnapshotGroupBox,
-                    "ShapeDrawing" => SettingsShapeDrawingGroupBox,
-                    "InkRecognition" => SettingsInkRecognitionGroupBox,
-                    "RandWindow" => SettingsRandWindowGroupBox,
-                    "Donation" => SettingsDonationGroupBox,
-                    _ => null
-                };
-
-                if (targetElement != null && SettingsPanelScrollViewer != null)
-                {
-                    // 获取目标元素相对于 ScrollViewer 的位置
-                    var transform = targetElement.TransformToAncestor(SettingsPanelScrollViewer);
-                    var position = transform.Transform(new System.Windows.Point(0, 0));
-
-                    // 滚动到目标位置
-                    SettingsPanelScrollViewer.ScrollToVerticalOffset(
-                        SettingsPanelScrollViewer.VerticalOffset + position.Y - 20);
-                }
-            }
-            catch (Exception ex)
-            {
-                LogHelper.WriteLogToFile($"ScrollToSettingsCategory failed: {ex.Message}", LogHelper.LogType.Error);
-            }
-        }
 
         /// <summary>
         /// 处理工具按钮点击 - 每次点击都会调用对应的 Click 方法
@@ -745,13 +683,228 @@ namespace Ink_Canvas {
             {
                 try
                 {
-                    // 这里可以处理其他分类的设置变更
+                    switch (e.CategoryName)
+                    {
+                        case "Canvas":
+                            HandleCanvasSettingChanged(e.PropertyName);
+                            break;
+                        case "PowerPoint":
+                            HandlePowerPointSettingChanged(e.PropertyName);
+                            break;
+                        case "Automation":
+                            HandleAutomationSettingChanged(e.PropertyName);
+                            break;
+                        case "Gesture":
+                            HandleGestureSettingChanged(e.PropertyName);
+                            break;
+                        case "Advanced":
+                            HandleAdvancedSettingChanged(e.PropertyName);
+                            break;
+                        case "Startup":
+                            HandleStartupSettingChanged(e.PropertyName);
+                            break;
+                        case "InkToShape":
+                            HandleInkToShapeSettingChanged(e.PropertyName);
+                            break;
+                    }
                 }
                 catch (Exception ex)
                 {
                     LogHelper.WriteLogToFile($"Error handling setting change: {ex.Message}", LogHelper.LogType.Error);
                 }
             });
+        }
+
+        private void HandleCanvasSettingChanged(string propertyName)
+        {
+            switch (propertyName)
+            {
+                case nameof(CanvasSettings.IsShowCursor):
+                    inkCanvas_EditingModeChanged(inkCanvas, null);
+                    break;
+                case nameof(CanvasSettings.EraserSize):
+                    // Update eraser size logic
+                    double width = 24;
+                    switch (Settings.Canvas.EraserSize)
+                    {
+                        case 0: width = 24; break;
+                        case 1: width = 38; break;
+                        case 2: width = 46; break;
+                        case 3: width = 62; break;
+                        case 4: width = 78; break;
+                    }
+                    eraserWidth = width;
+                    isEraserCircleShape = Settings.Canvas.EraserShapeType == 0;
+                    break;
+                case nameof(CanvasSettings.EraserShapeType):
+                    CheckEraserTypeTab();
+                    isEraserCircleShape = Settings.Canvas.EraserShapeType == 0;
+                    break;
+                case nameof(CanvasSettings.InkWidth):
+                    if (drawingAttributes != null)
+                    {
+                        drawingAttributes.Height = Settings.Canvas.InkWidth;
+                        drawingAttributes.Width = Settings.Canvas.InkWidth;
+                    }
+                    break;
+                case nameof(CanvasSettings.HighlighterWidth):
+                    if (drawingAttributes != null)
+                    {
+                        // Note: Logic from HighlighterWidthSlider_ValueChanged
+                        // drawingAttributes.Height = Settings.Canvas.HighlighterWidth;
+                        // drawingAttributes.Width = Settings.Canvas.HighlighterWidth / 2;
+                        // But we need to check current tool mode.
+                        // For now, just update if it's highlighter mode or generic update.
+                    }
+                    break;
+                case nameof(CanvasSettings.FitToCurve):
+                    if (drawingAttributes != null)
+                        drawingAttributes.FitToCurve = Settings.Canvas.FitToCurve;
+                    break;
+                case nameof(CanvasSettings.ApplyScaleToStylusTip):
+                    SelectionV2.ApplyScaleToStylusTip = Settings.Canvas.ApplyScaleToStylusTip;
+                    break;
+                case nameof(CanvasSettings.OnlyHitTestFullyContainedStrokes):
+                    SelectionV2.OnlyHitTestFullyContainedStrokes = Settings.Canvas.OnlyHitTestFullyContainedStrokes;
+                    break;
+                case nameof(CanvasSettings.AllowClickToSelectLockedStroke):
+                    SelectionV2.AllowClickToSelectLockedStroke = Settings.Canvas.AllowClickToSelectLockedStroke;
+                    break;
+                case nameof(CanvasSettings.SelectionMethod):
+                    SelectionV2.SelectionModeSelected = (SelectionPopup.SelectionMode)Settings.Canvas.SelectionMethod;
+                    break;
+            }
+        }
+
+        private void HandlePowerPointSettingChanged(string propertyName)
+        {
+            switch (propertyName)
+            {
+                case nameof(PowerPointSettings.PowerPointSupport):
+                    if (Settings.PowerPointSettings.PowerPointSupport)
+                        timerCheckPPT.Start();
+                    else
+                        timerCheckPPT.Stop();
+                    break;
+                case nameof(PowerPointSettings.ShowPPTButton):
+                case nameof(PowerPointSettings.PPTButtonsDisplayOption):
+                case nameof(PowerPointSettings.PPTLSButtonPosition):
+                case nameof(PowerPointSettings.PPTRSButtonPosition):
+                    if (BorderFloatingBarExitPPTBtn.Visibility == Visibility.Visible) UpdatePPTBtnDisplaySettingsStatus();
+                    break;
+                case nameof(PowerPointSettings.PPTSButtonsOption):
+                case nameof(PowerPointSettings.PPTBButtonsOption):
+                    if (BorderFloatingBarExitPPTBtn.Visibility == Visibility.Visible) UpdatePPTBtnStyleSettingsStatus();
+                    break;
+            }
+        }
+
+        private void HandleAutomationSettingChanged(string propertyName)
+        {
+            // Check if it's an auto-fold property
+            if (propertyName.StartsWith("IsAutoFold"))
+            {
+                // StartOrStoptimerCheckAutoFold(); // Removed
+            }
+            // Check if it's an auto-kill property
+            else if (propertyName.StartsWith("IsAutoKill"))
+            {
+                if (Settings.Automation.IsAutoKillEasiNote || Settings.Automation.IsAutoKillPptService ||
+                    Settings.Automation.IsAutoKillHiteAnnotation || Settings.Automation.IsAutoKillInkCanvas
+                    || Settings.Automation.IsAutoKillICA || Settings.Automation.IsAutoKillIDT || Settings.Automation.IsAutoKillVComYouJiao
+                    || Settings.Automation.IsAutoKillSeewoLauncher2DesktopAnnotation)
+                    timerKillProcess.Start();
+                else
+                    timerKillProcess.Stop();
+            }
+        }
+
+        private void HandleGestureSettingChanged(string propertyName)
+        {
+            switch (propertyName)
+            {
+                case nameof(GestureSettings.IsEnableTwoFingerZoom):
+                case nameof(GestureSettings.IsEnableTwoFingerTranslate):
+                case nameof(GestureSettings.IsEnableTwoFingerRotation):
+                    CheckEnableTwoFingerGestureBtnColorPrompt();
+                    break;
+                case nameof(GestureSettings.IsEnableMultiTouchMode):
+                    if (Settings.Gesture.IsEnableMultiTouchMode) {
+                        if (!isInMultiTouchMode) {
+                            inkCanvas.StylusDown += MainWindow_StylusDown;
+                            inkCanvas.StylusMove += MainWindow_StylusMove;
+                            inkCanvas.StylusUp += MainWindow_StylusUp;
+                            inkCanvas.TouchDown += MainWindow_TouchDown;
+                            inkCanvas.TouchDown -= Main_Grid_TouchDown;
+                            inkCanvas.EditingMode = InkCanvasEditingMode.None;
+                            inkCanvas.EditingMode = InkCanvasEditingMode.Ink;
+                            inkCanvas.Children.Clear();
+                            isInMultiTouchMode = true;
+                        }
+                    } else {
+                        if (isInMultiTouchMode) {
+                            inkCanvas.StylusDown -= MainWindow_StylusDown;
+                            inkCanvas.StylusMove -= MainWindow_StylusMove;
+                            inkCanvas.StylusUp -= MainWindow_StylusUp;
+                            inkCanvas.TouchDown -= MainWindow_TouchDown;
+                            inkCanvas.TouchDown += Main_Grid_TouchDown;
+                            inkCanvas.EditingMode = InkCanvasEditingMode.None;
+                            inkCanvas.EditingMode = InkCanvasEditingMode.Ink;
+                            inkCanvas.Children.Clear();
+                            isInMultiTouchMode = false;
+                        }
+                    }
+                    CheckEnableTwoFingerGestureBtnColorPrompt();
+                    break;
+                case nameof(GestureSettings.DisableGestureEraser):
+                    break;
+            }
+        }
+
+        private void HandleAdvancedSettingChanged(string propertyName)
+        {
+            switch (propertyName)
+            {
+                case nameof(AdvancedSettings.IsSpecialScreen):
+                    break;
+                case nameof(AdvancedSettings.IsEnableEdgeGestureUtil):
+                    if (OSVersion.GetOperatingSystem() >= OSVersionExtension.OperatingSystem.Windows10)
+                        EdgeGestureUtil.DisableEdgeGestures(new WindowInteropHelper(this).Handle, Settings.Advanced.IsEnableEdgeGestureUtil);
+                    break;
+                case nameof(AdvancedSettings.IsEnableForceFullScreen):
+                    if (Settings.Advanced.IsEnableForceFullScreen)
+                    {
+                        MainWindow_OnSizeChanged(this, null);
+                    }
+                    break;
+            }
+        }
+
+        private void HandleStartupSettingChanged(string propertyName)
+        {
+            switch (propertyName)
+            {
+                case nameof(StartupSettings.IsEnableNibMode):
+                    if (Settings.Startup.IsEnableNibMode)
+                        BoundsWidth = Settings.Advanced.NibModeBoundsWidth;
+                    else
+                        BoundsWidth = Settings.Advanced.FingerModeBoundsWidth;
+                    break;
+                case nameof(StartupSettings.IsAutoUpdate):
+                    break;
+                case nameof(StartupSettings.IsAutoUpdateWithSilence):
+                    break;
+            }
+        }
+
+        private void HandleInkToShapeSettingChanged(string propertyName)
+        {
+            switch (propertyName)
+            {
+                case nameof(InkToShapeSettings.IsInkToShapeEnabled):
+                    PenPaletteV2.InkRecognition = Settings.InkToShape.IsInkToShapeEnabled;
+                    break;
+            }
         }
 
         #endregion
@@ -798,10 +951,9 @@ namespace Ink_Canvas {
             BlackboardCenterSide.Visibility = Visibility.Collapsed;
             BlackboardRightSide.Visibility = Visibility.Collapsed;
             BorderTools.Visibility = Visibility.Collapsed;
-            BorderSettings.Visibility = Visibility.Collapsed;
+            //BorderSettings.Visibility = Visibility.Collapsed;
             LeftSidePanelForPPTNavigation.Visibility = Visibility.Collapsed;
             RightSidePanelForPPTNavigation.Visibility = Visibility.Collapsed;
-            BorderSettings.Margin = new Thickness(0, 0, 0, 0);
             TwoFingerGestureBorder.Visibility = Visibility.Collapsed;
             BoardTwoFingerGestureBorder.Visibility = Visibility.Collapsed;
             BorderDrawShape.Visibility = Visibility.Collapsed;
@@ -849,7 +1001,7 @@ namespace Ink_Canvas {
 
             Microsoft.Win32.SystemEvents.UserPreferenceChanged += SystemEvents_UserPreferenceChanged;
             try {
-                if (File.Exists("SpecialVersion.ini")) SpecialVersionResetToSuggestion_Click();
+                if (File.Exists("SpecialVersion.ini")) ApplySpecialVersionSettings();
             }
             catch (Exception ex) {
                 LogHelper.WriteLogToFile(ex.ToString(), LogHelper.LogType.Error);
@@ -945,7 +1097,7 @@ namespace Ink_Canvas {
         #region Definitions and Loading
 
         // 使用 SettingsService 管理的 Settings 实例
-        public Settings Settings => ServiceLocator.GetService<ISettingsService>()?.Settings ?? new Settings();
+        // public Settings Settings => ServiceLocator.GetService<ISettingsService>()?.Settings ?? new Settings();
         public bool isLoaded = false;
 
         [DllImport("user32.dll")]
@@ -975,11 +1127,19 @@ namespace Ink_Canvas {
         private void Window_Loaded(object sender, RoutedEventArgs e) {
             loadPenCanvas();
             //加载设置
-            LoadSettings(true);
+            // LoadSettings(true); // 已移除旧版加载逻辑
+            var settingsService = ServiceLocator.GetService<ISettingsService>();
+            if (settingsService != null)
+            {
+                settingsService.Load();
+            }
 
             // 在设置加载后更新UI状态
             CheckColorTheme(true);
             CheckPenTypeUIState();
+
+            // 执行启动任务
+             PerformStartupTasks();
 
             // HasNewUpdateWindow hasNewUpdateWindow = new HasNewUpdateWindow();
             // 注意：旧版 IA 库不支持 64 位，但新的 Windows.UI.Input.Inking.Analysis API 支持 x64
@@ -1040,6 +1200,388 @@ namespace Ink_Canvas {
             });
 
             UpdateIndexInfoDisplay();
+
+             try {
+                if (File.Exists("SpecialVersion.ini")) ApplySpecialVersionSettings();
+            }
+            catch (Exception ex) {
+                LogHelper.WriteLogToFile(ex.ToString(), LogHelper.LogType.Error);
+            }
+
+            // 初始化外观设置（浮动工具栏文字和托盘图标）
+            ApplyFloatingBarButtonLabelVisibility();
+            ApplyTrayIconVisibility();
+        }
+
+        /// <summary>
+        /// 执行启动时的任务（迁移自 LoadSettings(true)）
+        /// </summary>
+        private void PerformStartupTasks()
+        {
+            try
+            {
+                // 默认切换到光标模式
+                CursorIcon_Click(null, null);
+
+                if (Settings.Startup != null)
+                {
+                    if (Settings.Automation.AutoDelSavedFiles)
+                    {
+                        // 注意：需确保 DelAutoSavedFiles 类可用
+                         DelAutoSavedFiles.DeleteFilesOlder(Settings.Automation.AutoSavedStrokesLocation,
+                            Settings.Automation.AutoDelSavedFilesDaysThreshold);
+                    }
+
+                    if (Settings.Startup.IsFoldAtStartup)
+                    {
+                        FoldFloatingBar_MouseUp(Fold_Icon, null);
+                    }
+
+                    if (Settings.Startup.IsEnableNibMode)
+                    {
+                        BoundsWidth = Settings.Advanced.NibModeBoundsWidth;
+                    }
+                    else
+                    {
+                        BoundsWidth = Settings.Advanced.FingerModeBoundsWidth;
+                    }
+
+                    if (Settings.Startup.IsAutoUpdate)
+                    {
+                         AutoUpdate();
+                    }
+                }
+
+                // 应用设置到应用状态
+                if (Settings.Canvas != null)
+                {
+                     // 恢复笔设置
+                    lastPenType = Settings.Canvas.LastPenType;
+                    penType = lastPenType;
+                    lastDesktopInkColor = Settings.Canvas.LastDesktopInkColor;
+                    lastBoardInkColor = Settings.Canvas.LastBoardInkColor;
+                    highlighterColor = Settings.Canvas.LastHighlighterColor;
+                    lastPenWidth = Settings.Canvas.InkWidth;
+                    lastHighlighterWidth = Settings.Canvas.HighlighterWidth;
+
+                    // 同步ColorPalette的笔模式和笔粗细
+                    if (PenPaletteV2 != null)
+                    {
+                        PenPaletteV2.PenModeSelected = penType == 1 ? ColorPalette.PenMode.HighlighterMode : ColorPalette.PenMode.PenMode;
+                        PenPaletteV2.SelectedPenWidth = penType == 1 ? Settings.Canvas.HighlighterWidth : Settings.Canvas.InkWidth;
+                    }
+
+                    // 根据笔类型设置绘图属性
+                     if (penType == 1) {
+                         // 荧光笔模式
+                        drawingAttributes.Width = Settings.Canvas.HighlighterWidth / 2;
+                        drawingAttributes.Height = Settings.Canvas.HighlighterWidth;
+                        drawingAttributes.StylusTip = StylusTip.Rectangle;
+                        drawingAttributes.IsHighlighter = true;
+                    }
+                    else
+                    {
+                        drawingAttributes.Width = Settings.Canvas.InkWidth;
+                        drawingAttributes.Height = Settings.Canvas.InkWidth;
+                    }
+
+                    if (Settings.Canvas.IsShowCursor) {
+                        inkCanvas.ForceCursor = true;
+                    } else {
+                        inkCanvas.ForceCursor = false;
+                    }
+
+                     CheckEraserTypeTab();
+
+                    if (Settings.Canvas.FitToCurve) {
+                        drawingAttributes.FitToCurve = true;
+                    } else {
+                        drawingAttributes.FitToCurve = false;
+                    }
+
+                    if (SelectionV2 != null)
+                    {
+                        SelectionV2.SelectionModeSelected = (SelectionPopup.SelectionMode)Settings.Canvas.SelectionMethod;
+                        SelectionV2.ApplyScaleToStylusTip = Settings.Canvas.ApplyScaleToStylusTip;
+                        SelectionV2.OnlyHitTestFullyContainedStrokes = Settings.Canvas.OnlyHitTestFullyContainedStrokes;
+                        SelectionV2.AllowClickToSelectLockedStroke = Settings.Canvas.AllowClickToSelectLockedStroke;
+                    }
+                }
+
+                 if (Settings.Advanced != null) {
+                    if (Settings.Advanced.IsEnableFullScreenHelper) {
+                        FullScreenHelper.MarkFullscreenWindowTaskbarList(new WindowInteropHelper(this).Handle, true);
+                    }
+
+                    if (Settings.Advanced.IsEnableEdgeGestureUtil) {
+                        if (OSVersion.GetOperatingSystem() >= OSVersionExtension.OperatingSystem.Windows10)
+                            EdgeGestureUtil.DisableEdgeGestures(new WindowInteropHelper(this).Handle, true);
+                    }
+                }
+
+                if (Settings.InkToShape != null && PenPaletteV2 != null) {
+                    PenPaletteV2.InkRecognition = Settings.InkToShape.IsInkToShapeEnabled;
+                }
+
+                // 初始化调色盘的压感模拟状态
+                if (PenPaletteV2 != null)
+                {
+                    switch (Settings.Canvas.InkStyle) {
+                        case -1:
+                            PenPaletteV2.SimulatePressure = ColorPalette.PressureSimulation.None;
+                            break;
+                        case 0:
+                            PenPaletteV2.SimulatePressure = ColorPalette.PressureSimulation.PointSimulate;
+                            break;
+                        case 1:
+                            PenPaletteV2.SimulatePressure = ColorPalette.PressureSimulation.VelocitySimulate;
+                            break;
+                        default:
+                            PenPaletteV2.SimulatePressure = ColorPalette.PressureSimulation.PointSimulate;
+                            Settings.Canvas.InkStyle = 0;
+                            break;
+                    }
+                }
+
+                if (Settings.Automation != null)
+                {
+                     if (Settings.Automation.IsAutoKillEasiNote || Settings.Automation.IsAutoKillPptService ||
+                        Settings.Automation.IsAutoKillHiteAnnotation || Settings.Automation.IsAutoKillInkCanvas
+                        || Settings.Automation.IsAutoKillICA || Settings.Automation.IsAutoKillIDT ||
+                        Settings.Automation.IsAutoKillVComYouJiao
+                        || Settings.Automation.IsAutoKillSeewoLauncher2DesktopAnnotation) {
+                        timerKillProcess.Start();
+                    } else {
+                        timerKillProcess.Stop();
+                    }
+                }
+
+                if (Settings.PowerPointSettings != null) {
+                    if (Settings.PowerPointSettings.PowerPointSupport) {
+                        timerCheckPPT.Start();
+                    } else {
+                        timerCheckPPT.Stop();
+                    }
+                }
+
+                 if (Settings.Gesture != null) {
+                    if (Settings.Gesture.IsEnableMultiTouchMode) {
+                        if (!isInMultiTouchMode) {
+                            inkCanvas.StylusDown += MainWindow_StylusDown;
+                            inkCanvas.StylusMove += MainWindow_StylusMove;
+                            inkCanvas.StylusUp += MainWindow_StylusUp;
+                            inkCanvas.TouchDown += MainWindow_TouchDown;
+                            inkCanvas.TouchDown -= Main_Grid_TouchDown;
+                            inkCanvas.EditingMode = InkCanvasEditingMode.None;
+                            inkCanvas.EditingMode = InkCanvasEditingMode.Ink;
+                            inkCanvas.Children.Clear();
+                            isInMultiTouchMode = true;
+                        }
+                    } else {
+                        if (isInMultiTouchMode) {
+                            inkCanvas.StylusDown -= MainWindow_StylusDown;
+                            inkCanvas.StylusMove -= MainWindow_StylusMove;
+                            inkCanvas.StylusUp -= MainWindow_StylusUp;
+                            inkCanvas.TouchDown -= MainWindow_TouchDown;
+                            inkCanvas.TouchDown += Main_Grid_TouchDown;
+                            inkCanvas.EditingMode = InkCanvasEditingMode.None;
+                            inkCanvas.EditingMode = InkCanvasEditingMode.Ink;
+                            inkCanvas.Children.Clear();
+                            isInMultiTouchMode = false;
+                        }
+                    }
+
+                    CheckEnableTwoFingerGestureBtnColorPrompt();
+                }
+
+                // auto align
+                if (BorderFloatingBarExitPPTBtn.Visibility == Visibility.Visible) {
+                    ViewboxFloatingBarMarginAnimation(60);
+                } else {
+                    ViewboxFloatingBarMarginAnimation(100, true);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                 LogHelper.WriteLogToFile("Error in PerformStartupTasks: " + ex.Message, LogHelper.LogType.Error);
+            }
+        }
+
+        /// <summary>
+        /// 应用特殊版本推荐设置
+        /// </summary>
+        private async void ApplySpecialVersionSettings()
+        {
+             await Task.Delay(1000);
+            try {
+                isLoaded = false;
+
+                var settingsService = ServiceLocator.GetService<ISettingsService>();
+                if (settingsService != null)
+                {
+                    settingsService.ResetToDefaults();
+
+                    // 应用特殊版本设置
+                    Settings.Advanced.IsSpecialScreen = true;
+                    Settings.Advanced.IsQuadIR = false;
+                    Settings.Advanced.TouchMultiplier = 0.3;
+                    Settings.Advanced.NibModeBoundsWidth = 5;
+                    Settings.Advanced.FingerModeBoundsWidth = 20;
+                    Settings.Advanced.EraserBindTouchMultiplier = true;
+                    Settings.Advanced.IsLogEnabled = true;
+                    Settings.Advanced.IsEnableEdgeGestureUtil = false;
+                    Settings.Advanced.EdgeGestureUtilOnlyAffectBlackboardMode = false;
+                    Settings.Advanced.IsEnableFullScreenHelper = false;
+                    Settings.Advanced.IsEnableForceFullScreen = false;
+                    Settings.Advanced.IsEnableDPIChangeDetection = false;
+                    Settings.Advanced.IsEnableResolutionChangeDetection = false;
+                    Settings.Advanced.IsDisableCloseWindow = true;
+                    Settings.Advanced.EnableForceTopMost = false;
+
+                    Settings.Appearance.IsEnableDisPlayNibModeToggler = false;
+                    Settings.Appearance.IsColorfulViewboxFloatingBar = false;
+                    Settings.Appearance.ViewboxFloatingBarScaleTransformValue = 1;
+                    Settings.Appearance.EnableViewboxBlackBoardScaleTransform = false;
+                    Settings.Appearance.IsTransparentButtonBackground = true;
+                    Settings.Appearance.IsShowExitButton = true;
+                    Settings.Appearance.IsShowEraserButton = true;
+                    Settings.Appearance.IsShowHideControlButton = false;
+                    Settings.Appearance.IsShowLRSwitchButton = false;
+                    Settings.Appearance.IsShowModeFingerToggleSwitch = true;
+                    Settings.Appearance.IsShowQuickPanel = true;
+                    Settings.Appearance.Theme = 0;
+                    Settings.Appearance.EnableChickenSoupInWhiteboardMode = true;
+                    Settings.Appearance.EnableTimeDisplayInWhiteboardMode = true;
+                    Settings.Appearance.ChickenSoupSource = 1;
+                    Settings.Appearance.ViewboxFloatingBarOpacityValue = 1.0;
+                    Settings.Appearance.ViewboxFloatingBarOpacityInPPTValue = 1.0;
+                    Settings.Appearance.EnableTrayIcon = true;
+                    Settings.Appearance.FloatingBarButtonLabelVisibility = true;
+                    Settings.Appearance.FloatingBarIconsVisibility = "11111111";
+                    Settings.Appearance.EraserButtonsVisibility = 0;
+                    Settings.Appearance.OnlyDisplayEraserBtn = false;
+
+                    // Automation
+                    Settings.Automation.IsAutoFoldInEasiNote = true;
+                    Settings.Automation.IsAutoFoldInEasiNoteIgnoreDesktopAnno = true;
+                    Settings.Automation.IsAutoFoldInEasiCamera = true;
+                    Settings.Automation.IsAutoFoldInEasiNote3C = false;
+                    Settings.Automation.IsAutoFoldInEasiNote3 = false;
+                    Settings.Automation.IsAutoFoldInEasiNote5C = true;
+                    Settings.Automation.IsAutoFoldInSeewoPincoTeacher = false;
+                    Settings.Automation.IsAutoFoldInHiteTouchPro = false;
+                    Settings.Automation.IsAutoFoldInHiteCamera = false;
+                    Settings.Automation.IsAutoFoldInWxBoardMain = false;
+                    Settings.Automation.IsAutoFoldInOldZyBoard = false;
+                    Settings.Automation.IsAutoFoldInMSWhiteboard = false;
+                    Settings.Automation.IsAutoFoldInAdmoxWhiteboard = false;
+                    Settings.Automation.IsAutoFoldInAdmoxBooth = false;
+                    Settings.Automation.IsAutoFoldInQPoint = false;
+                    Settings.Automation.IsAutoFoldInYiYunVisualPresenter = false;
+                    Settings.Automation.IsAutoFoldInMaxHubWhiteboard = false;
+                    Settings.Automation.IsAutoFoldInPPTSlideShow = false;
+                    Settings.Automation.IsAutoKillPptService = false;
+                    Settings.Automation.IsAutoKillEasiNote = false;
+                    Settings.Automation.IsAutoKillVComYouJiao = false;
+                    Settings.Automation.IsAutoKillInkCanvas = false;
+                    Settings.Automation.IsAutoKillICA = false;
+                    Settings.Automation.IsAutoKillIDT = true;
+                    Settings.Automation.IsAutoKillSeewoLauncher2DesktopAnnotation = false;
+                    Settings.Automation.IsSaveScreenshotsInDateFolders = false;
+                    Settings.Automation.IsAutoSaveStrokesAtScreenshot = true;
+                    Settings.Automation.IsAutoSaveStrokesAtClear = true;
+                    Settings.Automation.IsAutoClearWhenExitingWritingMode = false;
+                    Settings.Automation.MinimumAutomationStrokeNumber = 0;
+                    Settings.Automation.IsEnableLimitAutoSaveAmount = false;
+                    Settings.Automation.LimitAutoSaveAmount = 3;
+                    // Special version overrides
+                    Settings.Automation.AutoDelSavedFiles = true;
+                    Settings.Automation.AutoDelSavedFilesDaysThreshold = 15;
+
+                    Settings.PowerPointSettings.PowerPointSupport = true;
+                    Settings.PowerPointSettings.IsShowCanvasAtNewSlideShow = false;
+                    Settings.PowerPointSettings.IsNoClearStrokeOnSelectWhenInPowerPoint = true;
+                    Settings.PowerPointSettings.IsShowStrokeOnSelectInPowerPoint = false;
+                    Settings.PowerPointSettings.IsAutoSaveStrokesInPowerPoint = true;
+                    Settings.PowerPointSettings.IsAutoSaveScreenShotInPowerPoint = true;
+                    Settings.PowerPointSettings.IsNotifyPreviousPage = false;
+                    Settings.PowerPointSettings.IsNotifyHiddenPage = false;
+                    Settings.PowerPointSettings.IsEnableTwoFingerGestureInPresentationMode = false;
+                    Settings.PowerPointSettings.IsSupportWPS = true;
+                    Settings.PowerPointSettings.RegistryShowBlackScreenLastSlideShow = false;
+                    Settings.PowerPointSettings.RegistryShowSlideShowToolbar = false;
+
+                    Settings.Canvas.InkWidth = 2;
+                    Settings.Canvas.IsShowCursor = false;
+                    Settings.Canvas.InkStyle = 0;
+                    Settings.Canvas.HighlighterWidth = 20;
+                    Settings.Canvas.EraserSize = 1;
+                    Settings.Canvas.EraserType = 0;
+                    Settings.Canvas.EraserShapeType = 1;
+                    Settings.Canvas.HideStrokeWhenSelecting = false;
+                    Settings.Canvas.ClearCanvasAndClearTimeMachine = false;
+                    Settings.Canvas.FitToCurve = false;
+                    Settings.Canvas.HyperbolaAsymptoteOption = 0;
+                    Settings.Canvas.BlackboardBackgroundColor = BlackboardBackgroundColorEnum.White;
+                    Settings.Canvas.BlackboardBackgroundPattern = BlackboardBackgroundPatternEnum.None;
+                    Settings.Canvas.IsEnableAutoConvertInkColorWhenBackgroundChanged = false;
+                    Settings.Canvas.UseDefaultBackgroundColorForEveryNewAddedBlackboardPage = false;
+                    Settings.Canvas.UseDefaultBackgroundPatternForEveryNewAddedBlackboardPage = false;
+                    Settings.Canvas.SelectionMethod = 0;
+                    Settings.Canvas.ApplyScaleToStylusTip = false;
+                    Settings.Canvas.OnlyHitTestFullyContainedStrokes = false;
+                    Settings.Canvas.AllowClickToSelectLockedStroke = false;
+
+                    Settings.Gesture.AutoSwitchTwoFingerGesture = true;
+                    Settings.Gesture.IsEnableTwoFingerTranslate = true;
+                    Settings.Gesture.IsEnableTwoFingerZoom = false;
+                    Settings.Gesture.IsEnableTwoFingerRotation = false;
+                    Settings.Gesture.IsEnableTwoFingerRotationOnSelection = false;
+                    Settings.Gesture.DisableGestureEraser = true;
+                    Settings.Gesture.DefaultMultiPointHandWritingMode = 2;
+                    Settings.Gesture.HideCursorWhenUsingTouchDevice = true;
+                    Settings.Gesture.EnableMouseGesture = true;
+                    Settings.Gesture.EnableMouseRightBtnGesture = true;
+                    Settings.Gesture.EnableMouseWheelGesture = true;
+
+                    Settings.InkToShape.IsInkToShapeEnabled = true;
+                    Settings.InkToShape.IsInkToShapeNoFakePressureRectangle = false;
+                    Settings.InkToShape.IsInkToShapeNoFakePressureTriangle = false;
+                    Settings.InkToShape.IsInkToShapeTriangle = true;
+                    Settings.InkToShape.IsInkToShapeRectangle = true;
+                    Settings.InkToShape.IsInkToShapeRounded = true;
+
+                    Settings.Startup.IsEnableNibMode = false;
+                    Settings.Startup.IsAutoUpdate = true;
+                    Settings.Startup.IsAutoUpdateWithSilence = true;
+                    Settings.Startup.AutoUpdateWithSilenceStartTime = "18:20";
+                    Settings.Startup.AutoUpdateWithSilenceEndTime = "07:40";
+                    Settings.Startup.IsFoldAtStartup = false;
+                    Settings.Startup.EnableWindowChromeRendering = false;
+
+                    Settings.Snapshot.CopyScreenshotToClipboard = true;
+                    Settings.Snapshot.AttachInkWhenScreenshot = true;
+                    Settings.Snapshot.OnlySnapshotMaximizeWindow = false;
+                    Settings.Snapshot.ScreenshotFileName = "Screenshot-[YYYY]-[MM]-[DD]-[HH]-[mm]-[ss].png";
+                    Settings.Snapshot.ScreenshotUsingMagnificationAPI = false;
+
+                    Settings.Storage.StorageLocation = "fr";
+                    Settings.Storage.UserStorageLocation = "";
+
+                    // 同步设置 AutoSavedStrokesLocation 为安装目录下的 Data 文件夹
+                    var runfolder = AppDomain.CurrentDomain.BaseDirectory;
+                    Settings.Automation.AutoSavedStrokesLocation =
+                        (runfolder.EndsWith("\\") ? runfolder.Substring(0, runfolder.Length - 1) : runfolder) + "\\Data";
+
+                    settingsService.Save();
+                }
+
+                isLoaded = true;
+            }
+            catch (Exception ex) {
+                LogHelper.WriteLogToFile("Error in ApplySpecialVersionSettings: " + ex.Message, LogHelper.LogType.Error);
+            }
         }
 
         private void SystemEventsOnDisplaySettingsChanged(object sender, EventArgs e) {
@@ -1259,6 +1801,29 @@ namespace Ink_Canvas {
 
         private void Window_Closed(object sender, EventArgs e) {
             LogHelper.WriteLogToFile("Ink Canvas closed", LogHelper.LogType.Event);
+        }
+
+        private void DisplayWelcomePopup() {
+            if( Ookii.Dialogs.Wpf.TaskDialog.OSSupportsTaskDialogs ) {
+                var t = new Thread(() => {
+                    try {
+                        using (Ookii.Dialogs.Wpf.TaskDialog dialog = new Ookii.Dialogs.Wpf.TaskDialog()) {
+                            dialog.WindowTitle = "InkCanvasForClass";
+                            dialog.MainInstruction = "已重置为建议设置";
+                            dialog.Content = "为了方便在不同环境下获得最佳体验，我们已经将所有选项重置。完成后建议您重启应用。";
+
+                            dialog.Footer = "您以后也可以在 “设置” 界面手动更改这些选项。";
+
+                            dialog.FooterIcon = Ookii.Dialogs.Wpf.TaskDialogIcon.Information;
+                            dialog.EnableHyperlinks = true;
+                            Ookii.Dialogs.Wpf.TaskDialogButton okButton = new Ookii.Dialogs.Wpf.TaskDialogButton(Ookii.Dialogs.Wpf.ButtonType.Ok);
+                            dialog.Buttons.Add(okButton);
+                            Ookii.Dialogs.Wpf.TaskDialogButton button = dialog.Show();
+                        }
+                    } catch { /* 忽略错误 */ }
+                });
+                t.Start();
+            }
         }
 
         private async void AutoUpdate() {

@@ -23,7 +23,10 @@ namespace Ink_Canvas {
             isDisplayingOrHidingBlackboard = true;
             HideSubPanelsImmediately();
             if (Settings.Gesture.AutoSwitchTwoFingerGesture) // 自动启用多指书写
-                ToggleSwitchEnableTwoFingerTranslate.IsOn = false;
+            {
+                Settings.Gesture.IsEnableTwoFingerTranslate = false;
+                SaveSettings();
+            }
             WaterMarkTime.Visibility = Visibility.Collapsed;
             WaterMarkDate.Visibility = Visibility.Collapsed;
             BlackBoardWaterMark.Visibility = Visibility.Collapsed;

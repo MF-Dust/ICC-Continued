@@ -135,15 +135,6 @@ namespace Ink_Canvas {
             }
         }
 
-        private void ToggleSwitchSupportWPS_Toggled(object sender, RoutedEventArgs e) {
-            if (!isLoaded) return;
-
-            Settings.PowerPointSettings.IsSupportWPS = ToggleSwitchSupportWPS.IsOn;
-            SaveSettings();
-        }
-
-        private bool isWPSSupportOn => Settings.PowerPointSettings.IsSupportWPS;
-
         public static bool IsShowingRestoreHiddenSlidesWindow = false;
         private static bool IsShowingAutoplaySlidesWindow = false;
 

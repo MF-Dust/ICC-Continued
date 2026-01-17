@@ -41,8 +41,8 @@
                 <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
                 <Setter Property="BorderThickness" Value="1"/>
                 <Setter Property="CornerRadius" Value="8"/>
-                <Setter Property="Padding" Value="16"/>
-                <Setter Property="Margin" Value="0,0,0,8"/>
+                <Setter Property="Padding" Value="20"/>
+                <Setter Property="Margin" Value="0,0,0,12"/>
             </Style>
 
             <!-- 设置项标题样式 -->
@@ -71,10 +71,12 @@
 
             <!-- 图标样式 -->
             <Style x:Key="SettingsIconStyle" TargetType="ui:FontIcon">
-                <Setter Property="FontSize" Value="20"/>
+                <Setter Property="FontSize" Value="22"/>
                 <Setter Property="Foreground" Value="{StaticResource AccentBrush}"/>
                 <Setter Property="Margin" Value="0,0,16,0"/>
                 <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="Width" Value="24"/>
+                <Setter Property="HorizontalAlignment" Value="Center"/>
             </Style>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -94,7 +96,7 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <ui:FontIcon Glyph="&#xE7E8;" Style="{StaticResource SettingsIconStyle}"/>
-                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,16,0">
                     <TextBlock Text="开机时运行" Style="{StaticResource SettingsTitleStyle}"/>
                     <TextBlock Text="系统启动时自动运行此应用程序" Style="{StaticResource SettingsDescriptionStyle}"/>
                 </StackPanel>
@@ -112,7 +114,7 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <ui:FontIcon Glyph="&#xE744;" Style="{StaticResource SettingsIconStyle}"/>
-                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,16,0">
                     <TextBlock Text="开机运行后收纳到侧边栏" Style="{StaticResource SettingsTitleStyle}"/>
                     <TextBlock Text="启动后自动将工具栏折叠到屏幕边缘" Style="{StaticResource SettingsDescriptionStyle}"/>
                 </StackPanel>
@@ -134,11 +136,11 @@
                     <ColumnDefinition Width="50"/>
                 </Grid.ColumnDefinitions>
                 <ui:FontIcon Glyph="&#xE740;" Style="{StaticResource SettingsIconStyle}"/>
-                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,16,0">
                     <TextBlock Text="浮动工具栏缩放" Style="{StaticResource SettingsTitleStyle}"/>
                     <TextBlock Text="调整工具栏的显示大小" Style="{StaticResource SettingsDescriptionStyle}"/>
                 </StackPanel>
-                <Slider Grid.Column="2" VerticalAlignment="Center"
+                <Slider Grid.Column="2" VerticalAlignment="Center" Margin="0,0,12,0"
                         Minimum="0.5" Maximum="2.0"
                         Value="{Binding Appearance.ViewboxFloatingBarScaleTransformValue, Mode=TwoWay}"
                         TickFrequency="0.1" IsSnapToTickEnabled="True"
@@ -160,11 +162,11 @@
                     <ColumnDefinition Width="50"/>
                 </Grid.ColumnDefinitions>
                 <ui:FontIcon Glyph="&#xE7A6;" Style="{StaticResource SettingsIconStyle}"/>
-                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,16,0">
                     <TextBlock Text="浮动工具栏透明度" Style="{StaticResource SettingsTitleStyle}"/>
                     <TextBlock Text="调整工具栏的不透明度" Style="{StaticResource SettingsDescriptionStyle}"/>
                 </StackPanel>
-                <Slider Grid.Column="2" VerticalAlignment="Center"
+                <Slider Grid.Column="2" VerticalAlignment="Center" Margin="0,0,12,0"
                         Minimum="0.1" Maximum="1.0"
                         Value="{Binding Appearance.ViewboxFloatingBarOpacityValue, Mode=TwoWay}"
                         TickFrequency="0.1" IsSnapToTickEnabled="True"

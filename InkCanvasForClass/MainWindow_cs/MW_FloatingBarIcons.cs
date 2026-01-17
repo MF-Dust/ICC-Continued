@@ -76,8 +76,8 @@ namespace Ink_Canvas {
             AnimationsHelper.HideWithSlideAndFade(EraserSizePanel);
             AnimationsHelper.HideWithSlideAndFade(BorderTools);
             AnimationsHelper.HideWithSlideAndFade(BoardBorderTools);
-            AnimationsHelper.HideWithSlideAndFade(PenPalette);
-            AnimationsHelper.HideWithSlideAndFade(BoardPenPalette);
+            // AnimationsHelper.HideWithSlideAndFade(PenPalette);
+            // AnimationsHelper.HideWithSlideAndFade(BoardPenPalette);
             AnimationsHelper.HideWithSlideAndFade(BorderDrawShape);
             AnimationsHelper.HideWithSlideAndFade(BoardBorderDrawShape);
             AnimationsHelper.HideWithSlideAndFade(BoardEraserSizePanel);
@@ -103,22 +103,12 @@ namespace Ink_Canvas {
         /// 鐢ㄦ柤鏇存柊娴嫊宸ュ叿娆勭殑"鎵嬪嫝"鎸夐垥鍜岀櫧鏉垮伐鍏锋瑒鐨?鎵嬪嫝"鎸夐垥鐨勬ǎ寮忥紙闁嬪暉鍜岄棞闁夌媭鎱嬶級
         /// </summary>
         private void CheckEnableTwoFingerGestureBtnColorPrompt() {
-            if (ToggleSwitchEnableMultiTouchMode.IsOn) {
-                TwoFingerGestureSimpleStackPanel.Opacity = 0.5;
-                TwoFingerGestureSimpleStackPanel.IsHitTestVisible = false;
-                EnableTwoFingerGestureBtn.Source =
-                    new BitmapImage(new Uri("/Resources/new-icons/gesture.png", UriKind.Relative));
+            if (Settings.Gesture.DefaultMultiPointHandWritingMode == 0) {
                 SetBoardGestureDisabledStyle();
             } else {
-                TwoFingerGestureSimpleStackPanel.Opacity = 1;
-                TwoFingerGestureSimpleStackPanel.IsHitTestVisible = true;
                 if (Settings.Gesture.IsEnableTwoFingerGesture) {
-                    EnableTwoFingerGestureBtn.Source =
-                        new BitmapImage(new Uri("/Resources/new-icons/gesture-enabled.png", UriKind.Relative));
                     SetBoardGestureEnabledStyle();
                 } else {
-                    EnableTwoFingerGestureBtn.Source =
-                        new BitmapImage(new Uri("/Resources/new-icons/gesture.png", UriKind.Relative));
                     SetBoardGestureDisabledStyle();
                 }
             }
@@ -155,20 +145,7 @@ namespace Ink_Canvas {
         /// 控制是否顯示浮動工具欄的“手勢”按鈕
         /// </summary>
         private void CheckEnableTwoFingerGestureBtnVisibility(bool isVisible) {
-            if (Settings.Appearance.FloatingBarIconsVisibility.Length > 9 && Settings.Appearance.FloatingBarIconsVisibility[9] == '0') {
-                EnableTwoFingerGestureBorder.Visibility = Visibility.Collapsed;
-                return;
-            }
-            if (StackPanelCanvasControls.Visibility != Visibility.Visible
-                || BorderFloatingBarMainControls.Visibility != Visibility.Visible) {
-                EnableTwoFingerGestureBorder.Visibility = Visibility.Collapsed;
-            } else if (isVisible == true) {
-                if (BorderFloatingBarExitPPTBtn.Visibility == Visibility.Visible)
-                    EnableTwoFingerGestureBorder.Visibility = Visibility.Collapsed;
-                else EnableTwoFingerGestureBorder.Visibility = Visibility.Visible;
-            } else {
-                EnableTwoFingerGestureBorder.Visibility = Visibility.Collapsed;
-            }
+            // EnableTwoFingerGestureBorder has been removed
         }
 
         #endregion “手勢”按鈕
@@ -242,11 +219,13 @@ namespace Ink_Canvas {
         private void HideSubPanelsImmediately() {
             BorderTools.Visibility = Visibility.Collapsed;
             BoardBorderTools.Visibility = Visibility.Collapsed;
-            PenPalette.Visibility = Visibility.Collapsed;
-            BoardPenPalette.Visibility = Visibility.Collapsed;
+            // PenPalette.Visibility = Visibility.Collapsed;
+            // BoardPenPalette.Visibility = Visibility.Collapsed;
             BoardEraserSizePanel.Visibility = Visibility.Collapsed;
             EraserSizePanel.Visibility = Visibility.Collapsed;
-            BorderSettings.Visibility = Visibility.Collapsed;
+            // BorderSettings.Visibility = Visibility.Collapsed; // Removed
+            //BorderSettingsMask.Visibility = Visibility.Collapsed;
+            //SettingsOverlay.Visibility = Visibility.Collapsed;
             BoardBorderLeftPageListView.Visibility = Visibility.Collapsed;
             BoardBorderRightPageListView.Visibility = Visibility.Collapsed;
             BoardBackgroundPopup.Visibility = Visibility.Collapsed;
@@ -314,8 +293,8 @@ namespace Ink_Canvas {
         private async void HideSubPanels(string mode = null, bool autoAlignCenter = false) {
             AnimationsHelper.HideWithSlideAndFade(BorderTools);
             AnimationsHelper.HideWithSlideAndFade(BoardBorderTools);
-            AnimationsHelper.HideWithSlideAndFade(PenPalette);
-            AnimationsHelper.HideWithSlideAndFade(BoardPenPalette);
+            // AnimationsHelper.HideWithSlideAndFade(PenPalette);
+            // AnimationsHelper.HideWithSlideAndFade(BoardPenPalette);
             AnimationsHelper.HideWithSlideAndFade(BoardEraserSizePanel);
             AnimationsHelper.HideWithSlideAndFade(EraserSizePanel);
             AnimationsHelper.HideWithSlideAndFade(BorderDrawShape);
@@ -323,34 +302,9 @@ namespace Ink_Canvas {
             AnimationsHelper.HideWithSlideAndFade(BoardBorderRightPageListView);
             AnimationsHelper.HideWithSlideAndFade(BoardBackgroundPopup);
 
-            if (BorderSettings.Visibility == Visibility.Visible) {
-                SettingsOverlay.IsHitTestVisible = false;
-                SettingsOverlay.Background = null;
-                var sb = new Storyboard();
-
-                // 滑动动画
-                var slideAnimation = new DoubleAnimation {
-                    From = 0, // 滑动距离
-                    To = BorderSettings.RenderTransform.Value.OffsetX - 490,
-                    Duration = TimeSpan.FromSeconds(0.6)
-                };
-                slideAnimation.EasingFunction = new CubicEase() { EasingMode = EasingMode.EaseOut };
-                Storyboard.SetTargetProperty(slideAnimation,
-                    new PropertyPath("(UIElement.RenderTransform).(TranslateTransform.X)"));
-                Storyboard.SetDesiredFrameRate(slideAnimation, 144);
-                sb.Children.Add(slideAnimation);
-
-                sb.Completed += (s, _) => {
-                    BorderSettings.Visibility = Visibility.Collapsed;
-                    isOpeningOrHidingSettingsPane = false;
-                };
-
-                BorderSettings.Visibility = Visibility.Visible;
-                BorderSettings.RenderTransform = new TranslateTransform();
-
-                isOpeningOrHidingSettingsPane = true;
-                sb.Begin((FrameworkElement)BorderSettings);
-            }
+            // Removed BorderSettings logic
+            //BorderSettingsMask.Visibility = Visibility.Collapsed;
+            //SettingsOverlay.Visibility = Visibility.Collapsed;
 
             AnimationsHelper.HideWithSlideAndFade(TwoFingerGestureBorder);
             AnimationsHelper.HideWithSlideAndFade(EraserSizePanel);
@@ -461,8 +415,9 @@ namespace Ink_Canvas {
 
                 if (Settings.Gesture.AutoSwitchTwoFingerGesture) // 自动关闭多指书写、开启双指移动
                 {
-                    ToggleSwitchEnableTwoFingerTranslate.IsOn = true;
-                    if (isInMultiTouchMode) ToggleSwitchEnableMultiTouchMode.IsOn = false;
+                    Settings.Gesture.IsEnableTwoFingerTranslate = true;
+                    if (isInMultiTouchMode) Settings.Gesture.DefaultMultiPointHandWritingMode = 1;
+                    SaveSettings();
                 }
 
                 if (Settings.Appearance.EnableTimeDisplayInWhiteboardMode == true) {
@@ -524,7 +479,10 @@ namespace Ink_Canvas {
                 if (SelectedMode != ICCToolsEnum.PenMode) PenIcon_Click(null, null);
 
                 if (Settings.Gesture.AutoSwitchTwoFingerGesture) // 自动启用多指书写
-                    ToggleSwitchEnableTwoFingerTranslate.IsOn = false;
+                {
+                    Settings.Gesture.IsEnableTwoFingerTranslate = false;
+                    SaveSettings();
+                }
                 // 2024.5.2 need to be tested
                 // if (!isInMultiTouchMode) ToggleSwitchEnableMultiTouchMode.IsOn = true;
                 WaterMarkTime.Visibility = Visibility.Collapsed;
@@ -1153,8 +1111,8 @@ namespace Ink_Canvas {
                 {
                     AnimationsHelper.HideWithSlideAndFade(BorderTools);
                     AnimationsHelper.HideWithSlideAndFade(BoardBorderTools);
-                    AnimationsHelper.HideWithSlideAndFade(PenPalette);
-                    AnimationsHelper.HideWithSlideAndFade(BoardPenPalette);
+                    // AnimationsHelper.HideWithSlideAndFade(PenPalette);
+                    // AnimationsHelper.HideWithSlideAndFade(BoardPenPalette);
                     AnimationsHelper.HideWithSlideAndFade(BorderDrawShape);
                     AnimationsHelper.HideWithSlideAndFade(BoardBorderDrawShape);
                     AnimationsHelper.HideWithSlideAndFade(BorderTools);
@@ -1167,8 +1125,8 @@ namespace Ink_Canvas {
                     AnimationsHelper.HideWithSlideAndFade(EraserSizePanel);
                     AnimationsHelper.HideWithSlideAndFade(BorderTools);
                     AnimationsHelper.HideWithSlideAndFade(BoardBorderTools);
-                    AnimationsHelper.HideWithSlideAndFade(PenPalette);
-                    AnimationsHelper.HideWithSlideAndFade(BoardPenPalette);
+                    // AnimationsHelper.HideWithSlideAndFade(PenPalette);
+                    // AnimationsHelper.HideWithSlideAndFade(BoardPenPalette);
                     AnimationsHelper.HideWithSlideAndFade(BorderDrawShape);
                     AnimationsHelper.HideWithSlideAndFade(BoardBorderDrawShape);
                     AnimationsHelper.HideWithSlideAndFade(BoardEraserSizePanel);
@@ -1333,18 +1291,25 @@ namespace Ink_Canvas {
         }
 
         private void SymbolIconSettings_Click(object sender, RoutedEventArgs e) {
-            if (isOpeningOrHidingSettingsPane != false) return;
             HideSubPanels();
-            isChangingUserStorageSelectionProgramically = true;
-            UpdateUserStorageSelection();
-            isChangingUserStorageSelectionProgramically = false;
-            HandleUserCustomStorageLocation();
-            InitStorageFoldersStructure(storageLocationItems[ComboBoxStoragePath.SelectedIndex].Path);
-            StartAnalyzeStorage();
-            CustomStorageLocationGroup.Visibility = ((StorageLocationItem)ComboBoxStoragePath.SelectedItem).SelectItem == "c-" ? Visibility.Visible : Visibility.Collapsed;
-            CustomStorageLocationCheckPanel.Visibility = ((StorageLocationItem)ComboBoxStoragePath.SelectedItem).SelectItem == "c-" ? Visibility.Visible : Visibility.Collapsed;
-            CustomStorageLocation.Text = Settings.Storage.UserStorageLocation;
-            BtnSettings_Click(null, null);
+            
+            // 检查是否已经打开了设置窗口
+            foreach (Window window in Application.Current.Windows)
+            {
+                if (window is Views.Settings.SettingsWindow)
+                {
+                    window.Activate();
+                    if (window.WindowState == WindowState.Minimized)
+                    {
+                        window.WindowState = WindowState.Normal;
+                    }
+                    return;
+                }
+            }
+
+            // 打开新的设置窗口
+            var settingsWindow = new Views.Settings.SettingsWindow();
+            settingsWindow.Show();
         }
 
         private async void SymbolIconScreenshot_MouseUp(object sender, MouseButtonEventArgs e) {
@@ -1383,20 +1348,7 @@ namespace Ink_Canvas {
         }
 
         public void CheckEraserTypeTab() {
-            if (Settings.Canvas.EraserShapeType == 0) {
-                // 圆形橡皮擦选中
-                UIStyleHelper.SetTabButtonSelected(CircleEraserTabButton, CircleEraserTabButtonText, CircleEraserTabButtonIndicator);
-                UIStyleHelper.SetTabButtonUnselected(RectangleEraserTabButton, RectangleEraserTabButtonText, RectangleEraserTabButtonIndicator);
-                UIStyleHelper.SetTabButtonSelected(BoardCircleEraserTabButton, BoardCircleEraserTabButtonText, BoardCircleEraserTabButtonIndicator);
-                UIStyleHelper.SetTabButtonUnselected(BoardRectangleEraserTabButton, BoardRectangleEraserTabButtonText, BoardRectangleEraserTabButtonIndicator);
-            }
-            else {
-                // 矩形橡皮擦选中
-                UIStyleHelper.SetTabButtonSelected(RectangleEraserTabButton, RectangleEraserTabButtonText, RectangleEraserTabButtonIndicator);
-                UIStyleHelper.SetTabButtonUnselected(CircleEraserTabButton, CircleEraserTabButtonText, CircleEraserTabButtonIndicator);
-                UIStyleHelper.SetTabButtonSelected(BoardRectangleEraserTabButton, BoardRectangleEraserTabButtonText, BoardRectangleEraserTabButtonIndicator);
-                UIStyleHelper.SetTabButtonUnselected(BoardCircleEraserTabButton, BoardCircleEraserTabButtonText, BoardCircleEraserTabButtonIndicator);
-            }
+            // Eraser tabs have been removed from legacy UI
         }
 
         private void SymbolIconRandOne_MouseUp(object sender, MouseButtonEventArgs e) {
@@ -1626,8 +1578,8 @@ namespace Ink_Canvas {
                 AnimationsHelper.HideWithSlideAndFade(EraserSizePanel);
                 AnimationsHelper.HideWithSlideAndFade(BorderTools);
                 AnimationsHelper.HideWithSlideAndFade(BoardBorderTools);
-                AnimationsHelper.HideWithSlideAndFade(PenPalette);
-                AnimationsHelper.HideWithSlideAndFade(BoardPenPalette);
+                // AnimationsHelper.HideWithSlideAndFade(PenPalette);
+                // AnimationsHelper.HideWithSlideAndFade(BoardPenPalette);
                 AnimationsHelper.HideWithSlideAndFade(BorderDrawShape);
                 AnimationsHelper.HideWithSlideAndFade(BoardBorderDrawShape);
                 AnimationsHelper.HideWithSlideAndFade(BoardEraserSizePanel);
@@ -1640,8 +1592,8 @@ namespace Ink_Canvas {
                 AnimationsHelper.HideWithSlideAndFade(EraserSizePanel);
                 AnimationsHelper.HideWithSlideAndFade(BorderTools);
                 AnimationsHelper.HideWithSlideAndFade(BoardBorderTools);
-                AnimationsHelper.HideWithSlideAndFade(PenPalette);
-                AnimationsHelper.HideWithSlideAndFade(BoardPenPalette);
+                // AnimationsHelper.HideWithSlideAndFade(PenPalette);
+                // AnimationsHelper.HideWithSlideAndFade(BoardPenPalette);
                 AnimationsHelper.HideWithSlideAndFade(BorderDrawShape);
                 AnimationsHelper.HideWithSlideAndFade(BoardBorderDrawShape);
                 AnimationsHelper.HideWithSlideAndFade(BoardEraserSizePanel);
@@ -1945,36 +1897,8 @@ namespace Ink_Canvas {
         private bool isOpeningOrHidingSettingsPane = false;
 
         private void BtnSettings_Click(object sender, RoutedEventArgs e) {
-            if (BorderSettings.Visibility == Visibility.Visible) {
-                HideSubPanels();
-            }
-            else {
-                SettingsOverlay.IsHitTestVisible = true;
-                SettingsOverlay.Background = new SolidColorBrush(Color.FromArgb(1, 0, 0, 0));
-                SettingsPanelScrollViewer.ScrollToTop();
-                var sb = new Storyboard();
-
-                // 滑动动画
-                var slideAnimation = new DoubleAnimation {
-                    From = BorderSettings.RenderTransform.Value.OffsetX - 490, // 滑动距离
-                    To = 0,
-                    Duration = TimeSpan.FromSeconds(0.6)
-                };
-                slideAnimation.EasingFunction = new CubicEase() { EasingMode = EasingMode.EaseOut };
-                Storyboard.SetTargetProperty(slideAnimation,
-                    new PropertyPath("(UIElement.RenderTransform).(TranslateTransform.X)"));
-                Storyboard.SetDesiredFrameRate(slideAnimation , 144);
-
-                sb.Children.Add(slideAnimation);
-
-                sb.Completed += (s, _) => { isOpeningOrHidingSettingsPane = false; };
-
-                BorderSettings.Visibility = Visibility.Visible;
-                BorderSettings.RenderTransform = new TranslateTransform();
-
-                isOpeningOrHidingSettingsPane = true;
-                sb.Begin((FrameworkElement)BorderSettings);
-            }
+            //new Views.Settings.SettingsWindow().Show();
+            SymbolIconSettings_Click(null, null);
         }
 
         private void BtnThickness_Click(object sender, RoutedEventArgs e) { }
