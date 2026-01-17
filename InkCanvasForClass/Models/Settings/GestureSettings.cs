@@ -16,6 +16,7 @@ namespace Ink_Canvas.Models.Settings
         private bool _disableGestureEraser = true;
         private int _defaultMultiPointHandWritingMode = 2;
         private bool _hideCursorWhenUsingTouchDevice = true;
+        private int _hideCursorMode = 0;
         private bool _enableMouseGesture = true;
         private bool _enableMouseRightBtnGesture = true;
         private bool _enableMouseWheelGesture = true;
@@ -125,6 +126,16 @@ namespace Ink_Canvas.Models.Settings
         }
 
         /// <summary>
+        /// 隐藏光标模式（0=每次启动都开启，1=每次启动都关闭）
+        /// </summary>
+        [JsonProperty("hideCursorMode")]
+        public int HideCursorMode
+        {
+            get => _hideCursorMode;
+            set => SetProperty(ref _hideCursorMode, value);
+        }
+
+        /// <summary>
         /// 是否启用鼠标手势
         /// </summary>
         [JsonProperty("enableMouseGesture")]
@@ -155,7 +166,7 @@ namespace Ink_Canvas.Models.Settings
         }
 
         /// <summary>
-        /// 鼠标滚轮操作类型（0=缩放画布）
+        /// 鼠标滚轮操作类型（0=缩放画布，1=调整笔粗细）
         /// </summary>
         [JsonProperty("mouseWheelAction")]
         public int MouseWheelAction
