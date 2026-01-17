@@ -125,7 +125,7 @@ namespace Ink_Canvas {
         }
 
         /// <summary>
-        /// 璁剧疆鐧芥澘鎵嬪娍鎸夐挳涓虹鐢ㄦ牱寮?
+        /// 设置白板手势按钮为禁用样式
         /// </summary>
         private void SetBoardGestureDisabledStyle() {
             BoardGesture.Background = CachedZincGray100Brush;
