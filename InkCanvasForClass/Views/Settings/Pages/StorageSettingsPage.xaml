@@ -18,6 +18,7 @@
                 <ResourceDictionary Source="SettingsPageStyles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             <converters:FileSizeConverter x:Key="FileSizeConverter"/>
+            <converters:DoubleToGridLengthConverter x:Key="DoubleToGridLengthConverter"/>
             <wc:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -97,9 +98,9 @@
                     <!-- Disk Usage Bar -->
                     <Grid Height="24" Margin="0,0,0,8">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="3*"/> <!-- Other Used -->
-                            <ColumnDefinition Width="1*"/> <!-- ICC Data -->
-                            <ColumnDefinition Width="6*"/> <!-- Free -->
+                            <ColumnDefinition Width="{Binding Storage.OtherUsedSpace, Converter={StaticResource DoubleToGridLengthConverter}}"/> <!-- Other Used -->
+                            <ColumnDefinition Width="{Binding Storage.ICCDataSpace, Converter={StaticResource DoubleToGridLengthConverter}}"/> <!-- ICC Data -->
+                            <ColumnDefinition Width="{Binding Storage.FreeSpace, Converter={StaticResource DoubleToGridLengthConverter}}"/> <!-- Free -->
                         </Grid.ColumnDefinitions>
                         <Rectangle Grid.Column="0" Fill="#0099FF"/>
                         <Rectangle Grid.Column="1" Fill="#FF3333"/>
@@ -123,11 +124,11 @@
                     <!-- ICC Data Breakdown Bar -->
                     <Grid Height="16" Margin="0,0,0,16">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="1*"/>
-                            <ColumnDefinition Width="1*"/>
-                            <ColumnDefinition Width="1*"/>
-                            <ColumnDefinition Width="1*"/>
-                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="{Binding Storage.AutoSavedInkSize, Converter={StaticResource DoubleToGridLengthConverter}}"/>
+                            <ColumnDefinition Width="{Binding Storage.BoardImageRefSize, Converter={StaticResource DoubleToGridLengthConverter}}"/>
+                            <ColumnDefinition Width="{Binding Storage.ExportedBoardSize, Converter={StaticResource DoubleToGridLengthConverter}}"/>
+                            <ColumnDefinition Width="{Binding Storage.CacheSize, Converter={StaticResource DoubleToGridLengthConverter}}"/>
+                            <ColumnDefinition Width="{Binding Storage.AutoSavedScreenshotSize, Converter={StaticResource DoubleToGridLengthConverter}}"/>
                         </Grid.ColumnDefinitions>
                         <Rectangle Grid.Column="0" Fill="#F97316"/> <!-- Auto Saved Ink -->
                         <Rectangle Grid.Column="1" Fill="#EAB308"/> <!-- Board Image Ref -->

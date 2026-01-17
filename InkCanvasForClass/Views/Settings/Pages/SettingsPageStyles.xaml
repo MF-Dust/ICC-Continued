@@ -138,4 +138,22 @@
         <Setter Property="Foreground" Value="{StaticResource NewFeatureBrush}"/>
     </Style>
 
+    <!-- Admin Tag Style -->
+    <Style x:Key="AdminTagStyle" TargetType="Border" BasedOn="{StaticResource NewFeatureTagStyle}">
+        <Setter Property="Background" Value="#33F59E0B"/>
+        <Setter Property="BorderBrush" Value="#F59E0B"/>
+    </Style>
+    <Style x:Key="AdminTagTextStyle" TargetType="TextBlock" BasedOn="{StaticResource NewFeatureTagTextStyle}">
+        <Setter Property="Foreground" Value="#F59E0B"/>
+    </Style>
+
+    <!-- Experimental Tag Style -->
+    <Style x:Key="ExperimentalTagStyle" TargetType="Border" BasedOn="{StaticResource NewFeatureTagStyle}">
+        <Setter Property="Background" Value="#33EF4444"/>
+        <Setter Property="BorderBrush" Value="#EF4444"/>
+    </Style>
+    <Style x:Key="ExperimentalTagTextStyle" TargetType="TextBlock" BasedOn="{StaticResource NewFeatureTagTextStyle}">
+        <Setter Property="Foreground" Value="#EF4444"/>
+    </Style>
+
 </ResourceDictionary>

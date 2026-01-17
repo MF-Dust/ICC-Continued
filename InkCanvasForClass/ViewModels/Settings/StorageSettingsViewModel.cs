@@ -90,12 +90,14 @@ namespace Ink_Canvas.ViewModels.Settings
         {
             _settings.StorageLocation = value;
             _saveAction?.Invoke();
+            OnPropertyChanged(nameof(CurrentStoragePath));
         }
 
         partial void OnUserStorageLocationChanged(string value)
         {
             _settings.UserStorageLocation = value;
             _saveAction?.Invoke();
+            OnPropertyChanged(nameof(CurrentStoragePath));
         }
 
         // Disk Usage Properties (Mock Data for UI)
@@ -103,6 +105,11 @@ namespace Ink_Canvas.ViewModels.Settings
         [ObservableProperty] private double _usedSpace;
         [ObservableProperty] private double _freeSpace;
         [ObservableProperty] private double _iccDataSpace;
+
+        public double OtherUsedSpace => Math.Max(0, UsedSpace - IccDataSpace);
+
+        partial void OnUsedSpaceChanged(double value) => OnPropertyChanged(nameof(OtherUsedSpace));
+        partial void OnIccDataSpaceChanged(double value) => OnPropertyChanged(nameof(OtherUsedSpace));
 
         [ObservableProperty] private double _autoSavedInkSize;
         [ObservableProperty] private double _boardImageRefSize;

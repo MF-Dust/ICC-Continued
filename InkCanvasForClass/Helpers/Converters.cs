@@ -116,4 +116,21 @@ namespace Ink_Canvas.Converter
             throw new NotImplementedException();
         }
     }
+
+    public class DoubleToGridLengthConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is double val)
+            {
+                return new GridLength(Math.Max(0, val), GridUnitType.Star);
+            }
+            return new GridLength(0, GridUnitType.Star);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }
