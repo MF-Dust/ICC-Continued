@@ -411,16 +411,13 @@ namespace Ink_Canvas {
 
                 HideSubPanels();
                 if (GridTransparencyFakeBackground.Background == Brushes.Transparent) {
-                    if (currentMode == 1) {
-                        currentMode = 0;
-                        GridBackgroundCover.Visibility = Visibility.Collapsed;
-                        AnimationsHelper.HideWithSlideAndFade(BlackboardLeftSide);
-                        AnimationsHelper.HideWithSlideAndFade(BlackboardCenterSide);
-                        AnimationsHelper.HideWithSlideAndFade(BlackboardRightSide);
-                    }
-
-                    BtnHideInkCanvas_Click(null, null);
+                    GridBackgroundCover.Visibility = Visibility.Collapsed;
+                    AnimationsHelper.HideWithSlideAndFade(BlackboardLeftSide);
+                    AnimationsHelper.HideWithSlideAndFade(BlackboardCenterSide);
+                    AnimationsHelper.HideWithSlideAndFade(BlackboardRightSide);
                 }
+
+                BtnHideInkCanvas_Click(null, null);
 
                 if (Settings.Gesture.AutoSwitchTwoFingerGesture) // 自动关闭多指书写、开启双指移动
                 {
@@ -1423,9 +1420,12 @@ namespace Ink_Canvas {
 
                                 if (isRestartInkReplay) break;
 
-                                while (isPauseInkReplay) {
+                                var timeoutCount = 0;
+                                while (isPauseInkReplay && timeoutCount < 1000) {
                                     Thread.Sleep(10);
+                                    timeoutCount++;
                                 }
+                                if (timeoutCount >= 1000) break;
 
                                 if (i++ >= 50) {
                                     i = 0;
@@ -1453,9 +1453,12 @@ namespace Ink_Canvas {
 
                                 if (isRestartInkReplay) break;
 
-                                while (isPauseInkReplay) {
+                                var timeoutCount = 0;
+                                while (isPauseInkReplay && timeoutCount < 1000) {
                                     Thread.Sleep(10);
+                                    timeoutCount++;
                                 }
+                                if (timeoutCount >= 1000) break;
 
                                 if (i++ >= k) {
                                     i = 0;

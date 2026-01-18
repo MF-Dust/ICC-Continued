@@ -48,7 +48,7 @@ namespace Ink_Canvas {
         private void ApplyHistoryToCanvas(TimeMachineHistory item, IccInkCanvas applyCanvas = null) {
             _currentCommitType = CommitReason.CodeInput;
             var canvas = inkCanvas;
-            if (applyCanvas != null && applyCanvas is IccInkCanvas) {
+            if (applyCanvas != null) {
                 canvas = applyCanvas;
             }
 

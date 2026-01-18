@@ -218,7 +218,7 @@ namespace Ink_Canvas.Services
             _isDrawing = false;
             _startPoint = null;
             _currentStep = 0;
-            _currentDrawer?.Reset();
+            _currentDrawer.Reset();
 
             return result;
         }
