@@ -25,6 +25,7 @@ using Ink_Canvas.Helpers;
 using Ink_Canvas.Dialogs;
 using Microsoft.Office.Interop.PowerPoint;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -147,11 +148,14 @@ namespace Ink_Canvas {
         private static bool IsShowingAutoplaySlidesWindow = false;
 
 
+        private const int MkEUnavailable = unchecked((int)0x800401E3);
+
         private void TimerCheckPPT_Elapsed(object sender, ElapsedEventArgs e) {
             if (IsShowingRestoreHiddenSlidesWindow || IsShowingAutoplaySlidesWindow) return;
             try {
-                //var processes = Process.GetProcessesByName("wpp");
-                //if (processes.Length > 0 && !isWPSSupportOn) return;
+                var isPowerPointRunning = Process.GetProcessesByName("POWERPNT").Length > 0;
+                var isWpsRunning = Process.GetProcessesByName("wpp").Length > 0;
+                if (!isPowerPointRunning && !isWpsRunning) return;
 
                 //使用下方提前创建 PowerPoint 实例，将导致 PowerPoint 不再有启动界面
                 //pptApplication = (Microsoft.Office.Interop.PowerPoint.Application)Activator.CreateInstance(Marshal.GetTypeFromCLSID(new Guid("91493441-5A91-11CF-8700-00AA0060263B")));
@@ -204,7 +208,11 @@ namespace Ink_Canvas {
                     PptApplication_SlideShowBegin(pptApplication.SlideShowWindows[1]);
             }
             catch (COMException ex) {
-                LogHelper.WriteLogToFile("轮询 PPT 时发生 COM 错误：" + ex.Message, LogHelper.LogType.Warning);
+                if (ex.HResult == MkEUnavailable) {
+                    LogHelper.WriteLogToFile("轮询 PPT 时 COM 对象暂不可用，将在下次轮询重试。", LogHelper.LogType.Trace);
+                } else {
+                    LogHelper.WriteLogToFile("轮询 PPT 时发生 COM 错误：" + ex.Message, LogHelper.LogType.Warning);
+                }
                 Application.Current.Dispatcher.Invoke(() => { BorderFloatingBarExitPPTBtn.Visibility = Visibility.Collapsed; });
                 timerCheckPPT.Start();
             }
@@ -667,6 +675,11 @@ namespace Ink_Canvas {
                 if (Settings.PowerPointSettings.IsShowCanvasAtNewSlideShow &&
                     !Settings.Automation.IsAutoFoldInPPTSlideShow)
                     BtnColorRed_Click(null, null);
+
+                if (Settings.PowerPointSettings.IsAutoEnterAnnotationMode && !isFloatingBarFolded) {
+                    SelectedMode = ICCToolsEnum.PenMode;
+                    ForceUpdateToolSelection(null);
+                }
 
                 isEnteredSlideShowEndEvent = false;
                 var currentPos = ExecuteComOperationWithRetry(() => Wn.View.CurrentShowPosition, "GetCurrentShowPosition", 1);
