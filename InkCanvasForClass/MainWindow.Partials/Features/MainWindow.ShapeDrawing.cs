@@ -625,7 +625,6 @@ namespace Ink_Canvas {
                     }
                     else {
                         var d = Math.Abs(CuboidFrontRectIniP.Y - endP.Y);
-                        var a = CuboidFrontRectEndP.X - CuboidFrontRectIniP.X;
                         var b = CuboidFrontRectEndP.Y - CuboidFrontRectIniP.Y;
 
                         var newLineIniP = new Point(CuboidFrontRectIniP.X + d, CuboidFrontRectIniP.Y - d);
