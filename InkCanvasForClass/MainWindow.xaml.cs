@@ -110,15 +110,12 @@ namespace Ink_Canvas {
                 // 统一设置系统：MainWindow.Settings 通过 getter 从 SettingsService 获取设置
                 // 如果 SettingsService 还没有加载设置，先加载
                 var settingsService = ServiceLocator.GetRequiredService<ISettingsService>();
-                if (settingsService != null)
+                if (settingsService is { IsLoaded: false })
                 {
-                    if (!settingsService.IsLoaded)
-                    {
-                        settingsService.Load();
-                    }
-                    // 订阅设置变更事件，确保设置修改后立即生效
-                    settingsService.SettingChanged += OnSettingChanged;
+                    settingsService.Load();
                 }
+                // 订阅设置变更事件，确保设置修改后立即生效
+                settingsService.SettingChanged += OnSettingChanged;
 
                 // 订阅 ViewModel 事件
                 SubscribeViewModelEvents();
@@ -1068,8 +1065,7 @@ namespace Ink_Canvas {
         }
 
         private void inkCanvas_EditingModeChanged(object sender, RoutedEventArgs e) {
-            var inkCanvas1 = sender as InkCanvas;
-            if (inkCanvas1 == null) return;
+            if (sender is not InkCanvas inkCanvas1) return;
             if (Settings.Canvas.IsShowCursor) {
                 if (inkCanvas1.EditingMode == InkCanvasEditingMode.Ink || drawingShapeMode != 0)
                     inkCanvas1.ForceCursor = true;
@@ -1102,13 +1098,13 @@ namespace Ink_Canvas {
         // public Settings Settings => ServiceLocator.GetService<ISettingsService>()?.Settings ?? new Settings();
         public bool isLoaded = false;
 
-        [DllImport("user32.dll")]
+        [LibraryImport("user32.dll")]
         static extern IntPtr GetSystemMenu(IntPtr hWnd, bool bRevert);
 
-        [DllImport("user32.dll")]
+        [LibraryImport("user32.dll")]
         static extern bool EnableMenuItem(IntPtr hMenu, uint uIDEnableItem, uint uEnable);
 
-        [DllImport("user32.dll", SetLastError = true)]
+        [LibraryImport("user32.dll", SetLastError = true)]
         static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, UInt32 uFlags);
 
         const uint MF_BYCOMMAND = 0x00000000;
@@ -1198,9 +1194,9 @@ namespace Ink_Canvas {
 
             InitStorageManagementModule();
 
-            InitFreezeWindow(new HWND[] {
+            InitFreezeWindow([
                 new HWND(new WindowInteropHelper(this).Handle)
-            });
+            ]);
 
             UpdateIndexInfoDisplay();
 
@@ -1556,7 +1552,7 @@ namespace Ink_Canvas {
                     Settings.InkToShape.IsInkToShapeRounded = true;
 
                     Settings.Startup.IsEnableNibMode = false;
-                    Settings.Startup.IsAutoUpdate = true;
+                    Settings.Startup.IsAutoUpdate = false;
                     Settings.Startup.IsAutoUpdateWithSilence = true;
                     Settings.Startup.AutoUpdateWithSilenceStartTime = "18:20";
                     Settings.Startup.AutoUpdateWithSilenceEndTime = "07:40";
@@ -1575,7 +1571,7 @@ namespace Ink_Canvas {
                     // 同步设置 AutoSavedStrokesLocation 为安装目录下的 Data 文件夹
                     var runfolder = AppDomain.CurrentDomain.BaseDirectory;
                     Settings.Automation.AutoSavedStrokesLocation =
-                        (runfolder.EndsWith("\\") ? runfolder.Substring(0, runfolder.Length - 1) : runfolder) + "\\Data";
+                        (runfolder.EndsWith('\\') ? runfolder[..^1] : runfolder) + "\\Data";
 
                     settingsService.Save();
                 }
@@ -1607,7 +1603,7 @@ namespace Ink_Canvas {
             }).Start();
         }
 
-        public DelayAction dpiChangedDelayAction = new DelayAction();
+        public DelayAction dpiChangedDelayAction = new();
 
         private void MainWindow_OnDpiChanged(object sender, System.Windows.DpiChangedEventArgs e)
         {
@@ -1788,8 +1784,8 @@ namespace Ink_Canvas {
             catch { /* 忽略错误 */ }
         }
 
-        [DllImport("user32.dll", SetLastError = true)]
-        public static extern bool MoveWindow(IntPtr hWnd, int X, int Y, int nWidth, int nHeight, bool bRepaint);
+        [LibraryImport("user32.dll", SetLastError = true)]
+        internal static extern bool MoveWindow(IntPtr hWnd, int X, int Y, int nWidth, int nHeight, bool bRepaint);
 
         [RequiresUnmanagedCode("Uses user32 MoveWindow for forced fullscreen behavior.")]
         private void MainWindow_OnSizeChanged(object sender, SizeChangedEventArgs e) {
@@ -1808,22 +1804,21 @@ namespace Ink_Canvas {
         }
 
         private void DisplayWelcomePopup() {
-            if( Ookii.Dialogs.Wpf.TaskDialog.OSSupportsTaskDialogs ) {
+            if (Ookii.Dialogs.Wpf.TaskDialog.OSSupportsTaskDialogs) {
                 var t = new Thread(() => {
                     try {
-                        using (Ookii.Dialogs.Wpf.TaskDialog dialog = new Ookii.Dialogs.Wpf.TaskDialog()) {
-                            dialog.WindowTitle = "InkCanvasForClass";
-                            dialog.MainInstruction = "已重置为建议设置";
-                            dialog.Content = "为了方便在不同环境下获得最佳体验，我们已经将所有选项重置。完成后建议您重启应用。";
+                        using var dialog = new Ookii.Dialogs.Wpf.TaskDialog();
+                        dialog.WindowTitle = "InkCanvasForClass";
+                        dialog.MainInstruction = "已重置为建议设置";
+                        dialog.Content = "为了方便在不同环境下获得最佳体验，我们已经将所有选项重置。完成后建议您重启应用。";
 
-                            dialog.Footer = "您以后也可以在 “设置” 界面手动更改这些选项。";
+                        dialog.Footer = "您以后也可以在 “设置” 界面手动更改这些选项。";
 
-                            dialog.FooterIcon = Ookii.Dialogs.Wpf.TaskDialogIcon.Information;
-                            dialog.EnableHyperlinks = true;
-                            Ookii.Dialogs.Wpf.TaskDialogButton okButton = new Ookii.Dialogs.Wpf.TaskDialogButton(Ookii.Dialogs.Wpf.ButtonType.Ok);
-                            dialog.Buttons.Add(okButton);
-                            dialog.Show();
-                        }
+                        dialog.FooterIcon = Ookii.Dialogs.Wpf.TaskDialogIcon.Information;
+                        dialog.EnableHyperlinks = true;
+                        var okButton = new Ookii.Dialogs.Wpf.TaskDialogButton(Ookii.Dialogs.Wpf.ButtonType.Ok);
+                        dialog.Buttons.Add(okButton);
+                        dialog.Show();
                     } catch { /* 忽略错误 */ }
                 });
                 t.Start();
@@ -1834,8 +1829,7 @@ namespace Ink_Canvas {
             AvailableLatestVersion = await AutoUpdateHelper.CheckForUpdates();
 
             if (AvailableLatestVersion != null) {
-                var isDownloadSuccessful = false;
-                isDownloadSuccessful = await AutoUpdateHelper.DownloadSetupFileAndSaveStatus(AvailableLatestVersion);
+                var isDownloadSuccessful = await AutoUpdateHelper.DownloadSetupFileAndSaveStatus(AvailableLatestVersion);
 
                 if (isDownloadSuccessful) {
                     if (!Settings.Startup.IsAutoUpdateWithSilence) {

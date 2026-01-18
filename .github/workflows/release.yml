@@ -1,0 +1,231 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g., v1.0.0)'
+        required: true
+        type: string
+      prerelease:
+        description: 'Is this a prerelease?'
+        required: false
+        type: boolean
+        default: false
+      create_tag:
+        description: 'Create Git tag?'
+        required: false
+        type: boolean
+        default: true
+      generate_notes:
+        description: 'Generate release notes automatically?'
+        required: false
+        type: boolean
+        default: true
+
+env:
+  SOLUTION_PATH: 'Ink Canvas.sln'
+
+jobs:
+  build-release:
+    name: Build Release Artifacts
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          lfs: true
+          submodules: recursive
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+          cache: true
+          cache-dependency-path: '**/*.csproj'
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/*.packages.config') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Restore dependencies
+        run: dotnet restore "${{ env.SOLUTION_PATH }}" --configuration Release
+
+      - name: Build Release (x64)
+        run: |
+          dotnet build "${{ env.SOLUTION_PATH }}" `
+            --configuration Release `
+            --no-restore `
+            -p:Platform=x64 `
+            -p:PublishReadyToRun=true `
+            -p:PublishSingleFile=false `
+            --verbosity minimal
+
+      - name: Build Release (x86)
+        run: |
+          dotnet build "${{ env.SOLUTION_PATH }}" `
+            --configuration Release `
+            --no-restore `
+            -p:Platform=x86 `
+            -p:PublishReadyToRun=true `
+            -p:PublishSingleFile=false `
+            --verbosity minimal
+
+      - name: Run tests
+        run: |
+          dotnet test "${{ env.SOLUTION_PATH }}" `
+            --configuration Release `
+            --no-build `
+            --no-restore `
+            --logger "console;verbosity=minimal" `
+            --results-directory TestResults `
+            --collect:"XPlat Code Coverage"
+
+      - name: Publish x64
+        run: |
+          dotnet publish "InkCanvasForClass/InkCanvasForClass.csproj" `
+            --configuration Release `
+            --framework net8.0-windows `
+            --runtime win-x64 `
+            --self-contained false `
+            --output ./publish/x64 `
+            -p:PublishReadyToRun=true `
+            -p:PublishTrimmed=false
+
+      - name: Publish x86
+        run: |
+          dotnet publish "InkCanvasForClass/InkCanvasForClass.csproj" `
+            --configuration Release `
+            --framework net8.0-windows `
+            --runtime win-x86 `
+            --self-contained false `
+            --output ./publish/x86 `
+            -p:PublishReadyToRun=true `
+            -p:PublishTrimmed=false
+
+      - name: Create portable packages
+        run: |
+          # Create zip packages
+          Compress-Archive -Path "./publish/x64/*" -DestinationPath "./InkCanvas-x64-${{ github.event.inputs.version }}.zip" -Force
+          Compress-Archive -Path "./publish/x86/*" -DestinationPath "./InkCanvas-x86-${{ github.event.inputs.version }}.zip" -Force
+          
+          # Create version info file
+          $versionInfo = @{
+            Version = "${{ github.event.inputs.version }}"
+            BuildDate = (Get-Date).ToString("yyyy-MM-dd HH:mm:ss UTC")
+            Commit = "${{ github.sha }}"
+            Branch = "${{ github.ref_name }}"
+            .NET = "8.0"
+          }
+          $versionInfo | ConvertTo-Json | Out-File -FilePath "./version-info.json" -Encoding utf8
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-artifacts
+          path: |
+            *.zip
+            version-info.json
+            TestResults/
+          retention-days: 30
+
+  create-release:
+    name: Create GitHub Release
+    needs: build-release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: release-artifacts
+          path: ./artifacts
+
+      - name: Create Git Tag
+        if: github.event.inputs.create_tag == 'true'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git tag -a "${{ github.event.inputs.version }}" -m "Release ${{ github.event.inputs.version }}"
+          git push origin "${{ github.event.inputs.version }}"
+
+      - name: Generate Release Notes
+        if: github.event.inputs.generate_notes == 'true'
+        id: release_notes
+        run: |
+          # Generate release notes from commits since last tag
+          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+          if [ -n "$LAST_TAG" ]; then
+            echo "release_notes<<EOF" >> $GITHUB_OUTPUT
+            echo "## Changes since $LAST_TAG" >> $GITHUB_OUTPUT
+            echo "" >> $GITHUB_OUTPUT
+            git log --pretty=format:"- %s (%h)" $LAST_TAG..HEAD >> $GITHUB_OUTPUT
+            echo "" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          else
+            echo "release_notes<<EOF" >> $GITHUB_OUTPUT
+            echo "## Initial Release" >> $GITHUB_OUTPUT
+            echo "" >> $GITHUB_OUTPUT
+            echo "First release of Ink Canvas for Class." >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.inputs.version }}
+          name: Release ${{ github.event.inputs.version }}
+          body: |
+            ${{ steps.release_notes.outputs.release_notes }}
+            
+            ## Installation
+            - Download the appropriate zip file for your system architecture
+            - Extract the zip file to your desired location
+            - Run `InkCanvasForClass.exe`
+            
+            ## System Requirements
+            - Windows 10/11 (x64 or x86)
+            - .NET 8.0 Runtime (included in self-contained builds)
+            
+            ## What's Included
+            - `InkCanvas-x64-${{ github.event.inputs.version }}.zip` - 64-bit version
+            - `InkCanvas-x86-${{ github.event.inputs.version }}.zip` - 32-bit version
+            - `version-info.json` - Build information
+            
+            ---
+            **Note**: This release was created automatically from commit ${{ github.sha }}
+          files: |
+            artifacts/*.zip
+            artifacts/version-info.json
+          draft: false
+          prerelease: ${{ github.event.inputs.prerelease }}
+          generate_release_notes: ${{ github.event.inputs.generate_notes }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  notify-release:
+    name: Notify Release Complete
+    needs: [build-release, create-release]
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+      - name: Release Status
+        run: |
+          if [ "${{ needs.build-release.result }}" == "success" ] && [ "${{ needs.create-release.result }}" == "success" ]; then
+            echo "✅ Release ${{ github.event.inputs.version }} completed successfully!"
+            echo "📦 Available at: https://github.com/${{ github.repository }}/releases/tag/${{ github.event.inputs.version }}"
+          else
+            echo "❌ Release failed!"
+            echo "Build status: ${{ needs.build-release.result }}"
+            echo "Release status: ${{ needs.create-release.result }}"
+            exit 1
+          fi

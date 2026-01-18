@@ -23,23 +23,90 @@
         <StackPanel Margin="0,0,12,24">
             <TextBlock Text="关于" Style="{StaticResource PageTitleStyle}"/>
 
+            <!-- UI Banner Placeholder -->
+            <Border CornerRadius="12" 
+                    Height="200" 
+                    Margin="0,0,0,24">
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="#1E3A8A" Offset="0"/>
+                        <GradientStop Color="#1E1B4B" Offset="0.5"/>
+                        <GradientStop Color="#312E81" Offset="1"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.3"/>
+                </Border.Effect>
+                <Grid>
+                    <Grid.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#1E3A8A" Offset="0"/>
+                            <GradientStop Color="#1E1B4B" Offset="0.5"/>
+                            <GradientStop Color="#312E81" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Grid.Background>
+                    
+                    <!-- Futuristic Grid Pattern Overlay -->
+                    <Grid Opacity="0.3">
+                        <Grid.Background>
+                            <DrawingBrush TileMode="Tile" Viewport="0,0,20,20" ViewportUnits="Absolute">
+                                <DrawingBrush.Drawing>
+                                    <GeometryDrawing>
+                                        <GeometryDrawing.Geometry>
+                                            <RectangleGeometry Rect="0,0,20,20"/>
+                                        </GeometryDrawing.Geometry>
+                                        <GeometryDrawing.Pen>
+                                            <Pen Brush="#60A5FA" Thickness="0.5"/>
+                                        </GeometryDrawing.Pen>
+                                    </GeometryDrawing>
+                                </DrawingBrush.Drawing>
+                            </DrawingBrush>
+                        </Grid.Background>
+                    </Grid>
+                    
+                    <!-- Content -->
+                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <TextBlock Text="InkCanvasForClass-Continued" 
+                                   FontSize="32" 
+                                   FontWeight="Bold" 
+                                   Foreground="#F0F9FF" 
+                                   HorizontalAlignment="Center"
+                                   Margin="0,0,0,8"/>
+                        <TextBlock Text="Version:0.0.1.0" 
+                                   FontSize="18" 
+                                   Foreground="#93C5FD" 
+                                   HorizontalAlignment="Center"
+                                   Margin="0,0,0,4"/>
+                        <TextBlock Text="Codename:Arona" 
+                                   FontSize="14" 
+                                   Foreground="#DBEAFE" 
+                                   HorizontalAlignment="Center"
+                                   TextWrapping="Wrap"
+                                   MaxWidth="400"/>
+                    </StackPanel>
+                    
+                    <!-- Glowing Accent Lines -->
+                    <Border BorderBrush="#60A5FA" 
+                            BorderThickness="1" 
+                            CornerRadius="12" 
+                            Opacity="0.5"
+                            Margin="2"/>
+                </Grid>
+            </Border>
+
             <!-- Version Info -->
             <StackPanel Margin="0,0,0,24">
                 <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
                     <TextBlock Text="Release Version: " FontSize="20" FontWeight="Bold"/>
-                    <TextBlock Text="6.0.0" FontSize="20" FontWeight="Bold"/>
+                    <TextBlock Text="0.0.1" FontSize="20" FontWeight="Bold"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="Bundle Version: " FontSize="20" FontWeight="Bold"/>
-                    <TextBlock Text="6.0.0.0" FontSize="20" FontWeight="Bold"/>
+                    <TextBlock Text="0.0.1.0" FontSize="20" FontWeight="Bold"/>
                 </StackPanel>
             </StackPanel>
 
-            <TextBlock Text="# 使用和分发本软件前，请您应当且务必知晓相关开源协议，且您应当知晓本软件基于 https://github.com/WXRIW/Ink-Canvas 修改而成。"
-                       Style="{StaticResource SettingsDescriptionStyle}" Margin="0,0,0,8"/>
-            <TextBlock Text="# 别再基于ICC改了！ICA本身就是依托构思，经过Dubi906w的屎上雕花变得更是依托大芬。有能力建议自己重写更好的。"
-                       Style="{StaticResource SettingsDescriptionStyle}" Margin="0,0,0,16"/>
-
+            
             <!-- License Box -->
             <Border Background="#2D2D30" BorderBrush="#3F3F46" BorderThickness="1" CornerRadius="8" Padding="16" Margin="0,0,0,24">
                 <StackPanel>
@@ -55,94 +122,15 @@
                 </StackPanel>
             </Border>
 
-            <!-- Developers -->
-            <TextBlock Text="开发者：" FontSize="20" FontWeight="Bold" Margin="0,0,0,16"/>
-            <UniformGrid Columns="3" Margin="0,0,0,24">
-                <!-- Dubi906w -->
-                <StackPanel HorizontalAlignment="Center">
-                    <Ellipse Width="80" Height="80" Margin="0,0,0,8">
-                        <Ellipse.Fill>
-                            <ImageBrush ImageSource="/InkCanvasForClass;component/Resources/DeveloperAvatars/dubi906w.jpg"/>
-                        </Ellipse.Fill>
-                    </Ellipse>
-                    <TextBlock Text="Dubi906w" FontSize="18" FontWeight="Bold" Foreground="#FBBF24" HorizontalAlignment="Center"/>
-                    <TextBlock Text="InkCanvasForClass" FontSize="14" Foreground="#FAFAFA" HorizontalAlignment="Center"/>
-                </StackPanel>
-
-                <!-- ChangSakura -->
-                <StackPanel HorizontalAlignment="Center">
-                    <Grid Width="80" Height="80" Margin="0,0,0,8">
-                        <Ellipse Width="80" Height="80">
-                            <Ellipse.Fill>
-                                <ImageBrush ImageSource="/InkCanvasForClass;component/Resources/DeveloperAvatars/ChangSakura.png"/>
-                            </Ellipse.Fill>
-                        </Ellipse>
-                        <Image Source="/InkCanvasForClass;component/Resources/Icons-png/check-box-background.png" Width="24" Height="24"
-                               VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0,0,-4,-4" Visibility="Collapsed"/>
-                        <!-- Assuming the sprout icon is an overlay or part of the image. I'll skip overlay for now or use a generic one if needed. -->
-                    </Grid>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                        <TextBlock Text="ChangSakura" FontSize="18" FontWeight="Bold" Foreground="#FBBF24"/>
-                        <!-- Sprout icon if possible -->
-                    </StackPanel>
-                    <TextBlock Text="Ink Canvas Artistry" FontSize="14" Foreground="#FAFAFA" HorizontalAlignment="Center"/>
-                </StackPanel>
-
-                <!-- WXRIW -->
-                <StackPanel HorizontalAlignment="Center">
-                    <Ellipse Width="80" Height="80" Margin="0,0,0,8">
-                        <Ellipse.Fill>
-                            <ImageBrush ImageSource="/InkCanvasForClass;component/Resources/DeveloperAvatars/WXRIW.png"/>
-                        </Ellipse.Fill>
-                    </Ellipse>
-                    <TextBlock Text="WXRIW" FontSize="18" FontWeight="Bold" Foreground="#FBBF24" HorizontalAlignment="Center"/>
-                    <TextBlock Text="Ink Canvas" FontSize="14" Foreground="#FAFAFA" HorizontalAlignment="Center"/>
-                </StackPanel>
-            </UniformGrid>
-
-            <!-- Links -->
-            <StackPanel Margin="0,0,0,24">
+            <!-- Acknowledgment -->
+            <StackPanel Margin="0,0,0,16">
+                <TextBlock Text="致谢：" FontSize="16" FontWeight="Bold" Margin="0,0,0,8"/>
                 <TextBlock>
-                    <Run Text="icc! Gitea源: " FontWeight="Bold"/>
-                    <Hyperlink NavigateUri="https://gitea.kriastans.cn/kriastans/InkCanvasForClass" Foreground="#60A5FA">
-                        gitea:kriastans/InkCanvasForClass
-                    </Hyperlink>
-                </TextBlock>
-                <TextBlock Margin="0,4,0,0">
-                    <Run Text="icc! GitHub源: " FontWeight="Bold"/>
+                    <Run Text="InkCanvasForClass" FontWeight="Bold"/>
                     <Hyperlink NavigateUri="https://github.com/InkCanvas/InkCanvasForClass" Foreground="#60A5FA">
-                        InkCanvas/InkCanvasForClass
+                        https://github.com/InkCanvas/InkCanvasForClass
                     </Hyperlink>
                 </TextBlock>
-                <TextBlock Margin="0,4,0,0">
-                    <Run Text="ICA 仓库源: " FontWeight="Bold"/>
-                    <Hyperlink NavigateUri="https://github.com/InkCanvas/Ink-Canvas-Artistry" Foreground="#60A5FA">
-                        InkCanvas/Ink-Canvas-Artistry
-                    </Hyperlink>
-                </TextBlock>
-                <TextBlock Margin="0,4,0,0">
-                    <Run Text="Ink Canvas 仓库源: " FontWeight="Bold"/>
-                    <Hyperlink NavigateUri="https://github.com/WXRIW/Ink-Canvas" Foreground="#60A5FA">
-                        WXRIW/Ink-Canvas
-                    </Hyperlink>
-                </TextBlock>
-            </StackPanel>
-
-            <!-- Contributors -->
-            <TextBlock Text="感谢下列贡献者和支持者：" FontSize="16" FontWeight="Bold" Margin="0,0,0,8"/>
-            <TextBlock Text="# 排名不分先后" Foreground="{StaticResource SecondaryTextBrush}" Margin="0,0,0,16"/>
-
-            <Image Source="/InkCanvasForClass;component/Resources/contributors.png" Stretch="Uniform" HorizontalAlignment="Left" Margin="0,0,0,24"/>
-
-            <!-- Copyright -->
-            <StackPanel>
-                <TextBlock Text="© 2024 Dubi906w(Kriastans) 版权所有" FontWeight="Bold" Margin="0,0,0,4"/>
-                <TextBlock Text="© 2022-2024 HARKOTEK Studio 提供技术支持" Foreground="{StaticResource SecondaryTextBrush}" Margin="0,0,0,4"/>
-                <TextBlock Text="感谢 HARKOTEK Studio 的成员 “幻想熵K2ro_” 提供技术支持" Foreground="{StaticResource SecondaryTextBrush}" Margin="0,0,0,4"/>
-                <TextBlock Text="ICC的部分元素素材设计参考来源于：© iNKORE! 名下产品 Inkways，已经过授权使用，最终解释权归 Yoojun Zhou 所有"
-                           Foreground="{StaticResource SecondaryTextBrush}" TextWrapping="Wrap" Margin="0,0,0,4"/>
-                <TextBlock Text="osu! 相关素材：© ppy powered 2007-2024" Foreground="{StaticResource SecondaryTextBrush}" Margin="0,0,0,4"/>
-                <TextBlock Text="We love Open-Source forever!" FontWeight="Bold" Foreground="{StaticResource SecondaryTextBrush}" Margin="0,8,0,0"/>
             </StackPanel>
 
         </StackPanel>

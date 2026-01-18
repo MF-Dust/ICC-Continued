@@ -7,7 +7,7 @@ namespace Ink_Canvas.Models.Settings
     /// </summary>
     public class StartupSettings : SettingsBase
     {
-        private bool _isAutoUpdate = true;
+        private bool _isAutoUpdate = false;
         private bool _isAutoUpdateWithSilence = false;
         private string _autoUpdateWithSilenceStartTime = "00:00";
         private string _autoUpdateWithSilenceEndTime = "00:00";

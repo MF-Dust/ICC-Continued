@@ -10,37 +10,89 @@ env:
   SOLUTION_PATH: 'Ink Canvas.sln'
 
 jobs:
-  quick-build:
+  build:
     runs-on: windows-latest
+    strategy:
+      matrix:
+        platform: [x86, x64]
+        configuration: [Release, Debug]
+        exclude:
+          - configuration: Debug
+            platform: x86
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          lfs: true  # 保持开启 LFS，防止图片丢失
+          lfs: true
           submodules: recursive
+          fetch-depth: 0
 
       - name: Setup .NET 8
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
+          cache: true
+          cache-dependency-path: '**/*.csproj'
 
       - name: Verify SDK
         run: dotnet --info
 
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/*.packages.config') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Cache build outputs
+        uses: actions/cache@v4
+        with:
+          path: |
+            **/obj/
+            **/bin/
+          key: ${{ runner.os }}-build-${{ matrix.platform }}-${{ matrix.configuration }}-${{ hashFiles('**/*.csproj', '**/*.cs') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ matrix.platform }}-${{ matrix.configuration }}-
+
       - name: Restore dependencies
-        run: dotnet restore "${{ env.SOLUTION_PATH }}"
+        run: dotnet restore "${{ env.SOLUTION_PATH }}" --configuration ${{ matrix.configuration }}
 
-      - name: Build Release (x86)
+      - name: Build solution
         run: |
           dotnet build "${{ env.SOLUTION_PATH }}" `
-            --configuration Release `
+            --configuration ${{ matrix.configuration }} `
             --no-restore `
-            -p:Platform=x86
+            -p:Platform=${{ matrix.platform }} `
+            --verbosity minimal
 
-      - name: Build Release (x64)
+      - name: Run tests
+        if: matrix.configuration == 'Release'
         run: |
-          dotnet build "${{ env.SOLUTION_PATH }}" `
-            --configuration Release `
+          dotnet test "${{ env.SOLUTION_PATH }}" `
+            --configuration ${{ matrix.configuration }} `
+            --no-build `
             --no-restore `
-            -p:Platform=x64
+            --logger "console;verbosity=minimal" `
+            --results-directory TestResults `
+            --collect:"XPlat Code Coverage"
+
+      - name: Upload build artifacts
+        if: matrix.configuration == 'Release' && matrix.platform == 'x64'
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts-${{ matrix.platform }}
+          path: |
+            **/bin/${{ matrix.configuration }}/**/*.exe
+            **/bin/${{ matrix.configuration }}/**/*.dll
+            !**/obj/**
+          retention-days: 30
+
+      - name: Upload test results
+        if: matrix.configuration == 'Release' && matrix.platform == 'x64'
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ matrix.platform }}
+          path: TestResults/
+          retention-days: 7
