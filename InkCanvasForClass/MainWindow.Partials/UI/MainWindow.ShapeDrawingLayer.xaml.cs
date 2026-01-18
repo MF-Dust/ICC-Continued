@@ -357,10 +357,9 @@ namespace Ink_Canvas {
             if (MainWindow?.inkCanvas?.Strokes != null) {
                 Point? nearestPoint = FindNearestStrokePoint(point);
                 if (nearestPoint.HasValue) {
-                    double distance = Math.Sqrt(
-                        Math.Pow(point.X - nearestPoint.Value.X, 2) +
-                        Math.Pow(point.Y - nearestPoint.Value.Y, 2)
-                    );
+                    double dx = point.X - nearestPoint.Value.X;
+                    double dy = point.Y - nearestPoint.Value.Y;
+                    double distance = Math.Sqrt(dx * dx + dy * dy);
 
                     if (distance <= _snapDistance) {
                         return nearestPoint.Value;
