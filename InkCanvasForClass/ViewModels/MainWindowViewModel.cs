@@ -331,7 +331,7 @@ namespace Ink_Canvas.ViewModels
         /// <summary>
         /// 下一页按钮是否与新建页按钮合并
         /// </summary>
-        public bool IsNextPageButtonMerged => CurrentWhiteboardIndex == WhiteboardTotalCount;
+        public bool IsNextPageButtonMerged => CurrentWhiteboardIndex >= WhiteboardTotalCount;
 
         #endregion
 
