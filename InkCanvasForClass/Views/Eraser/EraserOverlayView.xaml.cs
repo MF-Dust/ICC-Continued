@@ -177,6 +177,13 @@ namespace Ink_Canvas.Views.Eraser
         /// </summary>
         public void SetEraserColor(Color color)
         {
+            // 避免将橡皮擦颜色设置为完全透明，否则用户将看不到橡皮擦光标
+            if (color.A == 0)
+            {
+                // 如果传入的是全透明颜色，则保持当前颜色不变
+                return;
+            }
+
             EraserColor = color;
         }
 
