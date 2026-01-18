@@ -161,7 +161,11 @@ namespace Ink_Canvas.Views.Eraser
         public void ClearEraserCursor()
         {
             var drawingVisual = EraserOverlay_DrawingVisual.DrawingVisual;
-            // 清空绘图内容
+            // 清空绘图内容：打开绘图上下文但不进行任何绘制，从而清除之前的内容
+            using (var dc = drawingVisual.RenderOpen())
+            {
+                // Intentionally left blank to clear the visual.
+            }
         }
 
         /// <summary>
@@ -177,6 +181,13 @@ namespace Ink_Canvas.Views.Eraser
         /// </summary>
         public void SetEraserColor(Color color)
         {
+            // 避免将橡皮擦颜色设置为完全透明，否则用户将看不到橡皮擦光标
+            if (color.A == 0)
+            {
+                // 如果传入的是全透明颜色，则保持当前颜色不变
+                return;
+            }
+
             EraserColor = color;
         }
 
