@@ -159,9 +159,9 @@ namespace Ink_Canvas.Views.Settings
             UserControl page = null;
 
             // 检查缓存中是否已有页面
-            if (_pages.ContainsKey(pageTag))
+            if (_pages.TryGetValue(pageTag, out page))
             {
-                page = _pages[pageTag];
+                // 页面已存在于缓存中
             }
             else
             {
