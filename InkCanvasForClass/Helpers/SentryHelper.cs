@@ -649,10 +649,6 @@ namespace Ink_Canvas.Helpers
                 {
                     // Ignore dispose errors
                 }
-                catch (NullReferenceException)
-                {
-                    // Ignore dispose errors
-                }
             }
         }
 

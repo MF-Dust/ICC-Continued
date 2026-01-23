@@ -233,9 +233,8 @@ namespace Ink_Canvas.Services
 
             lock (_lock)
             {
-                foreach (var kvp in _registrations)
+                foreach (var registration in _registrations.Values)
                 {
-                    var registration = kvp.Value;
                     if (MatchesGesture(registration.Gesture, key, modifiers))
                     {
                         try
