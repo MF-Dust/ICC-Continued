@@ -496,6 +496,17 @@ namespace Ink_Canvas {
                 BlackBoardWaterMark.Visibility = Visibility.Collapsed;
             }
 
+            // 修复：进入白板模式前确保背景状态和容器可见性正确
+            // 当从光标模式点击白板按钮时：
+            // 1. PenIcon_Click 设置背景为非透明
+            // 2. BtnHideInkCanvas_Click 会把背景设置回透明，并隐藏 GridBackgroundCoverHolder
+            // 3. 这导致 BtnSwitch_Click 进入错误的分支，或者即使进入正确分支，白板背景也不可见
+            if (currentMode == 0) {
+                GridTransparencyFakeBackground.Opacity = 1;
+                GridTransparencyFakeBackground.Background = new SolidColorBrush(StringToColor("#01FFFFFF"));
+                GridBackgroundCoverHolder.Visibility = Visibility.Visible;
+            }
+
             BtnSwitch_Click(null, null);
 
             if (currentMode == 0)
@@ -1297,7 +1308,7 @@ namespace Ink_Canvas {
 
         private void SymbolIconSettings_Click(object sender, RoutedEventArgs e) {
             HideSubPanels();
-            
+
             // 检查是否已经打开了设置窗口
             foreach (Window window in Application.Current.Windows)
             {
