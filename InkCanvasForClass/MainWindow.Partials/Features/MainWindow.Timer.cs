@@ -39,15 +39,15 @@ namespace Ink_Canvas {
     }
 
     public partial class MainWindow : Window {
-        private Timer timerCheckPPT = new();
-        private Timer timerKillProcess = new();
-        private Timer timerCheckAutoFold = new();
+        private System.Timers.Timer timerCheckPPT = new();
+        private System.Timers.Timer timerKillProcess = new();
+        private System.Timers.Timer timerCheckAutoFold = new();
         private string AvailableLatestVersion = null;
-        private Timer timerCheckAutoUpdateWithSilence = new();
+        private System.Timers.Timer timerCheckAutoUpdateWithSilence = new();
         private bool isHidingSubPanelsWhenInking = false; // 避免书写时触发二次关闭二级菜单导致动画不连续
 
-        private Timer timerDisplayTime = new();
-        private Timer timerDisplayDate = new();
+        private System.Timers.Timer timerDisplayTime = new();
+        private System.Timers.Timer timerDisplayDate = new();
 
         private TimeViewModel nowTimeVM = new();
 
@@ -73,15 +73,15 @@ namespace Ink_Canvas {
             nowTimeVM.NowTime = DateTime.Now.ToShortTimeString().ToString();
         }
 
-        private void TimerDisplayTime_Elapsed(object sender, ElapsedEventArgs e) {
+        private void TimerDisplayTime_Elapsed(object? sender, ElapsedEventArgs e) {
             nowTimeVM.NowTime = DateTime.Now.ToShortTimeString().ToString();
         }
 
-        private void TimerDisplayDate_Elapsed(object sender, ElapsedEventArgs e) {
+        private void TimerDisplayDate_Elapsed(object? sender, ElapsedEventArgs e) {
             nowTimeVM.NowDate = DateTime.Now.ToShortDateString().ToString();
         }
 
-        private void TimerKillProcess_Elapsed(object sender, ElapsedEventArgs e) {
+        private void TimerKillProcess_Elapsed(object? sender, ElapsedEventArgs e) {
             try {
                 // 希沃相关： easinote swenserver RemoteProcess EasiNote.MediaHttpService smartnote.cloud EasiUpdate smartnote EasiUpdate3 EasiUpdate3Protect SeewoP2P CefSharp.BrowserSubprocess SeewoUploadService
                 var arg = "/F";
@@ -168,7 +168,7 @@ namespace Ink_Canvas {
         private bool foldFloatingBarByUser = false, // 保持收纳操作不受自动收纳的控制
             unfoldFloatingBarByUser = false; // 允许用户在希沃软件内进行展开操作
 
-        private void TimerCheckAutoFold_Elapsed(object sender, ElapsedEventArgs e) {
+        private void TimerCheckAutoFold_Elapsed(object? sender, ElapsedEventArgs e) {
             if (isFloatingBarChangingHideMode) return;
             try {
                 var windowProcessName = ForegroundWindowInfo.ProcessName();
@@ -284,7 +284,7 @@ namespace Ink_Canvas {
             }
         }
 
-        private void TimerCheckAutoUpdateWithSilence_Elapsed(object sender, ElapsedEventArgs e) {
+        private void TimerCheckAutoUpdateWithSilence_Elapsed(object? sender, ElapsedEventArgs e) {
             Dispatcher.Invoke(() => {
                 try {
                     if (!Topmost || inkCanvas.Strokes.Count > 0) return;

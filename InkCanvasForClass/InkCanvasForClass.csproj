@@ -8,12 +8,12 @@
     <AssemblyName>InkCanvasForClass</AssemblyName>
     <UseWPF>true</UseWPF>
 
-    <ImplicitUsings>disable</ImplicitUsings>
-    <Nullable>disable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 
     <!-- 禁用特定警告 -->
-    <NoWarn>$(NoWarn);CA1416;CS1998;CS0067</NoWarn>
+    <NoWarn>$(NoWarn);CA1416;CS1998;CS0067;CS8618;CS8600;CS8602;CS8604;CS8625;CS8622</NoWarn>
 
     <!-- 运行时配置 -->
     <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>

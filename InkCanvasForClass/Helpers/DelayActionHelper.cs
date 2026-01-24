@@ -6,9 +6,9 @@ namespace Ink_Canvas.Helpers
 {
     public class DelayAction : IDisposable
     {
-        private Timer _timerDebounce;
-        private Action _pendingAction;
-        private ISynchronizeInvoke _syncInvoke;
+        private System.Timers.Timer _timerDebounce;
+        private Action? _pendingAction;
+        private ISynchronizeInvoke? _syncInvoke;
         private readonly object _lockObject = new object();
         private bool _disposed = false;
 
@@ -25,7 +25,7 @@ namespace Ink_Canvas.Helpers
                 _syncInvoke = inv;
                 
                 if (_timerDebounce == null) {
-                    _timerDebounce = new Timer(timeMs) { AutoReset = false };
+                    _timerDebounce = new System.Timers.Timer(timeMs) { AutoReset = false };
                     _timerDebounce.Elapsed += OnTimerElapsed;
                 } else {
                     _timerDebounce.Interval = timeMs;
@@ -36,7 +36,7 @@ namespace Ink_Canvas.Helpers
             }
         }
         
-        private void OnTimerElapsed(object sender, ElapsedEventArgs e)
+        private void OnTimerElapsed(object? sender, ElapsedEventArgs e)
         {
             Action actionToExecute;
             ISynchronizeInvoke syncContext;

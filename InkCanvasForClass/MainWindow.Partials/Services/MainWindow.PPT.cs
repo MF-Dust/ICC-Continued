@@ -48,10 +48,10 @@ using System.Collections.Concurrent;
 
 namespace Ink_Canvas {
     public partial class MainWindow : Window {
-        public static Microsoft.Office.Interop.PowerPoint.Application pptApplication = null;
-        public static Presentation presentation = null;
-        public static Slides slides = null;
-        public static Slide slide = null;
+        public static Microsoft.Office.Interop.PowerPoint.Application? pptApplication = null;
+        public static Presentation? presentation = null;
+        public static Slides? slides = null;
+        public static Slide? slide = null;
         public static int slidescount = 0;
 
         // PPT联动优化：缓存的画刷对象，避免重复创建
@@ -150,7 +150,7 @@ namespace Ink_Canvas {
 
         private const int MkEUnavailable = unchecked((int)0x800401E3);
 
-        private void TimerCheckPPT_Elapsed(object sender, ElapsedEventArgs e) {
+        private void TimerCheckPPT_Elapsed(object? sender, ElapsedEventArgs e) {
             if (IsShowingRestoreHiddenSlidesWindow || IsShowingAutoplaySlidesWindow) return;
             try {
                 var isPowerPointRunning = Process.GetProcessesByName("POWERPNT").Length > 0;

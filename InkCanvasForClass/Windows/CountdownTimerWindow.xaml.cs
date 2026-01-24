@@ -24,7 +24,7 @@ namespace Ink_Canvas
             timer.Interval = 50;
         }
 
-        private void Timer_Elapsed(object sender, ElapsedEventArgs e)
+        private void Timer_Elapsed(object? sender, ElapsedEventArgs e)
         {
             if (!isTimerRunning || isPaused)
             {
@@ -82,7 +82,7 @@ namespace Ink_Canvas
         bool isTimerRunning = false;
         bool isPaused = false;
 
-        Timer timer = new Timer();
+        System.Timers.Timer timer = new System.Timers.Timer();
 
         private void Grid_MouseUp(object sender, MouseButtonEventArgs e)
         {
@@ -245,7 +245,7 @@ namespace Ink_Canvas
             {
                 UpdateStopTime();
                 startTime = DateTime.Now;
-                Timer_Elapsed(timer, null);
+                Timer_Elapsed(timer, null!);
             }
         }
 

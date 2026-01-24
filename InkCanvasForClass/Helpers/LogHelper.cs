@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Ink_Canvas.Helpers
 {
-    class LogHelper
+    public class LogHelper
     {
         /// <summary>
         /// 是否启用 Sentry 面包屑集成

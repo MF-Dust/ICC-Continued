@@ -117,7 +117,7 @@ namespace Ink_Canvas {
             }
         }
 
-        private void MainWindow_TouchDown(object sender, TouchEventArgs e) {
+        private void MainWindow_TouchDown(object? sender, TouchEventArgs e) {
             if (!isCursorHidden && Settings.Gesture.HideCursorWhenUsingTouchDevice) {
                 System.Windows.Forms.Cursor.Hide();
                 isCursorHidden = true;
@@ -330,7 +330,7 @@ namespace Ink_Canvas {
         private bool isLastTouchEraser = false;
         private bool forcePointEraser = true;
 
-        private void Main_Grid_TouchDown(object sender, TouchEventArgs e) {
+        private void Main_Grid_TouchDown(object? sender, TouchEventArgs e) {
             if (!isCursorHidden && Settings.Gesture.HideCursorWhenUsingTouchDevice) {
                 System.Windows.Forms.Cursor.Hide();
                 isCursorHidden = true;
@@ -650,7 +650,7 @@ namespace Ink_Canvas {
         private InkCanvasEditingMode lastInkCanvasEditingMode = InkCanvasEditingMode.Ink;
         private bool isSingleFingerDragMode = false;
 
-        private void inkCanvas_PreviewTouchDown(object sender, TouchEventArgs e) {
+        private void inkCanvas_PreviewTouchDown(object? sender, TouchEventArgs e) {
             inkCanvas.CaptureTouch(e.TouchDevice);
             ViewboxFloatingBar.IsHitTestVisible = false;
             BlackboardUIGridForInkReplay.IsHitTestVisible = false;

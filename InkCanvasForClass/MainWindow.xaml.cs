@@ -426,7 +426,7 @@ namespace Ink_Canvas {
         /// <summary>
         /// 处理隐藏子面板请求
         /// </summary>
-        private void OnHideSubPanelsRequested(object sender, EventArgs e)
+        private void OnHideSubPanelsRequested(object? sender, EventArgs e)
         {
             HideSubPanels();
         }
@@ -632,7 +632,7 @@ namespace Ink_Canvas {
         /// <summary>
         /// 处理橡皮擦反馈请求
         /// </summary>
-        private void OnEraserFeedbackRequested(object sender, Ink_Canvas.Services.Events.EraserFeedbackEventArgs e)
+        private void OnEraserFeedbackRequested(object? sender, Ink_Canvas.Services.Events.EraserFeedbackEventArgs e)
         {
             try
             {
@@ -672,7 +672,7 @@ namespace Ink_Canvas {
         /// <summary>
         /// 处理操作增量请求
         /// </summary>
-        private void OnManipulationDeltaRequested(object sender, Ink_Canvas.Services.Events.TouchManipulationDeltaEventArgs e)
+        private void OnManipulationDeltaRequested(object? sender, Ink_Canvas.Services.Events.TouchManipulationDeltaEventArgs e)
         {
             try
             {
@@ -751,7 +751,7 @@ namespace Ink_Canvas {
         {
             try
             {
-                BtnWhiteBoardDelete_Click(sender, null);
+                BtnWhiteBoardDelete_Click(sender, null!);
             }
             catch (Exception ex)
             {
@@ -1745,7 +1745,7 @@ namespace Ink_Canvas {
             }
         }
 
-        private void SystemEventsOnDisplaySettingsChanged(object sender, EventArgs e) {
+        private void SystemEventsOnDisplaySettingsChanged(object? sender, EventArgs e) {
             if (!Settings.Advanced.IsEnableResolutionChangeDetection) return;
             ShowNotification($"检测到显示器信息变化，变为{System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width}x{System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height}");
             new Thread(() => {
