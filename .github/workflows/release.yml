@@ -47,8 +47,10 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
+      # FIX: Added '--runtime' flag to the restore command to match the publish step.
+      # This resolves the NETSDK1005 error by ensuring assets are restored for the correct target.
       - name: Restore dependencies
-        run: dotnet restore "${{ env.SOLUTION_PATH }}"
+        run: dotnet restore "${{ env.SOLUTION_PATH }}" --runtime win-${{ matrix.platform }}
 
       - name: Build and Publish
         run: |
@@ -88,7 +90,6 @@ jobs:
           name: test-results-${{ matrix.platform }}
           path: TestResults/
           retention-days: 7
-
 
   create-release:
     name: Create GitHub Release
@@ -145,25 +146,6 @@ jobs:
         with:
           tag_name: ${{ github.event.inputs.version }}
           name: Release ${{ github.event.inputs.version }}
-          body: |
-            ${{ steps.release_notes.outputs.release_notes }}
-            
-            ## Installation
-            - Download the appropriate zip file for your system architecture
-            - Extract the zip file to your desired location
-            - Run `InkCanvasForClass.exe`
-            
-            ## System Requirements
-            - Windows 10/11 (x64 or x86)
-            - .NET 8.0 Runtime
-            
-            ## What's Included
-            - `InkCanvas-x64-${{ github.event.inputs.version }}.zip` - 64-bit version
-            - `InkCanvas-x86-${{ github.event.inputs.version }}.zip` - 32-bit version
-            - `version-info.json` - Build information
-            
-            ---
-            **Note**: This release was created automatically from commit ${{ github.sha }}
           files: |
             artifacts/release-artifact-*/*.zip
             ./version-info.json
