@@ -6,23 +6,23 @@
     <!-- 设置页面共享样式资源字典 - 现代深色主题 (iNKORE.UI.WPF.Modern 增强版) -->
 
     <!-- ==================== 颜色定义 ==================== -->
-    <Color x:Key="PrimaryBackgroundColor">#1A1A1A</Color>
-    <Color x:Key="SecondaryBackgroundColor">#252525</Color>
-    <Color x:Key="TertiaryBackgroundColor">#1F1F1F</Color>
-    <Color x:Key="CardBackgroundColor">#2D2D30</Color>
-    <Color x:Key="CardHoverBackgroundColor">#3A3A3D</Color>
-    <Color x:Key="CardPressedBackgroundColor">#454548</Color>
-    <Color x:Key="AccentColor">#60A5FA</Color>
-    <Color x:Key="AccentHoverColor">#93C5FD</Color>
-    <Color x:Key="AccentPressedColor">#3B82F6</Color>
-    <Color x:Key="AccentLightColor">#1E3A5F</Color>
-    <Color x:Key="PrimaryTextColor">#FAFAFA</Color>
-    <Color x:Key="SecondaryTextColor">#A1A1AA</Color>
-    <Color x:Key="TertiaryTextColor">#71717A</Color>
-    <Color x:Key="DisabledTextColor">#52525B</Color>
-    <Color x:Key="BorderColor">#3F3F46</Color>
-    <Color x:Key="BorderHoverColor">#52525B</Color>
-    <Color x:Key="DividerColor">#27272A</Color>
+    <Color x:Key="PrimaryBackgroundColor">#1B1B1F</Color>
+    <Color x:Key="SecondaryBackgroundColor">#222226</Color>
+    <Color x:Key="TertiaryBackgroundColor">#1F1F23</Color>
+    <Color x:Key="CardBackgroundColor">#26262B</Color>
+    <Color x:Key="CardHoverBackgroundColor">#2E2E34</Color>
+    <Color x:Key="CardPressedBackgroundColor">#34343A</Color>
+    <Color x:Key="AccentColor">#6EA8FF</Color>
+    <Color x:Key="AccentHoverColor">#8CBEFF</Color>
+    <Color x:Key="AccentPressedColor">#4F8BFF</Color>
+    <Color x:Key="AccentLightColor">#1E2D4B</Color>
+    <Color x:Key="PrimaryTextColor">#F5F7FA</Color>
+    <Color x:Key="SecondaryTextColor">#B8BDC7</Color>
+    <Color x:Key="TertiaryTextColor">#8B9099</Color>
+    <Color x:Key="DisabledTextColor">#5B6068</Color>
+    <Color x:Key="BorderColor">#36363D</Color>
+    <Color x:Key="BorderHoverColor">#4A4F58</Color>
+    <Color x:Key="DividerColor">#2A2A31</Color>
     <Color x:Key="SuccessColor">#4ADE80</Color>
     <Color x:Key="SuccessLightColor">#1A4A2E</Color>
     <Color x:Key="WarningColor">#FBBF24</Color>
@@ -81,7 +81,7 @@
         <Setter Property="Background" Value="{StaticResource CardBackgroundBrush}"/>
         <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
         <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="CornerRadius" Value="10"/>
         <Setter Property="Padding" Value="20,16"/>
         <Setter Property="Margin" Value="0,0,0,8"/>
         <Style.Triggers>
@@ -100,7 +100,7 @@
         <Setter Property="Background" Value="{StaticResource CardBackgroundBrush}"/>
         <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
         <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="CornerRadius" Value="10"/>
         <Setter Property="Margin" Value="0,0,0,8"/>
     </Style>
 
@@ -171,7 +171,7 @@
     <Style x:Key="SettingsIconContainerStyle" TargetType="Border">
         <Setter Property="Width" Value="40"/>
         <Setter Property="Height" Value="40"/>
-        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="CornerRadius" Value="10"/>
         <Setter Property="Background" Value="{StaticResource AccentLightBrush}"/>
         <Setter Property="Margin" Value="0,0,16,0"/>
         <Setter Property="VerticalAlignment" Value="Center"/>
@@ -204,7 +204,7 @@
     <!-- ==================== 标签样式 ==================== -->
     <Style x:Key="SettingsTagStyle" TargetType="Border">
         <Setter Property="Background" Value="#20FFFFFF"/>
-        <Setter Property="CornerRadius" Value="4"/>
+        <Setter Property="CornerRadius" Value="6"/>
         <Setter Property="Padding" Value="8,4"/>
         <Setter Property="Margin" Value="0,0,8,0"/>
         <Setter Property="VerticalAlignment" Value="Center"/>
@@ -214,7 +214,7 @@
         <Setter Property="Background" Value="#1A10B981"/>
         <Setter Property="BorderBrush" Value="{StaticResource NewFeatureBrush}"/>
         <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="CornerRadius" Value="4"/>
+        <Setter Property="CornerRadius" Value="6"/>
         <Setter Property="Padding" Value="6,2"/>
         <Setter Property="Margin" Value="8,0,0,0"/>
         <Setter Property="VerticalAlignment" Value="Center"/>
@@ -360,7 +360,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
                     <Border x:Name="border" Background="{TemplateBinding Background}"
-                            CornerRadius="6" Padding="{TemplateBinding Padding}">
+                            CornerRadius="8" Padding="{TemplateBinding Padding}">
                         <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </Border>
                     <ControlTemplate.Triggers>
@@ -393,7 +393,7 @@
                     <Border x:Name="border" Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="6" Padding="{TemplateBinding Padding}">
+                            CornerRadius="8" Padding="{TemplateBinding Padding}">
                         <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </Border>
                     <ControlTemplate.Triggers>
@@ -421,7 +421,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
                     <Border x:Name="border" Background="{TemplateBinding Background}"
-                            CornerRadius="6" Padding="{TemplateBinding Padding}">
+                            CornerRadius="8" Padding="{TemplateBinding Padding}">
                         <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </Border>
                     <ControlTemplate.Triggers>
@@ -609,7 +609,7 @@
     <!-- ==================== 徽章样式 ==================== -->
     <Style x:Key="BadgeStyle" TargetType="Border">
         <Setter Property="Background" Value="{StaticResource AccentBrush}"/>
-        <Setter Property="CornerRadius" Value="10"/>
+        <Setter Property="CornerRadius" Value="12"/>
         <Setter Property="Padding" Value="8,2"/>
         <Setter Property="MinWidth" Value="20"/>
         <Setter Property="MinHeight" Value="20"/>

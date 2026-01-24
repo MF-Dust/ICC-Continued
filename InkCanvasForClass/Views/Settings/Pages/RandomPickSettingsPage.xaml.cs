@@ -1,4 +1,6 @@
 using System.Windows.Controls;
+using Ink_Canvas.Core;
+using Ink_Canvas.ViewModels;
 
 namespace Ink_Canvas.Views.Settings.Pages
 {
@@ -10,6 +12,7 @@ namespace Ink_Canvas.Views.Settings.Pages
         public RandomPickSettingsPage()
         {
             InitializeComponent();
+            DataContext = ServiceLocator.GetRequiredService<SettingsViewModel>();
         }
     }
 }

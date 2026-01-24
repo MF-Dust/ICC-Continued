@@ -1,4 +1,4 @@
-﻿using Hardcodet.Wpf.TaskbarNotification;
+using Hardcodet.Wpf.TaskbarNotification;
 using Ink_Canvas.Core;
 using Ink_Canvas.Helpers;
 using Ink_Canvas.Services;
@@ -246,7 +246,11 @@ namespace Ink_Canvas
 
             // 外观设置 ViewModel
             // 依赖: ISettingsService
-            services.AddSingleton<AppearanceSettingsViewModel>();
+            services.AddSingleton<AppearanceSettingsViewModel>(sp =>
+            {
+                var settingsService = sp.GetRequiredService<ISettingsService>();
+                return new AppearanceSettingsViewModel(settingsService.Appearance, () => settingsService.Save());
+            });
 
             // 画布设置 ViewModel
             // 依赖: ISettingsService

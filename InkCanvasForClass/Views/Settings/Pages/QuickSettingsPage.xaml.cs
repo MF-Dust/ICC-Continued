@@ -2,7 +2,9 @@ using System;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using Ink_Canvas.Core;
 using Ink_Canvas.Helpers;
+using Ink_Canvas.ViewModels;
 using iNKORE.UI.WPF.Modern.Controls;
 
 namespace Ink_Canvas.Views.Settings.Pages
@@ -18,6 +20,7 @@ namespace Ink_Canvas.Views.Settings.Pages
         public QuickSettingsPage()
         {
             InitializeComponent();
+            DataContext = ServiceLocator.GetRequiredService<SettingsViewModel>();
             Loaded += QuickSettingsPage_Loaded;
         }
 

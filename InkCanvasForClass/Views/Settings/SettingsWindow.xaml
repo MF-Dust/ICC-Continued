@@ -9,7 +9,7 @@
         Title="应用设置" Height="760" Width="1120"
         MinHeight="640" MinWidth="960"
         WindowStartupLocation="CenterScreen"
-        Background="#1A1A1A"
+        Background="Transparent"
         Foreground="#FAFAFA"
         ui:ThemeManager.RequestedTheme="Dark"
         ui:WindowHelper.UseModernWindowStyle="True"
@@ -24,10 +24,10 @@
             </ResourceDictionary.MergedDictionaries>
 
             <!-- 导航视图专用颜色 -->
-            <Color x:Key="NavigationBackgroundColor">#202020</Color>
-            <Color x:Key="NavigationItemHoverColor">#2A2A2A</Color>
-            <Color x:Key="NavigationItemSelectedColor">#1E3A5F</Color>
-            <Color x:Key="SelectedIndicatorColor">#60A5FA</Color>
+            <Color x:Key="NavigationBackgroundColor">#1C1C20</Color>
+            <Color x:Key="NavigationItemHoverColor">#27272D</Color>
+            <Color x:Key="NavigationItemSelectedColor">#25324B</Color>
+            <Color x:Key="SelectedIndicatorColor">#6EA8FF</Color>
 
             <!-- 导航视图专用画刷 -->
             <SolidColorBrush x:Key="NavigationBackgroundBrush" Color="{StaticResource NavigationBackgroundColor}"/>
@@ -76,8 +76,9 @@
         </ResourceDictionary>
     </Window.Resources>
 
-    <Grid>
-        <ui:NavigationView x:Name="NavView"
+    <Border Background="#CC1B1B1F" BorderBrush="#303038" BorderThickness="1" CornerRadius="12">
+        <Grid>
+            <ui:NavigationView x:Name="NavView"
                            IsBackButtonVisible="Collapsed"
                            IsPaneToggleButtonVisible="True"
                            PaneDisplayMode="Left"
@@ -242,7 +243,7 @@
             </ui:NavigationView.FooterMenuItems>
 
             <!-- 内容区域 -->
-            <Border Background="{StaticResource PrimaryBackgroundBrush}">
+            <Border Background="Transparent">
                 <ui:ScrollViewerEx x:Name="ContentScrollViewer"
                                    Padding="48,36,48,48"
                                    VerticalScrollBarVisibility="Auto"
@@ -250,6 +251,7 @@
                     <Frame x:Name="ContentFrame" NavigationUIVisibility="Hidden" Background="Transparent"/>
                 </ui:ScrollViewerEx>
             </Border>
-        </ui:NavigationView>
-    </Grid>
+            </ui:NavigationView>
+        </Grid>
+    </Border>
 </Window>

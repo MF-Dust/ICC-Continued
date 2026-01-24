@@ -10,15 +10,10 @@ namespace Ink_Canvas.Views.Settings.Pages
     /// </summary>
     public partial class AppearanceSettingsPage : UserControl
     {
-        public AppearanceSettingsViewModel ViewModel { get; private set; }
-
         public AppearanceSettingsPage()
         {
             InitializeComponent();
-            
-            // 从服务定位器获取 ViewModel
-            ViewModel = ServiceLocator.GetRequiredService<AppearanceSettingsViewModel>();
-            DataContext = ViewModel;
+            DataContext = ServiceLocator.GetRequiredService<SettingsViewModel>();
         }
     }
 }
