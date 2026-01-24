@@ -20,10 +20,10 @@ namespace Ink_Canvas.ViewModels
     /// 触摸事件 ViewModel - 管理所有触摸相关的逻辑
     /// 包括手掌橡皮擦、多点触控手势、触摸指针隐藏等功能
     /// </summary>
-    public partial class TouchEventsViewModel : ViewModelBase
+    public partial class TouchEventsViewModel(ISettingsService settingsService, ITimeMachineService timeMachineService) : ViewModelBase
     {
-        private readonly ISettingsService _settingsService;
-        private readonly ITimeMachineService _timeMachineService;
+        private readonly ISettingsService _settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
+        private readonly ITimeMachineService _timeMachineService = timeMachineService ?? throw new ArgumentNullException(nameof(timeMachineService));
 
         #region Palm Eraser State
 
@@ -46,7 +46,7 @@ namespace Ink_Canvas.ViewModels
         /// <summary>
         /// 手掌触摸的初始位置
         /// </summary>
-        private Point _palmTouchStartPoint = new Point();
+        private Point _palmTouchStartPoint;
 
         /// <summary>
         /// 手掌橡皮的增量命中测试器
@@ -56,7 +56,7 @@ namespace Ink_Canvas.ViewModels
         /// <summary>
         /// 手掌橡皮的缩放矩阵
         /// </summary>
-        private Matrix _palmScaleMatrix = new Matrix();
+        private Matrix _palmScaleMatrix;
 
         /// <summary>
         /// 手掌橡皮上次更新位置
@@ -115,12 +115,7 @@ namespace Ink_Canvas.ViewModels
         /// <summary>
         /// 触摸设备ID集合
         /// </summary>
-        private HashSet<int> _touchDeviceIds = new HashSet<int>();
-
-        /// <summary>
-        /// 是否为单指拖拽模式
-        /// </summary>
-        private bool _isSingleFingerDragMode = false;
+        private HashSet<int> _touchDeviceIds = [];
 
         /// <summary>
         /// 操作变换缓存矩阵
@@ -140,7 +135,7 @@ namespace Ink_Canvas.ViewModels
         /// <summary>
         /// 上次平移值
         /// </summary>
-        private Point _lastTranslation = new Point(0, 0);
+        private Point _lastTranslation;
 
         /// <summary>
         /// 上次旋转角度
@@ -150,7 +145,7 @@ namespace Ink_Canvas.ViewModels
         /// <summary>
         /// 上次缩放值
         /// </summary>
-        private Vector _lastScale = new Vector(1, 1);
+        private Vector _lastScale;
 
         #endregion
 
@@ -214,16 +209,6 @@ namespace Ink_Canvas.ViewModels
         /// 请求显示橡皮擦反馈事件
         /// </summary>
         public event EventHandler<Ink_Canvas.Services.Events.EraserFeedbackEventArgs> EraserFeedbackRequested;
-
-        #endregion
-
-        #region Constructor
-
-        public TouchEventsViewModel(ISettingsService settingsService, ITimeMachineService timeMachineService)
-        {
-            _settingsService = settingsService ?? throw new ArgumentNullException(nameof(settingsService));
-            _timeMachineService = timeMachineService ?? throw new ArgumentNullException(nameof(timeMachineService));
-        }
 
         #endregion
 
@@ -390,7 +375,7 @@ namespace Ink_Canvas.ViewModels
             if (InkCanvas == null) return;
 
             StrokeCollection eraseResult = args.GetPointEraseResults();
-            StrokeCollection strokesToReplace = new StrokeCollection { args.HitStroke };
+            StrokeCollection strokesToReplace = [args.HitStroke];
 
             // 过滤掉锁定的笔画
             var filtered2Replace = strokesToReplace.Where(stroke => !stroke.ContainsPropertyData(Guid.Parse("{D6FCCF9F-6132-4E70-9222-054F05D0BF0E}"))).ToArray();
@@ -533,9 +518,8 @@ namespace Ink_Canvas.ViewModels
         public void HandleManipulationDelta(ManipulationDelta delta, Point center)
         {
             if (IsInMultiTouchMode || !_settingsService?.Settings?.Gesture?.IsEnableTwoFingerGesture == true) return;
-            if ((_touchDeviceIds.Count >= 2 && (_settingsService.Settings.PowerPointSettings.IsEnableTwoFingerGestureInPresentationMode ||
-                                        FloatingBar?.Visibility == Visibility.Visible)) ||
-                _isSingleFingerDragMode)
+            if (_touchDeviceIds.Count >= 2 && (_settingsService.Settings.PowerPointSettings.IsEnableTwoFingerGestureInPresentationMode ||
+                                        FloatingBar?.Visibility == Visibility.Visible))
             {
                 // 节流：限制更新频率
                 var currentTick = Environment.TickCount;
