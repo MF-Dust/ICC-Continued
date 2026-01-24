@@ -675,20 +675,20 @@ namespace Ink_Canvas.Popups {
         /// <summary>
         /// 根據傳入的觸筆模式修改Quick Action 子項目的可見性。
         /// </summary>
-        /// <param name="penMode"></param>
-        private void UpdateQuickActionItemsVisibilityByPenMode(PenMode penMode) {
+        /// <param name="mode"></param>
+        private void UpdateQuickActionItemsVisibilityByPenMode(PenMode mode) {
             _isDisplayQuickActions = true;
-            if (penMode == PenMode.PenMode) {
+            if (mode == PenMode.PenMode) {
                 _isDisplayInkRecognitionQuickAction = true;
                 _isDisplayInkPressureQuickAction = true;
                 _isDisplayCircleTipShapeQuickAction = false;
                 _isDisplayFingerModeQuickAction = true;
-            } else if (penMode == PenMode.HighlighterMode) {
+            } else if (mode == PenMode.HighlighterMode) {
                 _isDisplayInkRecognitionQuickAction = true;
                 _isDisplayInkPressureQuickAction = false;
                 _isDisplayCircleTipShapeQuickAction = true;
                 _isDisplayFingerModeQuickAction = true;
-            } else if (penMode == PenMode.LaserPenMode) {
+            } else if (mode == PenMode.LaserPenMode) {
                 _isDisplayQuickActions = false;
             }
             UpdateQuickActionVisibility(_isDisplayQuickActions);
@@ -1185,9 +1185,9 @@ namespace Ink_Canvas.Popups {
         /// <summary>
         /// 根据笔模式更新笔触粗细滑块的范围
         /// </summary>
-        private void UpdatePenWidthSliderRange(PenMode penMode) {
+        private void UpdatePenWidthSliderRange(PenMode mode) {
             if (PenWidthSlider != null) {
-                if (penMode == PenMode.PenMode) {
+                if (mode == PenMode.PenMode) {
                     // 签字笔模式：范围 1-20
                     PenWidthSlider.Minimum = 1;
                     PenWidthSlider.Maximum = 20;
@@ -1195,7 +1195,7 @@ namespace Ink_Canvas.Popups {
                     if (PenWidthSlider.Value < 1 || PenWidthSlider.Value > 20) {
                         PenWidthSlider.Value = 2;
                     }
-                } else if (penMode == PenMode.HighlighterMode) {
+                } else if (mode == PenMode.HighlighterMode) {
                     // 荧光笔模式：范围 15-45
                     PenWidthSlider.Minimum = 15;
                     PenWidthSlider.Maximum = 45;
