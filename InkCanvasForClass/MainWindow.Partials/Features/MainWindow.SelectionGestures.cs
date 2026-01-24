@@ -139,7 +139,7 @@ namespace Ink_Canvas {
         private void MatrixStrokes(Func<Matrix,Point,Matrix> func) {
             var m = new Matrix();
 
-            Point center = new Point(inkCanvas.GetSelectionBounds().Left + inkCanvas.GetSelectionBounds().Width / 2,
+            Point center = new(inkCanvas.GetSelectionBounds().Left + inkCanvas.GetSelectionBounds().Width / 2,
                 inkCanvas.GetSelectionBounds().Top + inkCanvas.GetSelectionBounds().Height / 2);
             center = m.Transform(center); // 转换为矩阵缩放和旋转的中心点
 
@@ -265,14 +265,14 @@ namespace Ink_Canvas {
 
 
 
-        private StrokeCollection StrokesSelectionClone = new StrokeCollection();
+        private StrokeCollection StrokesSelectionClone = new();
 
         private bool isRectangleSelectionMouseDown = false;
         // 矩形框选
-        private Point rectangleSelection_FirstPoint = new Point(0, 0);
-        private Point rectangleSelection_LastPoint = new Point(0, 0);
+        private Point rectangleSelection_FirstPoint = new();
+        private Point rectangleSelection_LastPoint = new();
         // 套索框选
-        private PointCollection rectangleSelection_LassoPoints = new PointCollection();
+        private PointCollection rectangleSelection_LassoPoints = new();
 
         private void GridInkCanvasSelectionCover_MouseDown(object sender, MouseButtonEventArgs e) {
         }
@@ -294,10 +294,10 @@ namespace Ink_Canvas {
                     var nodia = nt.HitTest(pt);
                     if (nodia.Count > 0) {
                         if (nodia[nodia.Count - 1].ContainsPropertyData(IsLockGuid) && Settings.Canvas.AllowClickToSelectLockedStroke) return;
-                        inkCanvas.Select(new StrokeCollection() {nodia[nodia.Count-1]});
+                        inkCanvas.Select([nodia[^1]]);
                     } else {
                         if (nt[0].ContainsPropertyData(IsLockGuid) && Settings.Canvas.AllowClickToSelectLockedStroke) return;
-                        inkCanvas.Select(new StrokeCollection() { nt[0] });
+                        inkCanvas.Select([nt[0]]);
                     }
                 } else if (nt.Count == 1) {
                     if (nt[0].ContainsPropertyData(IsLockGuid) && Settings.Canvas.AllowClickToSelectLockedStroke) return;
@@ -348,13 +348,13 @@ namespace Ink_Canvas {
             if (Settings.Canvas.SelectionMethod == 1) {
                 rectangleSelection_LastPoint = pt;
                 var rct = new Rect(rectangleSelection_FirstPoint, rectangleSelection_LastPoint);
-                ilh.AddPoints(new Point[] {
+                ilh.AddPoints([
                     rct.TopLeft,
                     rct.TopRight,
                     rct.BottomRight,
                     rct.BottomLeft,
                     rct.TopLeft
-                });
+                ]);
             } else {
                 rectangleSelection_LassoPoints.Add(pt);
                 ilh.AddPoints(rectangleSelection_LassoPoints);
@@ -446,8 +446,8 @@ namespace Ink_Canvas {
             }
 
             // resize strokes and preview strokes
-            SelectedStrokesResize(inkCanvas.GetSelectedStrokes(), (StrokeSelectionBorderHandlesEnum)lockedStrokeSelectionBorderHandleType,
-                (Rect)originalSelectionBounds, (Rect)resizedSelectionBounds);
+            SelectedStrokesResize(inkCanvas.GetSelectedStrokes(), (StrokeSelectionBorderHandlesEnum)lockedStrokeSelectionBorderHandleType!,
+                originalSelectionBounds.GetValueOrDefault(), resizedSelectionBounds.GetValueOrDefault());
             InkSelectionStrokesOverlay.DrawStrokes(inkCanvas.GetSelectedStrokes(), new Matrix());
 
             // display selectionToolBar
@@ -490,58 +490,58 @@ namespace Ink_Canvas {
             var isReverseWidth = false; // 是否逆向 resize Width,true 為調小，false為調大
             var isReverseHeight = false; // 是否逆向 resize Height,true 為調小，false為調大
             if (lockedStrokeSelectionBorderHandleType == StrokeSelectionBorderHandlesEnum.LeftTop) {
-                isReverseWidth = nowWindowPosition.X > ((Point)resizingFirstPoint).X;
-                isReverseHeight = nowWindowPosition.Y > ((Point)resizingFirstPoint).Y;
+                isReverseWidth = nowWindowPosition.X > resizingFirstPoint.GetValueOrDefault().X;
+                isReverseHeight = nowWindowPosition.Y > resizingFirstPoint.GetValueOrDefault().Y;
             } else if (lockedStrokeSelectionBorderHandleType == StrokeSelectionBorderHandlesEnum.RightTop) {
-                isReverseWidth = nowWindowPosition.X < ((Point)resizingFirstPoint).X;
-                isReverseHeight = nowWindowPosition.Y > ((Point)resizingFirstPoint).Y;
+                isReverseWidth = nowWindowPosition.X < resizingFirstPoint.GetValueOrDefault().X;
+                isReverseHeight = nowWindowPosition.Y > resizingFirstPoint.GetValueOrDefault().Y;
             } else if (lockedStrokeSelectionBorderHandleType == StrokeSelectionBorderHandlesEnum.LeftBottom) {
-                isReverseWidth = nowWindowPosition.X > ((Point)resizingFirstPoint).X;
-                isReverseHeight = nowWindowPosition.Y < ((Point)resizingFirstPoint).Y;
+                isReverseWidth = nowWindowPosition.X > resizingFirstPoint.GetValueOrDefault().X;
+                isReverseHeight = nowWindowPosition.Y < resizingFirstPoint.GetValueOrDefault().Y;
             } else if (lockedStrokeSelectionBorderHandleType == StrokeSelectionBorderHandlesEnum.RightBottom) {
-                isReverseWidth = nowWindowPosition.X < ((Point)resizingFirstPoint).X;
-                isReverseHeight = nowWindowPosition.Y < ((Point)resizingFirstPoint).Y;
+                isReverseWidth = nowWindowPosition.X < resizingFirstPoint.GetValueOrDefault().X;
+                isReverseHeight = nowWindowPosition.Y < resizingFirstPoint.GetValueOrDefault().Y;
             } else if (lockedStrokeSelectionBorderHandleType == StrokeSelectionBorderHandlesEnum.Top) {
                 isReverseWidth = false;
-                isReverseHeight = nowWindowPosition.Y > ((Point)resizingFirstPoint).Y;
+                isReverseHeight = nowWindowPosition.Y > resizingFirstPoint.GetValueOrDefault().Y;
             } else if (lockedStrokeSelectionBorderHandleType == StrokeSelectionBorderHandlesEnum.Bottom) {
                 isReverseWidth = false;
-                isReverseHeight = nowWindowPosition.Y < ((Point)resizingFirstPoint).Y;
+                isReverseHeight = nowWindowPosition.Y < resizingFirstPoint.GetValueOrDefault().Y;
             } else if (lockedStrokeSelectionBorderHandleType == StrokeSelectionBorderHandlesEnum.Left) {
-                isReverseWidth = nowWindowPosition.X > ((Point)resizingFirstPoint).X;
+                isReverseWidth = nowWindowPosition.X > resizingFirstPoint.GetValueOrDefault().X;
                 isReverseHeight = false;
             } else if (lockedStrokeSelectionBorderHandleType == StrokeSelectionBorderHandlesEnum.Right) {
-                isReverseWidth = nowWindowPosition.X < ((Point)resizingFirstPoint).X;
+                isReverseWidth = nowWindowPosition.X < resizingFirstPoint.GetValueOrDefault().X;
                 isReverseHeight = false;
             }
 
             // caculate height width left top
             var l = Math.Round(
-                ((Rect)originalSelectionBounds).Left +
-                ((int)lockedStrokeSelectionBorderHandleType == 0 || (int)lockedStrokeSelectionBorderHandleType == 2 || (int)lockedStrokeSelectionBorderHandleType == 4
-                    ? new Rect(((Point)resizingFirstPoint), nowWindowPosition).Width *
+                originalSelectionBounds.GetValueOrDefault().Left +
+                ((int)lockedStrokeSelectionBorderHandleType!.GetValueOrDefault() == 0 || (int)lockedStrokeSelectionBorderHandleType!.GetValueOrDefault() == 2 || (int)lockedStrokeSelectionBorderHandleType!.GetValueOrDefault() == 4
+                    ? new Rect(resizingFirstPoint.GetValueOrDefault(), nowWindowPosition).Width *
                       (isReverseWidth ? 1 : -1)
                     : 0), 0);
             var t = Math.Round(
-                ((Rect)originalSelectionBounds).Top +
-                ((int)lockedStrokeSelectionBorderHandleType == 0 || (int)lockedStrokeSelectionBorderHandleType == 1 || (int)lockedStrokeSelectionBorderHandleType == 6
-                    ? new Rect(((Point)resizingFirstPoint), nowWindowPosition).Height *
+                originalSelectionBounds.GetValueOrDefault().Top +
+                ((int)lockedStrokeSelectionBorderHandleType!.GetValueOrDefault() == 0 || (int)lockedStrokeSelectionBorderHandleType!.GetValueOrDefault() == 1 || (int)lockedStrokeSelectionBorderHandleType!.GetValueOrDefault() == 6
+                    ? new Rect(resizingFirstPoint.GetValueOrDefault(), nowWindowPosition).Height *
                       (isReverseHeight ? 1 : -1)
                     : 0), 0);
-            var w = (int)lockedStrokeSelectionBorderHandleType != 6 && (int)lockedStrokeSelectionBorderHandleType != 7 ? Math.Round(((Rect)originalSelectionBounds).Width + new Rect(((Point)resizingFirstPoint),
-                nowWindowPosition).Width * (isReverseWidth ? -1 : 1), 0) : ((Rect)originalSelectionBounds).Width;
-            var h = (int)lockedStrokeSelectionBorderHandleType != 4 && (int)lockedStrokeSelectionBorderHandleType != 5 ? Math.Round(((Rect)originalSelectionBounds).Height + new Rect(((Point)resizingFirstPoint),
-                nowWindowPosition).Height * (isReverseHeight ? -1 : 1), 0) : ((Rect)originalSelectionBounds).Height;
+            var w = (int)lockedStrokeSelectionBorderHandleType!.GetValueOrDefault() != 6 && (int)lockedStrokeSelectionBorderHandleType!.GetValueOrDefault() != 7 ? Math.Round(originalSelectionBounds.GetValueOrDefault().Width + new Rect(resizingFirstPoint.GetValueOrDefault(),
+                nowWindowPosition).Width * (isReverseWidth ? -1 : 1), 0) : originalSelectionBounds.GetValueOrDefault().Width;
+            var h = (int)lockedStrokeSelectionBorderHandleType!.GetValueOrDefault() != 4 && (int)lockedStrokeSelectionBorderHandleType!.GetValueOrDefault() != 5 ? Math.Round(originalSelectionBounds.GetValueOrDefault().Height + new Rect(resizingFirstPoint.GetValueOrDefault(),
+                nowWindowPosition).Height * (isReverseHeight ? -1 : 1), 0) : originalSelectionBounds.GetValueOrDefault().Height;
 
             var final_w = Math.Round(w,0);
             var final_h = Math.Round(h,0);
 
             if (isShiftKeyDown) {
-                var scaleW = w / ((Rect)originalSelectionBounds).Width;
-                var scaleH = h / ((Rect)originalSelectionBounds).Height;
+                var scaleW = w / originalSelectionBounds.GetValueOrDefault().Width;
+                var scaleH = h / originalSelectionBounds.GetValueOrDefault().Height;
 
-                final_w = Math.Round(((Rect)originalSelectionBounds).Width * Math.Max(scaleW, scaleH),0);
-                final_h = Math.Round(((Rect)originalSelectionBounds).Height * Math.Max(scaleW, scaleH),0);
+                final_w = Math.Round(originalSelectionBounds.GetValueOrDefault().Width * Math.Max(scaleW, scaleH),0);
+                final_h = Math.Round(originalSelectionBounds.GetValueOrDefault().Height * Math.Max(scaleW, scaleH),0);
             }
 
             if (final_w >= 1 && final_h >= 1) {
@@ -568,8 +568,8 @@ namespace Ink_Canvas {
                 resizedSelectionBounds = new Rect(ori_lt, ori_rb);
 
                 // preview resize
-                SelectedStrokesResize(inkCanvas.GetSelectedStrokes(), (StrokeSelectionBorderHandlesEnum)lockedStrokeSelectionBorderHandleType,
-                    (Rect)originalSelectionBounds, (Rect)resizedSelectionBounds, true);
+                SelectedStrokesResize(inkCanvas.GetSelectedStrokes(), (StrokeSelectionBorderHandlesEnum)lockedStrokeSelectionBorderHandleType!.GetValueOrDefault(),
+                    originalSelectionBounds.GetValueOrDefault(), resizedSelectionBounds.GetValueOrDefault(), true);
             }
         }
 
@@ -596,8 +596,8 @@ namespace Ink_Canvas {
             movingLastPoint = pt;
 
             // caculate offset
-            var offX = ((Point)movingLastPoint).X - ((Point)movingFirstPoint).X;
-            var offY = ((Point)movingLastPoint).Y - ((Point)movingFirstPoint).Y;
+            var offX = movingLastPoint.GetValueOrDefault().X - movingFirstPoint.GetValueOrDefault().X;
+            var offY = movingLastPoint.GetValueOrDefault().Y - movingFirstPoint.GetValueOrDefault().Y;
 
             // unlock
             isLockedStrokeSelectionMove = false;
@@ -605,7 +605,7 @@ namespace Ink_Canvas {
             if (isStrokeSelectionCloneOn) {
                 // transform strokes
                 var matrix = new Matrix();
-                matrix.Translate(((Point)movingLastPoint).X-((Point)movingFirstPoint).X, ((Point)movingLastPoint).Y - ((Point)movingFirstPoint).Y);
+                matrix.Translate(movingLastPoint.GetValueOrDefault().X - movingFirstPoint.GetValueOrDefault().X, movingLastPoint.GetValueOrDefault().Y - movingFirstPoint.GetValueOrDefault().Y);
 
                 isProgramChangeStrokesSelection = true;
                 var ori = inkCanvas.GetSelectedStrokes();
@@ -631,10 +631,10 @@ namespace Ink_Canvas {
                 }
 
                 // preview
-                SelectedStrokesMove(inkCanvas.GetSelectedStrokes(), (Point)movingFirstPoint, (Point)movingLastPoint, true);
+                SelectedStrokesMove(inkCanvas.GetSelectedStrokes(), movingFirstPoint.GetValueOrDefault(), movingLastPoint.GetValueOrDefault(), true);
 
                 // transform strokes
-                SelectedStrokesMove(inkCanvas.GetSelectedStrokes(), (Point)movingFirstPoint, (Point)movingLastPoint);
+                SelectedStrokesMove(inkCanvas.GetSelectedStrokes(), movingFirstPoint.GetValueOrDefault(), movingLastPoint.GetValueOrDefault());
 
                 // display selectionToolBar
                 var _bd = new Binding("Visibility");
@@ -682,13 +682,13 @@ namespace Ink_Canvas {
             movingLastPoint = pt;
 
             // caculate offset
-            var offX = ((Point)movingLastPoint).X - ((Point)movingFirstPoint).X;
-            var offY = ((Point)movingLastPoint).Y - ((Point)movingFirstPoint).Y;
+            var offX = movingLastPoint.GetValueOrDefault().X - movingFirstPoint.GetValueOrDefault().X;
+            var offY = movingLastPoint.GetValueOrDefault().Y - movingFirstPoint.GetValueOrDefault().Y;
 
             if (isStrokeSelectionCloneOn) {
 
                 var matrix = new Matrix();
-                matrix.Translate(((Point)movingLastPoint).X-((Point)movingFirstPoint).X, ((Point)movingLastPoint).Y - ((Point)movingFirstPoint).Y);
+                matrix.Translate(movingLastPoint.GetValueOrDefault().X - movingFirstPoint.GetValueOrDefault().X, movingLastPoint.GetValueOrDefault().Y - movingFirstPoint.GetValueOrDefault().Y);
 
                 InkSelectionStrokesOverlay.Open();
                 InkSelectionStrokesOverlay.DrawStrokes(inkCanvas.GetSelectedStrokes(), new Matrix(), false);
@@ -697,7 +697,7 @@ namespace Ink_Canvas {
 
             } else {
                 // preview
-                SelectedStrokesMove(inkCanvas.GetSelectedStrokes(), (Point)movingFirstPoint, (Point)movingLastPoint, true);
+                SelectedStrokesMove(inkCanvas.GetSelectedStrokes(), movingFirstPoint.GetValueOrDefault(), movingLastPoint.GetValueOrDefault(), true);
 
                 // relocate border position
                 if (isStrokesSelectionBorderMovingUseRenderTransform) {
@@ -743,12 +743,12 @@ namespace Ink_Canvas {
 
             // caculate rotate angle
             var vec1 = new double[] {
-                ((Point)rotatingLastPoint).X - ((Point)StrokesRotateSelectionBoundsCenterPoint).X ,
-                ((Point)rotatingLastPoint).Y - ((Point)StrokesRotateSelectionBoundsCenterPoint).Y
+                rotatingLastPoint.GetValueOrDefault().X - StrokesRotateSelectionBoundsCenterPoint.GetValueOrDefault().X ,
+                rotatingLastPoint.GetValueOrDefault().Y - StrokesRotateSelectionBoundsCenterPoint.GetValueOrDefault().Y
             };
             var vec_base = new double[] {
                 0,
-                ((Point)StrokesRotateSelectionBoundsCenterPoint).Y
+                StrokesRotateSelectionBoundsCenterPoint.GetValueOrDefault().Y
             };
             var cosine = (vec_base[0] * vec1[0] + vec_base[1] * vec1[1]) /
                          (Math.Sqrt(Math.Pow(vec_base[0], 2) + Math.Pow(vec_base[1], 2)) *

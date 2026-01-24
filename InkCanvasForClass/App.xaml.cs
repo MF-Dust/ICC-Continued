@@ -299,7 +299,7 @@ namespace Ink_Canvas
             LogHelper.WriteLogToFile("依赖注入配置完成", LogHelper.LogType.Info);
         }
 
-        private Assembly OnAssemblyResolve(object sender, ResolveEventArgs args) {
+        private Assembly? OnAssemblyResolve(object sender, ResolveEventArgs args) {
             // 旧版 IA 库 (IAWinFX, IACore, IALoader) 已移除
             // 现在使用 Windows.UI.Input.Inking.Analysis API，不再需要处理这些程序集
             return null;

@@ -14,7 +14,7 @@ namespace Ink_Canvas.Helpers
 {
     internal class AutoUpdateHelper
     {
-        public static async Task<string> CheckForUpdates(string proxy = null)
+        public static async Task<string?> CheckForUpdates(string proxy = null)
         {
             try
             {
@@ -63,7 +63,7 @@ namespace Ink_Canvas.Helpers
             }
         }
 
-        public static async Task<string> GetRemoteVersion(string fileUrl)
+        public static async Task<string?> GetRemoteVersion(string fileUrl)
         {
             try
             {
@@ -108,7 +108,7 @@ namespace Ink_Canvas.Helpers
             {
                 statusFilePath = Path.Combine(updatesFolderPath, $"DownloadV{version}Status.txt");
 
-                if (File.Exists(statusFilePath) && File.ReadAllText(statusFilePath).Trim().ToLower() == "true")
+                if (File.Exists(statusFilePath) && File.ReadAllText(statusFilePath).Trim().Equals("true", StringComparison.OrdinalIgnoreCase))
                 {
                     LogHelper.WriteLogToFile("自动更新 | 安装包已下载，跳过重复下载。");
                     return true;

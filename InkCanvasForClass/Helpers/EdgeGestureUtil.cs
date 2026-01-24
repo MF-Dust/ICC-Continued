@@ -146,13 +146,13 @@ namespace Ink_Canvas.Helpers
         #region "Methods"
 
         [DllImport("shell32.dll", SetLastError = true)]
-        private static extern int SHGetPropertyStoreForWindow(IntPtr handle, ref Guid riid, ref IPropertyStore propertyStore);
+        private static extern int SHGetPropertyStoreForWindow(IntPtr handle, ref Guid riid, out IPropertyStore propertyStore);
 
         [RequiresUnmanagedCode("Uses shell32 COM interop to update edge gesture settings.")]
         public static void DisableEdgeGestures(IntPtr hwnd, bool enable)
         {
             IPropertyStore propertyStore = null;
-            int hr = SHGetPropertyStoreForWindow(hwnd, ref IID_PROPERTY_STORE, ref propertyStore);
+            int hr = SHGetPropertyStoreForWindow(hwnd, ref IID_PROPERTY_STORE, out propertyStore);
             if (hr == 0)
             {
                 PropertyKey propKey = new(DISABLE_TOUCH_SCREEN, 2);
