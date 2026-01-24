@@ -228,6 +228,15 @@ namespace Ink_Canvas
             // 形状绘制服务 - 管理形状绘制功能
             services.AddSingleton<IShapeDrawingService, ShapeDrawingService>();
 
+            // 墨迹画布服务 - 管理墨迹画布相关功能
+            services.AddSingleton<IInkCanvasService, InkCanvasService>();
+
+            // 截图服务 - 管理截图功能
+            services.AddSingleton<IScreenshotService, ScreenshotService>();
+
+            // 通知服务 - 管理通知功能
+            services.AddSingleton<INotificationService, NotificationService>();
+
             // ========================================
             // ViewModels (Singleton)
             // ========================================
@@ -235,6 +244,24 @@ namespace Ink_Canvas
             // 设置 ViewModel
             // 依赖: ISettingsService
             services.AddSingleton<SettingsViewModel>();
+
+            // 外观设置 ViewModel
+            // 依赖: ISettingsService
+            services.AddSingleton<AppearanceSettingsViewModel>();
+
+            // 画布设置 ViewModel
+            // 依赖: ISettingsService
+            services.AddSingleton<CanvasSettingsViewModel>();
+
+            // 存储设置 ViewModel
+            // 依赖: ISettingsService
+            services.AddSingleton<ViewModels.Settings.StorageSettingsViewModel>();
+
+            // 手势设置 ViewModel
+            services.AddSingleton<ViewModels.GestureSettingsViewModel>();
+
+            // 随机选择设置 ViewModel
+            services.AddSingleton<ViewModels.Settings.RandomPickSettingsViewModel>();
 
             // SettingsPageViewModel 已移除，MainWindow 直接使用 SettingsViewModel
 
@@ -249,6 +276,14 @@ namespace Ink_Canvas
             // 浮动工具栏 ViewModel
             // 依赖: ISettingsService, ITimeMachineService
             services.AddSingleton<FloatingBarViewModel>();
+
+            // 黑板/白板 ViewModel
+            // 依赖: ISettingsService, ITimeMachineService
+            services.AddSingleton<BlackboardViewModel>();
+
+            // 触摸事件 ViewModel
+            // 依赖: ISettingsService, ITimeMachineService
+            services.AddSingleton<TouchEventsViewModel>();
 
             // ========================================
             // 构建服务提供者

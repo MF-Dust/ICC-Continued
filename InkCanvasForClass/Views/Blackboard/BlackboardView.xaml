@@ -6,7 +6,8 @@
              xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
              xmlns:vm="clr-namespace:Ink_Canvas.ViewModels"
              mc:Ignorable="d" 
-             d:DesignHeight="100" d:DesignWidth="1200">
+             d:DesignHeight="100" d:DesignWidth="1200"
+             d:DataContext="{d:DesignInstance Type=vm:BlackboardViewModel}">
     
     <UserControl.Resources>
         <ResourceDictionary>

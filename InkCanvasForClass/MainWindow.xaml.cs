@@ -88,6 +88,16 @@ namespace Ink_Canvas {
         private FloatingBarViewModel _floatingBarViewModel;
 
         /// <summary>
+        /// 黑板/白板 ViewModel
+        /// </summary>
+        public BlackboardViewModel BlackboardVM { get; private set; }
+
+        /// <summary>
+        /// 触摸事件 ViewModel
+        /// </summary>
+        public TouchEventsViewModel TouchEventsVM { get; private set; }
+
+        /// <summary>
         /// 热键服务
         /// </summary>
         private IHotkeyService _hotkeyService;
@@ -105,6 +115,8 @@ namespace Ink_Canvas {
                 ViewModel = ServiceLocator.GetRequiredService<MainWindowViewModel>();
                 ToolbarVM = ServiceLocator.GetRequiredService<ToolbarViewModel>();
                 SettingsVM = ServiceLocator.GetRequiredService<SettingsViewModel>();
+                BlackboardVM = ServiceLocator.GetRequiredService<BlackboardViewModel>();
+                TouchEventsVM = ServiceLocator.GetRequiredService<TouchEventsViewModel>();
                 _hotkeyService = ServiceLocator.GetRequiredService<IHotkeyService>();
 
                 // 统一设置系统：MainWindow.Settings 通过 getter 从 SettingsService 获取设置
