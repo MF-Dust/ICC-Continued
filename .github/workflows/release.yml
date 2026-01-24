@@ -142,6 +142,7 @@ jobs:
         with:
           tag_name: ${{ github.event.inputs.version }}
           name: Release ${{ github.event.inputs.version }}
+          # UPDATED: Body text to reflect x64-only build.
           files: |
             artifacts/release-artifact-x64/*.zip
             ./version-info.json
