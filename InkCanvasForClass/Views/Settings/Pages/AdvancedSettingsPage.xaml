@@ -5,11 +5,13 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
              xmlns:wc="clr-namespace:System.Windows.Controls;assembly=PresentationFramework"
+             xmlns:vm="clr-namespace:Ink_Canvas.ViewModels.Settings"
              mc:Ignorable="d"
              d:DesignHeight="1500" d:DesignWidth="600"
              Background="Transparent"
              Foreground="#FAFAFA"
-             ui:ThemeManager.RequestedTheme="Dark">
+             ui:ThemeManager.RequestedTheme="Dark"
+             d:DataContext="{d:DesignInstance vm:AdvancedSettingsViewModel, IsDesignTimeCreatable=True}">
 
     <UserControl.Resources>
         <ResourceDictionary>
@@ -27,7 +29,7 @@
 
             <!-- Gesture Eraser Warning -->
             <Border Style="{StaticResource ErrorInfoBarStyle}"
-                    Visibility="{Binding Gesture.DisableGestureEraser, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    Visibility="{Binding IsSpecialScreen, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>

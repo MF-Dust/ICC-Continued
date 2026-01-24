@@ -26,10 +26,10 @@ namespace Ink_Canvas
     /// </summary>
     public partial class App : Application
     {
-        System.Threading.Mutex mutex;
+        private static System.Threading.Mutex _mutex;
 
-        public static string[] StartArgs = null;
-        public static string RootPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data") + "\\";
+        public static string[] StartArgs { get; private set; }
+        public static string RootPath { get; } = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data") + "\\";
 
         /// <summary>
         /// 依赖注入服务提供者
@@ -53,7 +53,7 @@ namespace Ink_Canvas
         /// <summary>
         /// 初始化 Sentry SDK
         /// </summary>
-        private void InitializeSentry()
+        private static void InitializeSentry()
         {
             // 使用 SentryHelper 进行初始化，包含更多功能
             SentryHelper.Initialize(enablePerformanceMonitoring: true, tracesSampleRate: 1.0);
@@ -74,8 +74,7 @@ namespace Ink_Canvas
         /// </summary>
         private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            var exception = e.ExceptionObject as Exception;
-            if (exception != null)
+            if (e.ExceptionObject is Exception exception)
             {
                 // 使用 SentryHelper 捕获异常，包含更多上下文
                 SentryHelper.CaptureException(exception,
@@ -110,11 +109,11 @@ namespace Ink_Canvas
                 );
 
                 // 释放 mutex
-                if (mutex != null) {
+                if (_mutex != null) {
                     try {
-                        mutex.ReleaseMutex();
-                        mutex.Dispose();
-                        mutex = null;
+                        _mutex.ReleaseMutex();
+                        _mutex.Dispose();
+                        _mutex = null;
                         LogHelper.WriteLogToFile("应用退出：互斥锁已释放", LogHelper.LogType.Info);
                     }
                     catch (ObjectDisposedException ex) {
@@ -327,7 +326,6 @@ namespace Ink_Canvas
         [RequiresUnmanagedCode("Uses DWM APIs for WindowChrome configuration.")]
         void App_Startup(object sender, StartupEventArgs e)
         {
-            RootPath = Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase, "Data") + "\\";
             if (!Directory.Exists(RootPath))
             {
                 Directory.CreateDirectory(RootPath);
@@ -340,7 +338,7 @@ namespace Ink_Canvas
             LogHelper.NewLog(string.Format("Ink Canvas Starting (Version: {0})", Assembly.GetExecutingAssembly().GetName().Version.ToString()));
 
             bool ret;
-            mutex = new System.Threading.Mutex(true, "InkCanvasForClass", out ret);
+            _mutex = new System.Threading.Mutex(true, "InkCanvasForClass", out ret);
 
             if (!ret && !(e.Args.Contains("-m")||e.Args.Contains("--multiple"))) //-m multiple
             {
@@ -353,18 +351,18 @@ namespace Ink_Canvas
                         dialog.MainIcon = TaskDialogIcon.Warning;
                         dialog.MainInstruction = "已有一个实例正在运行";
                         dialog.Content = "这意味着 InkCanvasForClass 正在运行，而您又运行了主程序一遍。如果频繁出现该弹窗且ICC无法正常启动时，请尝试 “以多开模式启动”。";
-                        TaskDialogButton customButton = new("以多开模式启动");
-                        customButton.Default = false;
-                        dialog.ButtonClicked += (object s, TaskDialogItemClickedEventArgs _e) => {
+                        TaskDialogButton customButton = new("以多开模式启动")
+                        {
+                            Default = false
+                        };
+                        dialog.ButtonClicked += (s, _e) => {
                             if (_e.Item == customButton)
                             {
                                 Process.Start(System.Windows.Forms.Application.ExecutablePath, "-m");
                             }
                         };
-                        TaskDialogButton okButton = new(ButtonType.Ok);
-                        okButton.Default = true;
                         dialog.Buttons.Add(customButton);
-                        dialog.Buttons.Add(okButton);
+                        dialog.Buttons.Add(new TaskDialogButton(ButtonType.Ok) { Default = true });
                         dialog.ShowDialog();
                     }
                 }
@@ -403,11 +401,13 @@ namespace Ink_Canvas
 
             if (isUsingWindowChrome && DwmCompositionHelper.DwmIsCompositionEnabled()) {
                 mainWin.AllowsTransparency = false;
-                WindowChrome wc = new();
-                wc.GlassFrameThickness = new Thickness(-1);
-                wc.CaptionHeight = 0;
-                wc.CornerRadius = new CornerRadius(0);
-                wc.ResizeBorderThickness = new Thickness(0);
+                WindowChrome wc = new()
+                {
+                    GlassFrameThickness = new Thickness(-1),
+                    CaptionHeight = 0,
+                    CornerRadius = new CornerRadius(0),
+                    ResizeBorderThickness = new Thickness(0)
+                };
                 WindowChrome.SetWindowChrome(mainWin, wc);
             } else {
                 mainWin.AllowsTransparency = true;

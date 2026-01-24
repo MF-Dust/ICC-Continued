@@ -5,11 +5,13 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
              xmlns:local="clr-namespace:Ink_Canvas.Views.Settings.Pages"
+             xmlns:vm="clr-namespace:Ink_Canvas.ViewModels.Settings"
              mc:Ignorable="d"
              d:DesignHeight="1200" d:DesignWidth="600"
              Background="Transparent"
              Foreground="#FAFAFA"
-             ui:ThemeManager.RequestedTheme="Dark">
+             ui:ThemeManager.RequestedTheme="Dark"
+             d:DataContext="{d:DesignInstance vm:AboutSettingsViewModel, IsDesignTimeCreatable=True}">
 
     <UserControl.Resources>
         <ResourceDictionary>
@@ -65,18 +67,18 @@
 
                     <!-- Content -->
                     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <TextBlock Text="InkCanvasForClass-Continued"
+                        <TextBlock Text="{Binding ApplicationName}"
                                    FontSize="32"
                                    FontWeight="Bold"
                                    Foreground="#F0F9FF"
                                    HorizontalAlignment="Center"
                                    Margin="0,0,0,8"/>
-                        <TextBlock Text="Version:0.0.1.1"
+                        <TextBlock Text="{Binding Version, StringFormat='Version:{0}'}"
                                    FontSize="18"
                                    Foreground="#93C5FD"
                                    HorizontalAlignment="Center"
                                    Margin="0,0,0,4"/>
-                        <TextBlock Text="Codename:Arona"
+                        <TextBlock Text="{Binding CodeName, StringFormat='Codename:{0}'}"
                                    FontSize="14"
                                    Foreground="#DBEAFE"
                                    HorizontalAlignment="Center"
@@ -96,12 +98,10 @@
             <!-- Version Info -->
             <StackPanel Margin="0,0,0,24">
                 <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
-                    <TextBlock Text="Release Version: " FontSize="20" FontWeight="Bold"/>
-                    <TextBlock Text="0.0.1" FontSize="20" FontWeight="Bold"/>
+                    <TextBlock Text="{Binding Version, StringFormat='Release Version: {0}'}" FontSize="20" FontWeight="Bold"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="Bundle Version: " FontSize="20" FontWeight="Bold"/>
-                    <TextBlock Text="0.0.1.1" FontSize="20" FontWeight="Bold"/>
+                    <TextBlock Text="{Binding BundleVersion, StringFormat='Bundle Version: {0}'}" FontSize="20" FontWeight="Bold"/>
                 </StackPanel>
             </StackPanel>
 
@@ -112,11 +112,11 @@
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,8">
                         <ui:FontIcon Glyph="&#xE8A9;" FontSize="24" Margin="0,0,12,0"/>
                         <StackPanel>
-                            <TextBlock Text="本软件和ICA, Ink Canvas均基于许可证开源" FontSize="12" Foreground="{StaticResource SecondaryTextBrush}" HorizontalAlignment="Center"/>
-                            <TextBlock Text="GNU General Public License v3.0" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center"/>
+                            <TextBlock Text="{Binding LicenseDescription}" FontSize="12" Foreground="{StaticResource SecondaryTextBrush}" HorizontalAlignment="Center"/>
+                            <TextBlock Text="{Binding LicenseName}" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center"/>
                         </StackPanel>
                     </StackPanel>
-                    <TextBlock Text="本强许可协议的许可条件是，在相同许可协议下，提供许可作品的完整源代码和修改，包括使用许可作品的大型作品。版权和许可声明必须保留。贡献者明确授予专利权。"
+                    <TextBlock Text="{Binding LicenseDescription}"
                                TextWrapping="Wrap" Foreground="{StaticResource SecondaryTextBrush}" TextAlignment="Center"/>
                 </StackPanel>
             </Border>
@@ -126,8 +126,8 @@
                 <TextBlock Text="致谢：" FontSize="16" FontWeight="Bold" Margin="0,0,0,8"/>
                 <TextBlock>
                     <Run Text="InkCanvasForClass" FontWeight="Bold"/>
-                    <Hyperlink NavigateUri="https://github.com/InkCanvas/InkCanvasForClass" Foreground="#60A5FA">
-                        https://github.com/InkCanvas/InkCanvasForClass
+                    <Hyperlink NavigateUri="{Binding OriginalProjectUrl}" Foreground="#60A5FA">
+                        {Binding OriginalProjectUrl}
                     </Hyperlink>
                 </TextBlock>
             </StackPanel>
