@@ -59,9 +59,9 @@ namespace Ink_Canvas {
         #region 常用颜色画刷缓存
 
         private static readonly SolidColorBrush CachedTransparentBrush = new SolidColorBrush(Colors.Transparent);
-        private static readonly SolidColorBrush CachedZincGray100Brush = new SolidColorBrush(Color.FromRgb(244, 244, 245));
-        private static readonly SolidColorBrush CachedZincGray400Brush = new SolidColorBrush(Color.FromRgb(161, 161, 170));
-        private static readonly SolidColorBrush CachedZincGray900Brush = new SolidColorBrush(Color.FromRgb(24, 24, 27));
+        private static readonly SolidColorBrush CachedZincGray100Brush = new SolidColorBrush(Color.FromRgb(248, 250, 252)); // Slate-50
+        private static readonly SolidColorBrush CachedZincGray400Brush = new SolidColorBrush(Color.FromRgb(209, 213, 219)); // Gray-300
+        private static readonly SolidColorBrush CachedZincGray900Brush = new SolidColorBrush(Color.FromRgb(31, 41, 55)); // Gray-800
         private static readonly SolidColorBrush CachedBlue600Brush = new SolidColorBrush(Color.FromRgb(37, 99, 235));
         private static readonly SolidColorBrush CachedGhostWhiteBrush = new SolidColorBrush(Colors.GhostWhite);
         private static readonly SolidColorBrush CachedInkReplayButtonPressedBrush = new SolidColorBrush(Color.FromArgb(34, 9, 9, 11));

@@ -10,7 +10,7 @@
         <Setter Property="Margin" Value="2,0"/>
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="#10000000"/>
+                <Setter Property="Background" Value="#0F0F172A"/>
             </Trigger>
         </Style.Triggers>
     </Style>
@@ -22,17 +22,17 @@
     
     <!-- 工具栏容器样式 -->
     <Style x:Key="FloatingBarContainerStyle" TargetType="Border">
-        <Setter Property="Background" Value="#fafafa"/>
-        <Setter Property="BorderBrush" Value="#9952525b"/>
+        <Setter Property="Background" Value="#F8FAFC"/>
+        <Setter Property="BorderBrush" Value="#D1D5DB"/>
         <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="CornerRadius" Value="5"/>
+        <Setter Property="CornerRadius" Value="8"/>
         <Setter Property="Effect">
             <Setter.Value>
                 <DropShadowEffect Color="Black" 
                                   Direction="270" 
-                                  ShadowDepth="2" 
-                                  BlurRadius="8" 
-                                  Opacity="0.2"/>
+                                  ShadowDepth="4" 
+                                  BlurRadius="16" 
+                                  Opacity="0.12"/>
             </Setter.Value>
         </Setter>
     </Style>
@@ -40,16 +40,16 @@
     <!-- 工具图标样式 -->
     <Style x:Key="FloatingBarToolIconStyle" TargetType="Image">
         <Setter Property="RenderOptions.BitmapScalingMode" Value="HighQuality"/>
-        <Setter Property="Height" Value="17"/>
+        <Setter Property="Height" Value="18"/>
         <Setter Property="Margin" Value="0,3,0,0"/>
     </Style>
     
     <!-- 工具文本样式 -->
     <Style x:Key="FloatingBarToolTextStyle" TargetType="TextBlock">
-        <Setter Property="FontSize" Value="8"/>
+        <Setter Property="FontSize" Value="9"/>
         <Setter Property="Margin" Value="0,1,0,0"/>
         <Setter Property="TextAlignment" Value="Center"/>
-        <Setter Property="Foreground" Value="Black"/>
+        <Setter Property="Foreground" Value="#1F2937"/>
     </Style>
     
     <!-- 删除按钮文本样式 -->
@@ -88,14 +88,14 @@
     <Style x:Key="FloatingBarMoveControlStyle" TargetType="Border">
         <Setter Property="Width" Value="36"/>
         <Setter Property="Height" Value="36"/>
-        <Setter Property="CornerRadius" Value="5"/>
-        <Setter Property="Background" Value="#fafafa"/>
+        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="Background" Value="#F8FAFC"/>
         <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="BorderBrush" Value="#9952525b"/>
+        <Setter Property="BorderBrush" Value="#D1D5DB"/>
         <Setter Property="Cursor" Value="SizeAll"/>
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="#f0f0f0"/>
+                <Setter Property="Background" Value="#EEF2F7"/>
             </Trigger>
         </Style.Triggers>
     </Style>

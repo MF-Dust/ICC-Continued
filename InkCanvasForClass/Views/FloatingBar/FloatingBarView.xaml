@@ -10,6 +10,14 @@
              d:DesignHeight="58" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance Type=vm:FloatingBarViewModel}">
     
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="FloatingBarResources.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    
     <Viewbox Name="ViewboxFloatingBar" 
              HorizontalAlignment="Left" 
              Height="58" 
@@ -23,11 +31,7 @@
         <ui:SimpleStackPanel Orientation="Horizontal" Name="_FloatingBar_SimpleStackPanel">
             <!-- 移动控制按钮 -->
             <Border x:Name="BorderFloatingBarMoveControls" 
-                    Width="36" Height="36" 
-                    CornerRadius="5"
-                    Background="#fafafa" 
-                    BorderThickness="1" 
-                    BorderBrush="#9952525b">
+                    Style="{StaticResource FloatingBarMoveControlStyle}">
                 <ui:SimpleStackPanel Margin="0,2,0,2" 
                                      Orientation="Horizontal"
                                      HorizontalAlignment="Center">
@@ -42,10 +46,7 @@
                     Padding="2" 
                     Height="36"
                     Name="BorderFloatingBarMainControls" 
-                    Background="#fafafa" 
-                    CornerRadius="5"
-                    BorderThickness="1"
-                    BorderBrush="#9952525b">
+                    Style="{StaticResource FloatingBarContainerStyle}">
                 <ui:SimpleStackPanel Margin="2,0" 
                                      Name="StackPanelFloatingBar" 
                                      Orientation="Horizontal">
@@ -59,10 +60,8 @@
                                          HorizontalAlignment="Center" 
                                          Width="28" 
                                          Margin="0,-2">
-                        <Image RenderOptions.BitmapScalingMode="HighQuality" 
-                               Height="17" 
-                               Margin="0,3,0,0"
-                               x:Name="CursorToolbarIconImage">
+                        <Image x:Name="CursorToolbarIconImage"
+                               Style="{StaticResource FloatingBarToolIconStyle}">
                             <Image.Source>
                                 <DrawingImage>
                                     <DrawingImage.Drawing>
@@ -75,10 +74,7 @@
                         </Image>
                         <TextBlock x:Name="SelectionToolBarTextBlock" 
                                    Text="鼠标" 
-                                   Foreground="Black"
-                                   FontSize="8" 
-                                   Margin="0,1,0,0" 
-                                   TextAlignment="Center" />
+                                   Style="{StaticResource FloatingBarToolTextStyle}" />
                     </ui:SimpleStackPanel>
                     
                     <!-- 画笔工具 -->
@@ -91,9 +87,7 @@
                                          Width="28" 
                                          Margin="0,-2">
                         <Image x:Name="PenIcon"
-                               RenderOptions.BitmapScalingMode="HighQuality" 
-                               Height="17" 
-                               Margin="0,3,0,0">
+                               Style="{StaticResource FloatingBarToolIconStyle}">
                             <Image.Source>
                                 <DrawingImage>
                                     <DrawingImage.Drawing>
@@ -108,10 +102,7 @@
                         </Image>
                         <TextBlock x:Name="PenToolbarTextBlock" 
                                    Text="批注" 
-                                   Foreground="Black" 
-                                   FontSize="8"
-                                   Margin="0,1,0,0" 
-                                   TextAlignment="Center" />
+                                   Style="{StaticResource FloatingBarToolTextStyle}" />
                     </ui:SimpleStackPanel>
                     
                     <!-- 清空工具 -->
@@ -123,9 +114,7 @@
                                          HorizontalAlignment="Center" 
                                          Width="28" 
                                          Margin="0,-2">
-                        <Image RenderOptions.BitmapScalingMode="HighQuality" 
-                               Height="17" 
-                               Margin="0,3,0,0">
+                        <Image Style="{StaticResource FloatingBarToolIconStyle}">
                             <Image.Source>
                                 <DrawingImage>
                                     <DrawingImage.Drawing>
@@ -140,11 +129,7 @@
                         </Image>
                         <TextBlock x:Name="TrashBinToolbarTextBlock" 
                                    Text="清空" 
-                                   Foreground="#B91C1C"
-                                   FontWeight="Bold" 
-                                   FontSize="8" 
-                                   Margin="0,1,0,0" 
-                                   TextAlignment="Center" />
+                                   Style="{StaticResource FloatingBarDeleteTextStyle}" />
                     </ui:SimpleStackPanel>
                     
                     <!-- 更多工具按钮可以在这里添加 -->
