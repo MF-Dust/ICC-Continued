@@ -25,6 +25,8 @@ on:
 
 env:
   SOLUTION_PATH: 'Ink Canvas.sln'
+  # 定义项目文件中指定的目标框架，方便复用
+  TARGET_FRAMEWORK: 'net8.0-windows10.0.17763.0'
 
 jobs:
   build-and-package:
@@ -47,16 +49,15 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
-      # FIX: Added '--runtime' flag to the restore command to match the publish step.
-      # This resolves the NETSDK1005 error by ensuring assets are restored for the correct target.
       - name: Restore dependencies
         run: dotnet restore "${{ env.SOLUTION_PATH }}" --runtime win-${{ matrix.platform }}
 
+      # FIX: Updated the --framework parameter to match the exact TFM in the .csproj file.
       - name: Build and Publish
         run: |
           dotnet publish "InkCanvasForClass/InkCanvasForClass.csproj" `
             --configuration Release `
-            --framework net8.0-windows `
+            --framework ${{ env.TARGET_FRAMEWORK }} `
             --runtime win-${{ matrix.platform }} `
             --self-contained false `
             --output ./publish/${{ matrix.platform }} `
@@ -124,7 +125,6 @@ jobs:
         if: github.event.inputs.generate_notes == 'true'
         id: release_notes
         run: |
-          # (Script remains the same)
           LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
           if [ -n "$LAST_TAG" ]; then
             echo "release_notes<<EOF" >> $GITHUB_OUTPUT
