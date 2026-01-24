@@ -71,7 +71,7 @@
                                    Foreground="#F0F9FF"
                                    HorizontalAlignment="Center"
                                    Margin="0,0,0,8"/>
-                        <TextBlock Text="Version:0.0.1.0"
+                        <TextBlock Text="Version:0.0.1.1"
                                    FontSize="18"
                                    Foreground="#93C5FD"
                                    HorizontalAlignment="Center"
@@ -101,7 +101,7 @@
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="Bundle Version: " FontSize="20" FontWeight="Bold"/>
-                    <TextBlock Text="0.0.1.0" FontSize="20" FontWeight="Bold"/>
+                    <TextBlock Text="0.0.1.1" FontSize="20" FontWeight="Bold"/>
                 </StackPanel>
             </StackPanel>
 
