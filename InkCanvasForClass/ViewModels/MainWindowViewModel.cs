@@ -64,6 +64,7 @@ namespace Ink_Canvas.ViewModels
 
             // 创建子 ViewModel
             BlackboardViewModel = new BlackboardViewModel(pageService, settingsService);
+            TouchEventsViewModel = new TouchEventsViewModel(settingsService, timeMachineService);
 
             // 订阅服务事件
             _timeMachineService.UndoStateChanged += OnUndoStateChanged;
@@ -73,6 +74,12 @@ namespace Ink_Canvas.ViewModels
             // 订阅 BlackboardViewModel 事件
             BlackboardViewModel.PageNavigationRequested += OnBlackboardPageNavigationRequested;
             BlackboardViewModel.BackgroundChanged += OnBlackboardBackgroundChanged;
+
+            // 订阅 TouchEventsViewModel 事件
+            TouchEventsViewModel.EditingModeChangeRequested += OnEditingModeChangeRequested;
+            TouchEventsViewModel.HideSubPanelsRequested += OnHideSubPanelsRequested;
+            TouchEventsViewModel.EraserFeedbackRequested += OnEraserFeedbackRequested;
+            TouchEventsViewModel.ManipulationDeltaRequested += OnManipulationDeltaRequested;
         }
 
         #endregion
@@ -83,6 +90,11 @@ namespace Ink_Canvas.ViewModels
         /// 白板 ViewModel
         /// </summary>
         public BlackboardViewModel BlackboardViewModel { get; }
+
+        /// <summary>
+        /// 触摸事件 ViewModel
+        /// </summary>
+        public TouchEventsViewModel TouchEventsViewModel { get; }
 
         private void OnBlackboardPageNavigationRequested(object sender, PageNavigationEventArgs e)
         {
@@ -96,6 +108,30 @@ namespace Ink_Canvas.ViewModels
             BlackboardBackgroundChangedRequested?.Invoke(this, e);
         }
 
+        private void OnEditingModeChangeRequested(object sender, EditingModeChangeRequestedEventArgs e)
+        {
+            // 转发编辑模式变更事件到 View
+            EditingModeChangeRequested?.Invoke(this, e);
+        }
+
+        private void OnHideSubPanelsRequested(object sender, EventArgs e)
+        {
+            // 转发隐藏子面板请求事件到 View
+            HideSubPanelsRequested?.Invoke(this, e);
+        }
+
+        private void OnEraserFeedbackRequested(object sender, EraserFeedbackEventArgs e)
+        {
+            // 转发橡皮擦反馈事件到 View
+            EraserFeedbackRequested?.Invoke(this, e);
+        }
+
+        private void OnManipulationDeltaRequested(object sender, Ink_Canvas.Services.Events.TouchManipulationDeltaEventArgs e)
+        {
+            // 转发操作增量请求事件到 View
+            ManipulationDeltaRequested?.Invoke(this, e);
+        }
+
         /// <summary>
         /// 白板页面导航请求事件
         /// </summary>
@@ -105,6 +141,26 @@ namespace Ink_Canvas.ViewModels
         /// 白板背景变更请求事件
         /// </summary>
         public event EventHandler<BackgroundChangedEventArgs> BlackboardBackgroundChangedRequested;
+
+        /// <summary>
+        /// 编辑模式变更请求事件
+        /// </summary>
+        public event EventHandler<EditingModeChangeRequestedEventArgs> EditingModeChangeRequested;
+
+        /// <summary>
+        /// 隐藏子面板请求事件
+        /// </summary>
+        public event EventHandler HideSubPanelsRequested;
+
+        /// <summary>
+        /// 橡皮擦反馈请求事件
+        /// </summary>
+        public event EventHandler<EraserFeedbackEventArgs> EraserFeedbackRequested;
+
+        /// <summary>
+        /// 操作增量请求事件
+        /// </summary>
+        public event EventHandler<Ink_Canvas.Services.Events.TouchManipulationDeltaEventArgs> ManipulationDeltaRequested;
 
         #endregion
 
@@ -473,11 +529,6 @@ namespace Ink_Canvas.ViewModels
             // 因为重做需要访问 MainWindow 的 timeMachine 和 ApplyHistoryToCanvas
             RedoRequested?.Invoke(this, EventArgs.Empty);
         }
-
-        /// <summary>
-        /// 隐藏子面板请求事件
-        /// </summary>
-        public event EventHandler HideSubPanelsRequested;
 
         #endregion
 

@@ -303,8 +303,52 @@ namespace Ink_Canvas {
             ViewModel.SetBoardBackgroundPatternRequested += OnSetBoardBackgroundPatternRequested;
             ViewModel.ToggleBoardBackgroundPanelRequested += OnToggleBoardBackgroundPanelRequested;
 
+            // TouchEventsViewModel 事件订阅
+            SubscribeTouchEventsViewModelEvents();
+
             // 设置面板事件订阅
             SubscribeSettingsViewEvents();
+        }
+
+        /// <summary>
+        /// 订阅 TouchEventsViewModel 事件
+        /// </summary>
+        private void SubscribeTouchEventsViewModelEvents()
+        {
+            if (ViewModel?.TouchEventsViewModel == null) return;
+
+            // 编辑模式变更请求
+            ViewModel.TouchEventsViewModel.EditingModeChangeRequested += OnEditingModeChangeRequested;
+
+            // 隐藏子面板请求
+            ViewModel.TouchEventsViewModel.HideSubPanelsRequested += OnHideSubPanelsRequested;
+
+            // 橡皮擦反馈请求
+            ViewModel.TouchEventsViewModel.EraserFeedbackRequested += OnEraserFeedbackRequested;
+
+            // 操作增量请求
+            ViewModel.TouchEventsViewModel.ManipulationDeltaRequested += OnManipulationDeltaRequested;
+
+            // 初始化 TouchEventsViewModel 的 UI 引用
+            InitializeTouchEventsViewModelUI();
+        }
+
+        /// <summary>
+        /// 初始化 TouchEventsViewModel 的 UI 引用
+        /// </summary>
+        private void InitializeTouchEventsViewModelUI()
+        {
+            if (ViewModel?.TouchEventsViewModel == null) return;
+
+            // 设置 UI 引用
+            ViewModel.TouchEventsViewModel.InkCanvas = inkCanvas;
+            ViewModel.TouchEventsViewModel.EraserOverlay = GridEraserOverlay;
+            ViewModel.TouchEventsViewModel.EraserDrawingVisual = EraserOverlay_DrawingVisual?.DrawingVisual;
+            ViewModel.TouchEventsViewModel.FloatingBar = ViewboxFloatingBar;
+            ViewModel.TouchEventsViewModel.BlackboardUI = BlackboardUIGridForInkReplay;
+
+            // 设置基准触摸宽度
+            ViewModel.TouchEventsViewModel.BoundsWidth = BoundsWidth;
         }
 
         /// <summary>
@@ -418,7 +462,23 @@ namespace Ink_Canvas {
                 ViewModel.SetBoardBackgroundColorRequested -= OnSetBoardBackgroundColorRequested;
                 ViewModel.SetBoardBackgroundPatternRequested -= OnSetBoardBackgroundPatternRequested;
                 ViewModel.ToggleBoardBackgroundPanelRequested -= OnToggleBoardBackgroundPanelRequested;
+
+                // 取消订阅 TouchEventsViewModel 事件
+                UnsubscribeTouchEventsViewModelEvents();
             }
+        }
+
+        /// <summary>
+        /// 取消订阅 TouchEventsViewModel 事件
+        /// </summary>
+        private void UnsubscribeTouchEventsViewModelEvents()
+        {
+            if (ViewModel?.TouchEventsViewModel == null) return;
+
+            ViewModel.TouchEventsViewModel.EditingModeChangeRequested -= OnEditingModeChangeRequested;
+            ViewModel.TouchEventsViewModel.HideSubPanelsRequested -= OnHideSubPanelsRequested;
+            ViewModel.TouchEventsViewModel.EraserFeedbackRequested -= OnEraserFeedbackRequested;
+            ViewModel.TouchEventsViewModel.ManipulationDeltaRequested -= OnManipulationDeltaRequested;
         }
 
         #region ViewModel 事件处理
@@ -536,6 +596,94 @@ namespace Ink_Canvas {
             catch (Exception ex)
             {
                 LogHelper.WriteLogToFile("处理绘制直线请求失败：" + ex.Message, LogHelper.LogType.Error);
+            }
+        }
+
+        /// <summary>
+        /// 处理编辑模式变更请求
+        /// </summary>
+        private void OnEditingModeChangeRequested(object sender, Ink_Canvas.Services.Events.EditingModeChangeRequestedEventArgs e)
+        {
+            try
+            {
+                if (inkCanvas != null)
+                {
+                    inkCanvas.EditingMode = e.NewMode;
+                }
+            }
+            catch (Exception ex)
+            {
+                LogHelper.WriteLogToFile("处理编辑模式变更请求失败：" + ex.Message, LogHelper.LogType.Error);
+            }
+        }
+
+        /// <summary>
+        /// 处理橡皮擦反馈请求
+        /// </summary>
+        private void OnEraserFeedbackRequested(object sender, Ink_Canvas.Services.Events.EraserFeedbackEventArgs e)
+        {
+            try
+            {
+                if (EraserOverlay_DrawingVisual?.DrawingVisual != null)
+                {
+                    var ct = EraserOverlay_DrawingVisual.DrawingVisual.RenderOpen();
+                    
+                    // 创建橡皮擦形状
+                    Geometry eraserGeometry;
+                    if (e.IsCircleShape)
+                    {
+                        eraserGeometry = new EllipseGeometry(new System.Windows.Point(e.Width / 2, e.Height / 2), e.Width / 2, e.Height / 2);
+                    }
+                    else
+                    {
+                        eraserGeometry = new RectangleGeometry(new Rect(0, 0, e.Width, e.Height));
+                    }
+                    
+                    // 应用变换
+                    var transform = new TranslateTransform(e.Position.X - e.Width / 2, e.Position.Y - e.Height / 2);
+                    eraserGeometry.Transform = transform;
+                    
+                    // 绘制橡皮擦
+                    ct.DrawGeometry(new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromArgb(128, 255, 0, 0)), 
+                        new System.Windows.Media.Pen(new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromArgb(200, 255, 0, 0)), 2), 
+                        eraserGeometry);
+                    
+                    ct.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                LogHelper.WriteLogToFile("处理橡皮擦反馈请求失败：" + ex.Message, LogHelper.LogType.Error);
+            }
+        }
+
+        /// <summary>
+        /// 处理操作增量请求
+        /// </summary>
+        private void OnManipulationDeltaRequested(object sender, Ink_Canvas.Services.Events.TouchManipulationDeltaEventArgs e)
+        {
+            try
+            {
+                if (inkCanvas?.Strokes != null)
+                {
+                    // 应用变换到所有笔画
+                    var matrix = e.CachedMatrix;
+                    matrix.Translate(e.Delta.Translation.X, e.Delta.Translation.Y);
+                    matrix.RotateAt(e.Delta.Rotation, e.Center.X, e.Center.Y);
+                    matrix.ScaleAt(e.Delta.Scale.X, e.Delta.Scale.Y, e.Center.X, e.Center.Y);
+
+                    foreach (var stroke in inkCanvas.Strokes)
+                    {
+                        if (!stroke.ContainsPropertyData(Guid.Parse("{D6FCCF9F-6132-4E70-9222-054F05D0BF0E}"))) // 非锁定笔画
+                        {
+                            stroke.Transform(matrix, false);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                LogHelper.WriteLogToFile("处理操作增量请求失败：" + ex.Message, LogHelper.LogType.Error);
             }
         }
 
