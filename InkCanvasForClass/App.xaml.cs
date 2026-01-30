@@ -1,8 +1,8 @@
-using Hardcodet.Wpf.TaskbarNotification;
 using Ink_Canvas.Core;
 using Ink_Canvas.Helpers;
 using Ink_Canvas.Services;
 using Ink_Canvas.ViewModels;
+using Ink_Canvas.ViewModels.Settings;
 using iNKORE.UI.WPF.Modern.Controls;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -127,22 +127,9 @@ namespace Ink_Canvas
                     }
                 }
 
-                // 释放托盘图标
-                if (_taskbar != null) {
-                    try {
-                        _taskbar.Dispose();
-                        _taskbar = null;
-                        LogHelper.WriteLogToFile("应用退出：托盘图标已释放", LogHelper.LogType.Info);
-                    }
-                    catch (ObjectDisposedException ex) {
-                        LogHelper.WriteLogToFile("应用退出：释放托盘图标失败（对象已释放） - " + ex.Message, LogHelper.LogType.Error);
-                    }
-                    catch (InvalidOperationException ex) {
-                        LogHelper.WriteLogToFile("应用退出：释放托盘图标失败（无效操作） - " + ex.Message, LogHelper.LogType.Error);
-                    }
-                    catch (UnauthorizedAccessException ex) {
-                        LogHelper.WriteLogToFile("应用退出：释放托盘图标失败（访问被拒绝） - " + ex.Message, LogHelper.LogType.Error);
-                    }
+                if (Application.Current.MainWindow is MainWindow mainWindow)
+                {
+                    mainWindow.DisposeTrayIcon();
                 }
 
                 LogHelper.WriteLogToFile("应用退出：清理完成，准备强制退出", LogHelper.LogType.Event);
@@ -243,6 +230,7 @@ namespace Ink_Canvas
             // 设置 ViewModel
             // 依赖: ISettingsService
             services.AddSingleton<SettingsViewModel>();
+            services.AddSingleton<AboutSettingsViewModel>();
 
             // 外观设置 ViewModel
             // 依赖: ISettingsService
@@ -324,7 +312,6 @@ namespace Ink_Canvas
             e.Handled = true;
         }
 
-        private TaskbarIcon _taskbar;
         private MainWindow mainWin = null;
 
         [RequiresUnmanagedCode("Uses DWM APIs for WindowChrome configuration.")]
@@ -418,8 +405,6 @@ namespace Ink_Canvas
             }
             mainWin.Show();
 
-            _taskbar = (TaskbarIcon)FindResource("TaskbarTrayIcon");
-
             LierdaCracker cracker = new();
             cracker.Cracker();
 
@@ -453,8 +438,8 @@ namespace Ink_Canvas
                 else
                     try
                     {
-                        ScrollViewerEx SenderScrollViewer = (ScrollViewerEx)sender;
-                        SenderScrollViewer.ScrollToVerticalOffset(SenderScrollViewer.VerticalOffset - e.Delta * Constants.MouseWheelScrollMultiplier * System.Windows.Forms.SystemInformation.MouseWheelScrollLines / Constants.MouseWheelDeltaStandard);
+                        var senderScrollViewer = (System.Windows.Controls.ScrollViewer)sender;
+                        senderScrollViewer.ScrollToVerticalOffset(senderScrollViewer.VerticalOffset - e.Delta * Constants.MouseWheelScrollMultiplier * System.Windows.Forms.SystemInformation.MouseWheelScrollLines / Constants.MouseWheelDeltaStandard);
                         e.Handled = true;
                     }
                     catch (InvalidOperationException ex) {

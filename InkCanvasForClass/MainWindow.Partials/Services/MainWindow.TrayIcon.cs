@@ -1,4 +1,4 @@
-﻿using Ink_Canvas.Helpers;
+using Ink_Canvas.Helpers;
 using iNKORE.UI.WPF.Modern.Controls;
 using System;
 using System.Collections.Generic;
@@ -13,7 +13,7 @@ using System.Windows.Controls;
 using System.Windows.Forms.VisualStyles;
 using System.Windows.Interop;
 using System.Windows.Media.Animation;
-using Hardcodet.Wpf.TaskbarNotification;
+using Wpf.Ui.Tray.Controls;
 
 namespace Ink_Canvas
 {
@@ -101,7 +101,8 @@ namespace Ink_Canvas
             var mainWin = (MainWindow)Application.Current.MainWindow;
             if (mainWin.IsLoaded) {
                 mainWin.Hide();
-                var s = ((TaskbarIcon)Application.Current.Resources["TaskbarTrayIcon"]).ContextMenu;
+                var trayIcon = mainWin.FindName("TrayIcon") as NotifyIcon;
+                var s = trayIcon?.Menu ?? (ContextMenu)Application.Current.Resources["SysTrayMenu"];
                 var ResetFloatingBarPositionTrayIconMenuItem = (MenuItem)s.Items[s.Items.Count - 4];
                 var FoldFloatingBarTrayIconMenuItem = (MenuItem)s.Items[s.Items.Count - 5];
                 var ForceFullScreenTrayIconMenuItem = (MenuItem)s.Items[s.Items.Count - 6];
@@ -122,7 +123,8 @@ namespace Ink_Canvas
             var mainWin = (MainWindow)Application.Current.MainWindow;
             if (mainWin.IsLoaded) {
                 mainWin.Show();
-                var s = ((TaskbarIcon)Application.Current.Resources["TaskbarTrayIcon"]).ContextMenu;
+                var trayIcon = mainWin.FindName("TrayIcon") as NotifyIcon;
+                var s = trayIcon?.Menu ?? (ContextMenu)Application.Current.Resources["SysTrayMenu"];
                 var ResetFloatingBarPositionTrayIconMenuItem = (MenuItem)s.Items[s.Items.Count - 4];
                 var FoldFloatingBarTrayIconMenuItem = (MenuItem)s.Items[s.Items.Count - 5];
                 var ForceFullScreenTrayIconMenuItem = (MenuItem)s.Items[s.Items.Count - 6];

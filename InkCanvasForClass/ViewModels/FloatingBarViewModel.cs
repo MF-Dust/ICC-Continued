@@ -107,6 +107,21 @@ namespace Ink_Canvas.ViewModels
         [ObservableProperty]
         private double _scale = 1.0;
 
+        /// <summary>
+        /// 更多功能面板是否可见
+        /// </summary>
+        [ObservableProperty]
+        private bool _isMoreFeaturesVisible;
+
+        /// <summary>
+        /// 切换更多功能面板命令
+        /// </summary>
+        [RelayCommand]
+        private void ToggleMoreFeatures()
+        {
+            IsMoreFeaturesVisible = !IsMoreFeaturesVisible;
+        }
+
         #endregion
 
         #region 撤销/重做状态

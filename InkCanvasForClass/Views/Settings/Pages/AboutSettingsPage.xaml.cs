@@ -1,6 +1,9 @@
+using System;
+using System.Diagnostics;
 using System.Windows.Controls;
+using System.Windows.Navigation;
 using Ink_Canvas.Core;
-using Ink_Canvas.ViewModels;
+using Ink_Canvas.ViewModels.Settings;
 
 namespace Ink_Canvas.Views.Settings.Pages
 {
@@ -13,7 +16,18 @@ namespace Ink_Canvas.Views.Settings.Pages
         public AboutSettingsPage()
         {
             InitializeComponent();
-            DataContext = ServiceLocator.GetRequiredService<SettingsViewModel>();
+            DataContext = ServiceLocator.GetRequiredService<AboutSettingsViewModel>();
+        }
+
+        private void OnHyperlinkRequestNavigate(object sender, RequestNavigateEventArgs e)
+        {
+            if (e.Uri is null)
+            {
+                return;
+            }
+
+            Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri) { UseShellExecute = true });
+            e.Handled = true;
         }
     }
 }

@@ -3,367 +3,338 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
              xmlns:local="clr-namespace:Ink_Canvas.Views.Settings.Pages"
              mc:Ignorable="d"
-             d:DesignHeight="1500" d:DesignWidth="600"
-             Background="Transparent"
-             Foreground="#FAFAFA"
-             ui:ThemeManager.RequestedTheme="Dark">
+             d:DesignHeight="1500" d:DesignWidth="800"
+             Background="Transparent">
 
     <UserControl.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="SettingsPageStyles.xaml"/>
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
     </UserControl.Resources>
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto" PanningMode="VerticalOnly">
+    <ui:DynamicScrollViewer VerticalScrollBarVisibility="Auto" PanningMode="VerticalOnly">
         <StackPanel Margin="0,0,12,24">
-            <TextBlock Text="自动化" Style="{StaticResource PageTitleStyle}"/>
+            <!-- Header -->
+            <ui:TextBlock Text="自动化" FontTypography="Title" Margin="0,0,0,12" />
+            <ui:TextBlock Text="当检测到以下应用运行时，自动收纳画板" 
+                          FontTypography="Body" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,24"/>
 
-            <!-- Auto Fold -->
-            <TextBlock Text="自动收纳" Style="{StaticResource SettingsGroupTitleStyle}"/>
-
-            <Border Style="{StaticResource SettingsCardStyle}">
+            <!-- Seewo Series -->
+            <ui:CardExpander Margin="0,0,0,12" IsExpanded="True">
+                <ui:CardExpander.Icon>
+                    <ui:SymbolIcon Symbol="Apps24"/>
+                </ui:CardExpander.Icon>
+                <ui:CardExpander.Header>
+                    <ui:TextBlock Text="希沃 (Seewo) 系列" FontTypography="Body"/>
+                </ui:CardExpander.Header>
                 <StackPanel>
-                    <!-- Responsive Container -->
-                    <Viewbox StretchDirection="Both" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,0,0,20">
-                        <StackPanel MaxWidth="800">
-                            <!-- Seewo Applications Group -->
-                            <StackPanel Margin="0,0,0,20">
-                                <TextBlock Text="希沃系列" Style="{StaticResource SmallGroupTitleStyle}"/>
-                                <UniformGrid Columns="5" HorizontalAlignment="Center" Margin="0,0,0,12">
-                                    <!-- Seewo Whiteboard 5 -->
-                                    <Border Style="{StaticResource AppCardStyle}">
-                                        <StackPanel>
-                                            <Image Source="/InkCanvasForClass;component/Resources/Icons-png/EasiNote.png" Style="{StaticResource AppIconStyle}"/>
-                                            <TextBlock Text="希沃白板5" Style="{StaticResource AppNameStyle}"/>
-                                            <ui:ToggleSwitch IsOn="{Binding Automation.IsAutoFoldInEasiNote, Mode=TwoWay}" Style="{StaticResource AppToggleStyle}"/>
-                                        </StackPanel>
-                                    </Border>
+                    <ui:CardControl Margin="0,0,0,4">
+                        <ui:CardControl.Icon>
+                            <ui:ImageIcon Source="/InkCanvasForClass;component/Resources/Icons-png/EasiNote.png" Width="24" Height="24"/>
+                        </ui:CardControl.Icon>
+                        <ui:CardControl.Header>
+                            <ui:TextBlock Text="希沃白板 5" FontTypography="Body"/>
+                        </ui:CardControl.Header>
+                        <ui:ToggleSwitch IsChecked="{Binding Automation.IsAutoFoldInEasiNote, Mode=TwoWay}"/>
+                    </ui:CardControl>
 
-                                    <!-- Seewo Camera -->
-                                    <Border Style="{StaticResource AppCardStyle}">
-                                        <StackPanel>
-                                            <Image Source="/InkCanvasForClass;component/Resources/Icons-png/EasiCamera.png" Style="{StaticResource AppIconStyle}"/>
-                                            <TextBlock Text="希沃展台" Style="{StaticResource AppNameStyle}"/>
-                                            <ui:ToggleSwitch IsOn="{Binding Automation.IsAutoFoldInEasiCamera, Mode=TwoWay}" Style="{StaticResource AppToggleStyle}"/>
-                                        </StackPanel>
-                                    </Border>
+                    <ui:CardControl Margin="0,0,0,4">
+                        <ui:CardControl.Icon>
+                            <ui:ImageIcon Source="/InkCanvasForClass;component/Resources/Icons-png/EasiNote.png" Width="24" Height="24"/>
+                        </ui:CardControl.Icon>
+                        <ui:CardControl.Header>
+                            <ui:TextBlock Text="希沃白板 5（忽略桌面批注）" FontTypography="Body"/>
+                        </ui:CardControl.Header>
+                        <ui:ToggleSwitch IsChecked="{Binding Automation.IsAutoFoldInEasiNoteIgnoreDesktopAnno, Mode=TwoWay}"/>
+                    </ui:CardControl>
+                    
+                    <ui:CardControl Margin="0,0,0,4">
+                        <ui:CardControl.Icon>
+                            <ui:ImageIcon Source="/InkCanvasForClass;component/Resources/Icons-png/EasiCamera.png" Width="24" Height="24"/>
+                        </ui:CardControl.Icon>
+                        <ui:CardControl.Header>
+                            <ui:TextBlock Text="希沃展台" FontTypography="Body"/>
+                        </ui:CardControl.Header>
+                        <ui:ToggleSwitch IsChecked="{Binding Automation.IsAutoFoldInEasiCamera, Mode=TwoWay}"/>
+                    </ui:CardControl>
 
-                                    <!-- Seewo Whiteboard 3 -->
-                                    <Border Style="{StaticResource AppCardStyle}">
-                                        <StackPanel>
-                                            <Image Source="/InkCanvasForClass;component/Resources/Icons-png/EasiNote3.png" Style="{StaticResource AppIconStyle}"/>
-                                            <TextBlock Text="希沃白板3" Style="{StaticResource AppNameStyle}"/>
-                                            <ui:ToggleSwitch IsOn="{Binding Automation.IsAutoFoldInEasiNote3, Mode=TwoWay}" Style="{StaticResource AppToggleStyle}"/>
-                                        </StackPanel>
-                                    </Border>
+                    <ui:CardControl Margin="0,0,0,4">
+                        <ui:CardControl.Icon>
+                            <ui:ImageIcon Source="/InkCanvasForClass;component/Resources/Icons-png/EasiNote3.png" Width="24" Height="24"/>
+                        </ui:CardControl.Icon>
+                        <ui:CardControl.Header>
+                            <ui:TextBlock Text="希沃白板 3" FontTypography="Body"/>
+                        </ui:CardControl.Header>
+                        <ui:ToggleSwitch IsChecked="{Binding Automation.IsAutoFoldInEasiNote3, Mode=TwoWay}"/>
+                    </ui:CardControl>
 
-                                    <!-- Seewo Lite -->
-                                    <Border Style="{StaticResource AppCardStyle}">
-                                        <StackPanel>
-                                            <Image Source="/InkCanvasForClass;component/Resources/Icons-png/HiteLightBoard.png" Style="{StaticResource AppIconStyle}"/>
-                                            <TextBlock Text="希沃轻白板" Style="{StaticResource AppNameStyle}"/>
-                                            <ui:ToggleSwitch IsOn="{Binding Automation.IsAutoFoldInEasiNote3C, Mode=TwoWay}" Style="{StaticResource AppToggleStyle}"/>
-                                        </StackPanel>
-                                    </Border>
+                    <ui:CardControl Margin="0,0,0,4">
+                        <ui:CardControl.Icon>
+                            <ui:ImageIcon Source="/InkCanvasForClass;component/Resources/Icons-png/HiteLightBoard.png" Width="24" Height="24"/>
+                        </ui:CardControl.Icon>
+                        <ui:CardControl.Header>
+                            <ui:TextBlock Text="希沃轻白板" FontTypography="Body"/>
+                        </ui:CardControl.Header>
+                        <ui:ToggleSwitch IsChecked="{Binding Automation.IsAutoFoldInEasiNote3C, Mode=TwoWay}"/>
+                    </ui:CardControl>
 
-                                    <!-- Seewo Lite 5C -->
-                                    <Border Style="{StaticResource AppCardStyle}">
-                                        <StackPanel>
-                                            <Image Source="/InkCanvasForClass;component/Resources/Icons-png/EasiNote5C.png" Style="{StaticResource AppIconStyle}"/>
-                                            <TextBlock Text="希沃轻白板5C" Style="{StaticResource AppNameStyle}"/>
-                                            <ui:ToggleSwitch IsOn="{Binding Automation.IsAutoFoldInEasiNote5C, Mode=TwoWay}" Style="{StaticResource AppToggleStyle}"/>
-                                        </StackPanel>
-                                    </Border>
+                    <ui:CardControl Margin="0,0,0,4">
+                         <ui:CardControl.Icon>
+                            <ui:ImageIcon Source="/InkCanvasForClass;component/Resources/Icons-png/EasiNote5C.png" Width="24" Height="24"/>
+                        </ui:CardControl.Icon>
+                        <ui:CardControl.Header>
+                            <ui:TextBlock Text="希沃轻白板 5C" FontTypography="Body"/>
+                        </ui:CardControl.Header>
+                        <ui:ToggleSwitch IsChecked="{Binding Automation.IsAutoFoldInEasiNote5C, Mode=TwoWay}"/>
+                    </ui:CardControl>
 
-                                    <!-- Seewo Pinco -->
-                                    <Border Style="{StaticResource AppCardStyle}">
-                                        <StackPanel>
-                                            <Image Source="/InkCanvasForClass;component/Resources/Icons-png/SeewoPinco.png" Style="{StaticResource AppIconStyle}"/>
-                                            <TextBlock Text="希沃品课" Style="{StaticResource AppNameStyle}"/>
-                                            <ui:ToggleSwitch IsOn="{Binding Automation.IsAutoFoldInSeewoPincoTeacher, Mode=TwoWay}" Style="{StaticResource AppToggleStyle}"/>
-                                        </StackPanel>
-                                    </Border>
-                                </UniformGrid>
-                            </StackPanel>
-
-                            <!-- Hite Applications -->
-                            <StackPanel Margin="0,0,0,20">
-                                <TextBlock Text="鸿合系列" Style="{StaticResource SmallGroupTitleStyle}"/>
-                                <UniformGrid Columns="5" HorizontalAlignment="Center" Margin="0,0,0,12">
-                                    <!-- Hite Whiteboard -->
-                                    <Border Style="{StaticResource AppCardStyle}">
-                                        <StackPanel>
-                                            <Image Source="/InkCanvasForClass;component/Resources/Icons-png/HiteBoard.png" Style="{StaticResource AppIconStyle}"/>
-                                            <TextBlock Text="鸿合白板" Style="{StaticResource AppNameStyle}"/>
-                                            <ui:ToggleSwitch IsOn="{Binding Automation.IsAutoFoldInHiteTouchPro, Mode=TwoWay}" Style="{StaticResource AppToggleStyle}"/>
-                                        </StackPanel>
-                                    </Border>
-
-                                    <!-- Hite Camera -->
-                                    <Border Style="{StaticResource AppCardStyle}">
-                                        <StackPanel>
-                                            <Image Source="/InkCanvasForClass;component/Resources/Icons-png/HiteCamera.png" Style="{StaticResource AppIconStyle}"/>
-                                            <TextBlock Text="鸿合展台" Style="{StaticResource AppNameStyle}"/>
-                                            <ui:ToggleSwitch IsOn="{Binding Automation.IsAutoFoldInHiteCamera, Mode=TwoWay}" Style="{StaticResource AppToggleStyle}"/>
-                                        </StackPanel>
-                                    </Border>
-
-                                    <!-- Hite Lite -->
-                                    <Border Style="{StaticResource AppCardStyle}">
-                                        <StackPanel>
-                                            <Image Source="/InkCanvasForClass;component/Resources/Icons-png/HiteLightBoard.png" Style="{StaticResource AppIconStyle}"/>
-                                            <TextBlock Text="鸿合轻量白板" Style="{StaticResource AppNameStyle}"/>
-                                            <ui:ToggleSwitch IsOn="{Binding Automation.IsAutoFoldInHiteLightBoard, Mode=TwoWay}" Style="{StaticResource AppToggleStyle}"/>
-                                        </StackPanel>
-                                    </Border>
-                                </UniformGrid>
-                            </StackPanel>
-
-                            <!-- Other Brands Applications -->
-                            <StackPanel Margin="0,0,0,20">
-                                <TextBlock Text="其他品牌" Style="{StaticResource SmallGroupTitleStyle}"/>
-                                <UniformGrid Columns="5" HorizontalAlignment="Center" Margin="0,0,0,12">
-                                    <!-- WxBoard -->
-                                    <Border Style="{StaticResource AppCardStyle}">
-                                        <StackPanel>
-                                            <Image Source="/InkCanvasForClass;component/Resources/Icons-png/WenXiang.png" Style="{StaticResource AppIconStyle}"/>
-                                            <TextBlock Text="文香白板" Style="{StaticResource AppNameStyle}"/>
-                                            <ui:ToggleSwitch IsOn="{Binding Automation.IsAutoFoldInWxBoardMain, Mode=TwoWay}" Style="{StaticResource AppToggleStyle}"/>
-                                        </StackPanel>
-                                    </Border>
-
-                                    <!-- MS Whiteboard -->
-                                    <Border Style="{StaticResource AppCardStyle}">
-                                        <StackPanel>
-                                            <Image Source="/InkCanvasForClass;component/Resources/Icons-png/Whiteboard.png" Style="{StaticResource AppIconStyle}"/>
-                                            <TextBlock Text="微软白板" Style="{StaticResource AppNameStyle}"/>
-                                            <ui:ToggleSwitch IsOn="{Binding Automation.IsAutoFoldInMSWhiteboard, Mode=TwoWay}" Style="{StaticResource AppToggleStyle}"/>
-                                        </StackPanel>
-                                    </Border>
-
-                                    <!-- Admox Whiteboard -->
-                                    <Border Style="{StaticResource AppCardStyle}">
-                                        <StackPanel>
-                                            <Image Source="/InkCanvasForClass;component/Resources/Icons-png/AdmoxWhiteboard.png" Style="{StaticResource AppIconStyle}"/>
-                                            <TextBlock Text="安道白板" Style="{StaticResource AppNameStyle}"/>
-                                            <ui:ToggleSwitch IsOn="{Binding Automation.IsAutoFoldInAdmoxWhiteboard, Mode=TwoWay}" Style="{StaticResource AppToggleStyle}"/>
-                                        </StackPanel>
-                                    </Border>
-
-                                    <!-- Admox Booth -->
-                                    <Border Style="{StaticResource AppCardStyle}">
-                                        <StackPanel>
-                                            <Image Source="/InkCanvasForClass;component/Resources/Icons-png/AdmoxBooth.png" Style="{StaticResource AppIconStyle}"/>
-                                            <TextBlock Text="安道展台" Style="{StaticResource AppNameStyle}"/>
-                                            <ui:ToggleSwitch IsOn="{Binding Automation.IsAutoFoldInAdmoxBooth, Mode=TwoWay}" Style="{StaticResource AppToggleStyle}"/>
-                                        </StackPanel>
-                                    </Border>
-
-                                    <!-- YiYun Whiteboard -->
-                                    <Border Style="{StaticResource AppCardStyle}">
-                                        <StackPanel>
-                                            <Image Source="/InkCanvasForClass;component/Resources/Icons-png/YiYunWhiteboard.png" Style="{StaticResource AppIconStyle}"/>
-                                            <TextBlock Text="艺云白板" Style="{StaticResource AppNameStyle}"/>
-                                            <ui:ToggleSwitch IsOn="{Binding Automation.IsAutoFoldInYiYunWhiteboard, Mode=TwoWay}" Style="{StaticResource AppToggleStyle}"/>
-                                        </StackPanel>
-                                    </Border>
-
-                                    <!-- YiYun Visual Presenter -->
-                                    <Border Style="{StaticResource AppCardStyle}">
-                                        <StackPanel>
-                                            <Image Source="/InkCanvasForClass;component/Resources/Icons-png/YiYunVisualPresenter.png" Style="{StaticResource AppIconStyle}"/>
-                                            <TextBlock Text="艺云展台" Style="{StaticResource AppNameStyle}"/>
-                                            <ui:ToggleSwitch IsOn="{Binding Automation.IsAutoFoldInYiYunVisualPresenter, Mode=TwoWay}" Style="{StaticResource AppToggleStyle}"/>
-                                        </StackPanel>
-                                    </Border>
-
-                                    <!-- MaxHub Whiteboard -->
-                                    <Border Style="{StaticResource AppCardStyle}">
-                                        <StackPanel>
-                                            <Image Source="/InkCanvasForClass;component/Resources/Icons-png/MaxHubWhiteboard.png" Style="{StaticResource AppIconStyle}"/>
-                                            <TextBlock Text="MaxHub白板" Style="{StaticResource AppNameStyle}"/>
-                                            <ui:ToggleSwitch IsOn="{Binding Automation.IsAutoFoldInMaxHubWhiteboard, Mode=TwoWay}" Style="{StaticResource AppToggleStyle}"/>
-                                        </StackPanel>
-                                    </Border>
-                                </UniformGrid>
-                            </StackPanel>
-                        </StackPanel>
-                    </Viewbox>
-
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <Image Source="/InkCanvasForClass;component/Resources/Icons-png/EasiNote.png" Width="24" Height="24" Margin="0,0,16,0" VerticalAlignment="Center"/>
-                        <TextBlock Grid.Column="1" Text="自动收纳忽略桌面EN5批注窗口" Style="{StaticResource SettingsTitleStyle}"/>
-                        <ui:ToggleSwitch Grid.Column="2" IsOn="{Binding Automation.IsAutoFoldInEasiNoteIgnoreDesktopAnno, Mode=TwoWay}"/>
-                    </Grid>
-
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <Image Source="/InkCanvasForClass;component/Resources/Icons-png/penUpright.png" Width="24" Height="24" Margin="0,0,16,0" VerticalAlignment="Center"/>
-                        <TextBlock Grid.Column="1" Text="进入“中原旧白板”时自动收纳" Style="{StaticResource SettingsTitleStyle}"/>
-                        <ui:ToggleSwitch Grid.Column="2" IsOn="{Binding Automation.IsAutoFoldInOldZyBoard, Mode=TwoWay}"/>
-                    </Grid>
-
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <Image Source="/InkCanvasForClass;component/Resources/Icons-png/Powerpoint.png" Width="24" Height="24" Margin="0,0,16,0" VerticalAlignment="Center"/>
-                        <TextBlock Grid.Column="1" Text="播放PPT时自动收纳" Style="{StaticResource SettingsTitleStyle}"/>
-                        <ui:ToggleSwitch Grid.Column="2" IsOn="{Binding Automation.IsAutoFoldInPPTSlideShow, Mode=TwoWay}"/>
-                    </Grid>
+                    <ui:CardControl Margin="0,0,0,0">
+                         <ui:CardControl.Icon>
+                            <ui:ImageIcon Source="/InkCanvasForClass;component/Resources/Icons-png/SeewoPinco.png" Width="24" Height="24"/>
+                        </ui:CardControl.Icon>
+                        <ui:CardControl.Header>
+                            <ui:TextBlock Text="希沃品课" FontTypography="Body"/>
+                        </ui:CardControl.Header>
+                        <ui:ToggleSwitch IsChecked="{Binding Automation.IsAutoFoldInSeewoPincoTeacher, Mode=TwoWay}"/>
+                    </ui:CardControl>
                 </StackPanel>
-            </Border>
+            </ui:CardExpander>
 
-            <!-- Auto Kill -->
-            <TextBlock Text="自动查杀" Style="{StaticResource SettingsGroupTitleStyle}"/>
-
-            <Border Style="{StaticResource SettingsCardStyle}">
+            <!-- Hite Series -->
+             <ui:CardExpander Margin="0,0,0,12" IsExpanded="True">
+                <ui:CardExpander.Icon>
+                    <ui:SymbolIcon Symbol="Board24"/>
+                </ui:CardExpander.Icon>
+                <ui:CardExpander.Header>
+                    <ui:TextBlock Text="鸿合 (Hite) 系列" FontTypography="Body"/>
+                </ui:CardExpander.Header>
                 <StackPanel>
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <Image Source="/InkCanvasForClass;component/Resources/Icons-png/PPTTools.png" Width="24" Height="24" Margin="0,0,16,0" VerticalAlignment="Center"/>
-                        <TextBlock Grid.Column="1" Text="自动查杀希沃“PPT小工具”" Style="{StaticResource SettingsTitleStyle}"/>
-                        <ui:ToggleSwitch Grid.Column="2" IsOn="{Binding Automation.IsAutoKillPptService, Mode=TwoWay}"/>
-                    </Grid>
-                    <TextBlock Text="# 请注意，查杀 PPT 小工具会导致希沃课堂授课助手无法使用，直接进入希沃课堂授课助手安装目录删除 Office.dll 文件即可进入 PPT 放映时不会启动希沃的 PPT 工具栏。"
-                               Style="{StaticResource SettingsDescriptionStyle}" Margin="0,-8,0,16"/>
+                    <ui:CardControl Margin="0,0,0,4">
+                         <ui:CardControl.Icon>
+                            <ui:ImageIcon Source="/InkCanvasForClass;component/Resources/Icons-png/HiteBoard.png" Width="24" Height="24"/>
+                        </ui:CardControl.Icon>
+                        <ui:CardControl.Header>
+                            <ui:TextBlock Text="鸿合白板" FontTypography="Body"/>
+                        </ui:CardControl.Header>
+                        <ui:ToggleSwitch IsChecked="{Binding Automation.IsAutoFoldInHiteTouchPro, Mode=TwoWay}"/>
+                    </ui:CardControl>
 
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <Image Source="/InkCanvasForClass;component/Resources/Icons-png/EasiNote.png" Width="24" Height="24" Margin="0,0,16,0" VerticalAlignment="Center"/>
-                        <TextBlock Grid.Column="1" Text="自动查杀 希沃白板5" Style="{StaticResource SettingsTitleStyle}"/>
-                        <ui:ToggleSwitch Grid.Column="2" IsOn="{Binding Automation.IsAutoKillEasiNote, Mode=TwoWay}"/>
-                    </Grid>
+                    <ui:CardControl Margin="0,0,0,4">
+                         <ui:CardControl.Icon>
+                            <ui:ImageIcon Source="/InkCanvasForClass;component/Resources/Icons-png/HiteCamera.png" Width="24" Height="24"/>
+                        </ui:CardControl.Icon>
+                        <ui:CardControl.Header>
+                            <ui:TextBlock Text="鸿合展台" FontTypography="Body"/>
+                        </ui:CardControl.Header>
+                        <ui:ToggleSwitch IsChecked="{Binding Automation.IsAutoFoldInHiteCamera, Mode=TwoWay}"/>
+                    </ui:CardControl>
 
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <Image Source="/InkCanvasForClass;component/Resources/Icons-png/HiteAnnotation.png" Width="24" Height="24" Margin="0,0,16,0" VerticalAlignment="Center"/>
-                        <TextBlock Grid.Column="1" Text="自动查杀 鸿合屏幕书写" Style="{StaticResource SettingsTitleStyle}"/>
-                        <ui:ToggleSwitch Grid.Column="2" IsOn="{Binding Automation.IsAutoKillHiteAnnotation, Mode=TwoWay}"/>
-                    </Grid>
-
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <Image Source="/InkCanvasForClass;component/Resources/Icons-png/VComYouJiao.png" Width="24" Height="24" Margin="0,0,16,0" VerticalAlignment="Center"/>
-                        <TextBlock Grid.Column="1" Text="自动查杀 优教授课端" Style="{StaticResource SettingsTitleStyle}"/>
-                        <ui:ToggleSwitch Grid.Column="2" IsOn="{Binding Automation.IsAutoKillVComYouJiao, Mode=TwoWay}"/>
-                    </Grid>
+                    <ui:CardControl Margin="0,0,0,0">
+                         <ui:CardControl.Icon>
+                            <ui:ImageIcon Source="/InkCanvasForClass;component/Resources/Icons-png/HiteLightBoard.png" Width="24" Height="24"/>
+                        </ui:CardControl.Icon>
+                        <ui:CardControl.Header>
+                            <ui:TextBlock Text="鸿合轻量白板" FontTypography="Body"/>
+                        </ui:CardControl.Header>
+                        <ui:ToggleSwitch IsChecked="{Binding Automation.IsAutoFoldInHiteLightBoard, Mode=TwoWay}"/>
+                    </ui:CardControl>
                 </StackPanel>
-            </Border>
+             </ui:CardExpander>
 
-            <!-- Similar Software Kill -->
-            <TextBlock Text="同类软件查杀" Style="{StaticResource SettingsGroupTitleStyle}"/>
-
-            <Border Style="{StaticResource SettingsCardStyle}">
+            <!-- Other Brands -->
+             <ui:CardExpander Margin="0,0,0,24" IsExpanded="True">
+                <ui:CardExpander.Icon>
+                    <ui:SymbolIcon Symbol="AppGeneric24"/>
+                </ui:CardExpander.Icon>
+                <ui:CardExpander.Header>
+                    <ui:TextBlock Text="其他品牌" FontTypography="Body"/>
+                </ui:CardExpander.Header>
                 <StackPanel>
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <Image Source="/InkCanvasForClass;component/Resources/Icons-png/InkCanvas.png" Width="24" Height="24" Margin="0,0,16,0" VerticalAlignment="Center"/>
-                        <TextBlock Grid.Column="1" Text="自动查杀 Ink Canvas" Style="{StaticResource SettingsTitleStyle}"/>
-                        <ui:ToggleSwitch Grid.Column="2" IsOn="{Binding Automation.IsAutoKillInkCanvas, Mode=TwoWay}"/>
-                    </Grid>
+                    <ui:CardControl Margin="0,0,0,4">
+                         <ui:CardControl.Icon>
+                            <ui:ImageIcon Source="/InkCanvasForClass;component/Resources/Icons-png/WenXiang.png" Width="24" Height="24"/>
+                        </ui:CardControl.Icon>
+                        <ui:CardControl.Header>
+                            <ui:TextBlock Text="文香白板" FontTypography="Body"/>
+                        </ui:CardControl.Header>
+                        <ui:ToggleSwitch IsChecked="{Binding Automation.IsAutoFoldInWxBoardMain, Mode=TwoWay}"/>
+                    </ui:CardControl>
 
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <Image Source="/InkCanvasForClass;component/Resources/Icons-png/ica.png" Width="24" Height="24" Margin="0,0,16,0" VerticalAlignment="Center"/>
-                        <TextBlock Grid.Column="1" Text="自动查杀ICA（新版旧版通杀）" Style="{StaticResource SettingsTitleStyle}"/>
-                        <ui:ToggleSwitch Grid.Column="2" IsOn="{Binding Automation.IsAutoKillICA, Mode=TwoWay}"/>
-                    </Grid>
+                    <ui:CardControl Margin="0,0,0,4">
+                         <ui:CardControl.Icon>
+                            <ui:ImageIcon Source="/InkCanvasForClass;component/Resources/Icons-png/Whiteboard.png" Width="24" Height="24"/>
+                        </ui:CardControl.Icon>
+                        <ui:CardControl.Header>
+                            <ui:TextBlock Text="中原旧版白板" FontTypography="Body"/>
+                        </ui:CardControl.Header>
+                        <ui:ToggleSwitch IsChecked="{Binding Automation.IsAutoFoldInOldZyBoard, Mode=TwoWay}"/>
+                    </ui:CardControl>
+
+                    <ui:CardControl Margin="0,0,0,4">
+                         <ui:CardControl.Icon>
+                            <ui:ImageIcon Source="/InkCanvasForClass;component/Resources/Icons-png/WPS.png" Width="24" Height="24"/>
+                        </ui:CardControl.Icon>
+                        <ui:CardControl.Header>
+                            <ui:TextBlock Text="QPoint" FontTypography="Body"/>
+                        </ui:CardControl.Header>
+                        <ui:ToggleSwitch IsChecked="{Binding Automation.IsAutoFoldInQPoint, Mode=TwoWay}"/>
+                    </ui:CardControl>
+
+                    <ui:CardControl Margin="0,0,0,4">
+                         <ui:CardControl.Icon>
+                            <ui:ImageIcon Source="/InkCanvasForClass;component/Resources/Icons-png/Whiteboard.png" Width="24" Height="24"/>
+                        </ui:CardControl.Icon>
+                        <ui:CardControl.Header>
+                            <ui:TextBlock Text="微软白板" FontTypography="Body"/>
+                        </ui:CardControl.Header>
+                        <ui:ToggleSwitch IsChecked="{Binding Automation.IsAutoFoldInMSWhiteboard, Mode=TwoWay}"/>
+                    </ui:CardControl>
+
+                    <ui:CardControl Margin="0,0,0,4">
+                         <ui:CardControl.Icon>
+                            <ui:ImageIcon Source="/InkCanvasForClass;component/Resources/Icons-png/Powerpoint.png" Width="24" Height="24"/>
+                        </ui:CardControl.Icon>
+                        <ui:CardControl.Header>
+                            <ui:TextBlock Text="PowerPoint 幻灯片放映" FontTypography="Body"/>
+                        </ui:CardControl.Header>
+                        <ui:ToggleSwitch IsChecked="{Binding Automation.IsAutoFoldInPPTSlideShow, Mode=TwoWay}"/>
+                    </ui:CardControl>
+
+                    <ui:CardControl Margin="0,0,0,4">
+                         <ui:CardControl.Icon>
+                            <ui:ImageIcon Source="/InkCanvasForClass;component/Resources/Icons-png/AdmoxWhiteboard.png" Width="24" Height="24"/>
+                        </ui:CardControl.Icon>
+                        <ui:CardControl.Header>
+                            <ui:TextBlock Text="安道白板" FontTypography="Body"/>
+                        </ui:CardControl.Header>
+                        <ui:ToggleSwitch IsChecked="{Binding Automation.IsAutoFoldInAdmoxWhiteboard, Mode=TwoWay}"/>
+                    </ui:CardControl>
+
+                    <ui:CardControl Margin="0,0,0,4">
+                         <ui:CardControl.Icon>
+                            <ui:ImageIcon Source="/InkCanvasForClass;component/Resources/Icons-png/AdmoxBooth.png" Width="24" Height="24"/>
+                        </ui:CardControl.Icon>
+                        <ui:CardControl.Header>
+                            <ui:TextBlock Text="安道展台" FontTypography="Body"/>
+                        </ui:CardControl.Header>
+                        <ui:ToggleSwitch IsChecked="{Binding Automation.IsAutoFoldInAdmoxBooth, Mode=TwoWay}"/>
+                    </ui:CardControl>
+
+                    <ui:CardControl Margin="0,0,0,4">
+                         <ui:CardControl.Icon>
+                            <ui:ImageIcon Source="/InkCanvasForClass;component/Resources/Icons-png/YiYunWhiteboard.png" Width="24" Height="24"/>
+                        </ui:CardControl.Icon>
+                        <ui:CardControl.Header>
+                            <ui:TextBlock Text="艺云白板" FontTypography="Body"/>
+                        </ui:CardControl.Header>
+                        <ui:ToggleSwitch IsChecked="{Binding Automation.IsAutoFoldInYiYunWhiteboard, Mode=TwoWay}"/>
+                    </ui:CardControl>
+                    
+                    <ui:CardControl Margin="0,0,0,4">
+                         <ui:CardControl.Icon>
+                            <ui:ImageIcon Source="/InkCanvasForClass;component/Resources/Icons-png/YiYunVisualPresenter.png" Width="24" Height="24"/>
+                        </ui:CardControl.Icon>
+                        <ui:CardControl.Header>
+                            <ui:TextBlock Text="艺云展台" FontTypography="Body"/>
+                        </ui:CardControl.Header>
+                        <ui:ToggleSwitch IsChecked="{Binding Automation.IsAutoFoldInYiYunVisualPresenter, Mode=TwoWay}"/>
+                    </ui:CardControl>
+
+                    <ui:CardControl Margin="0,0,0,0">
+                         <ui:CardControl.Icon>
+                            <ui:ImageIcon Source="/InkCanvasForClass;component/Resources/Icons-png/MaxHubWhiteboard.png" Width="24" Height="24"/>
+                        </ui:CardControl.Icon>
+                        <ui:CardControl.Header>
+                            <ui:TextBlock Text="MaxHub 白板" FontTypography="Body"/>
+                        </ui:CardControl.Header>
+                        <ui:ToggleSwitch IsChecked="{Binding Automation.IsAutoFoldInMaxHubWhiteboard, Mode=TwoWay}"/>
+                    </ui:CardControl>
                 </StackPanel>
-            </Border>
+             </ui:CardExpander>
 
-            <!-- Annotation Popup Intercept -->
-            <TextBlock Text="批注弹窗拦截" Style="{StaticResource SettingsGroupTitleStyle}"/>
+            <ui:TextBlock Text="自动结束进程" FontTypography="BodyStrong" Margin="0,0,0,8"/>
+            <ui:TextBlock Text="当检测到以下进程运行时，自动结束" 
+                          FontTypography="Body" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,12"/>
 
-            <Border Style="{StaticResource SettingsCardStyle}">
-                <StackPanel>
-                    <TextBlock Text="# 该功能可以自动隐藏其他白板软件在最小化时显示的桌面批注弹窗，并且可以使用icc无缝替代这些弹窗。希沃系列的浮窗拦截后可显示“返回到希沃软件”按钮。"
-                               Style="{StaticResource SettingsDescriptionStyle}" Margin="0,0,0,16"/>
+            <ui:CardControl Margin="0,0,0,4">
+                 <ui:CardControl.Icon>
+                    <ui:ImageIcon Source="/InkCanvasForClass;component/Resources/Icons-png/Powerpoint.png" Width="24" Height="24"/>
+                </ui:CardControl.Icon>
+                <ui:CardControl.Header>
+                    <ui:TextBlock Text="PowerPoint 服务" FontTypography="Body"/>
+                </ui:CardControl.Header>
+                <ui:ToggleSwitch IsChecked="{Binding Automation.IsAutoKillPptService, Mode=TwoWay}"/>
+            </ui:CardControl>
 
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="清屏时自动截图" Style="{StaticResource SettingsTitleStyle}"/>
-                        <ui:ToggleSwitch Grid.Column="1" IsOn="{Binding Automation.IsAutoSaveStrokesAtClear, Mode=TwoWay}"/>
-                    </Grid>
+            <ui:CardControl Margin="0,0,0,4">
+                 <ui:CardControl.Icon>
+                    <ui:ImageIcon Source="/InkCanvasForClass;component/Resources/Icons-png/EasiNote.png" Width="24" Height="24"/>
+                </ui:CardControl.Icon>
+                <ui:CardControl.Header>
+                    <ui:TextBlock Text="希沃白板" FontTypography="Body"/>
+                </ui:CardControl.Header>
+                <ui:ToggleSwitch IsChecked="{Binding Automation.IsAutoKillEasiNote, Mode=TwoWay}"/>
+            </ui:CardControl>
 
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="截图分日期文件夹保存" Style="{StaticResource SettingsTitleStyle}"/>
-                        <ui:ToggleSwitch Grid.Column="1" IsOn="{Binding Automation.IsSaveScreenshotsInDateFolders, Mode=TwoWay}"/>
-                    </Grid>
+            <ui:CardControl Margin="0,0,0,4">
+                 <ui:CardControl.Icon>
+                    <ui:ImageIcon Source="/InkCanvasForClass;component/Resources/Icons-png/HiteAnnotation.png" Width="24" Height="24"/>
+                </ui:CardControl.Icon>
+                <ui:CardControl.Header>
+                    <ui:TextBlock Text="鸿合批注" FontTypography="Body"/>
+                </ui:CardControl.Header>
+                <ui:ToggleSwitch IsChecked="{Binding Automation.IsAutoKillHiteAnnotation, Mode=TwoWay}"/>
+            </ui:CardControl>
 
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="截图时自动保存墨迹" Style="{StaticResource SettingsTitleStyle}"/>
-                        <ui:ToggleSwitch Grid.Column="1" IsOn="{Binding Automation.IsAutoSaveStrokesAtScreenshot, Mode=TwoWay}"/>
-                    </Grid>
+            <ui:CardControl Margin="0,0,0,4">
+                 <ui:CardControl.Icon>
+                    <ui:ImageIcon Source="/InkCanvasForClass;component/Resources/Icons-png/VComYouJiao.png" Width="24" Height="24"/>
+                </ui:CardControl.Icon>
+                <ui:CardControl.Header>
+                    <ui:TextBlock Text="优教助手" FontTypography="Body"/>
+                </ui:CardControl.Header>
+                <ui:ToggleSwitch IsChecked="{Binding Automation.IsAutoKillVComYouJiao, Mode=TwoWay}"/>
+            </ui:CardControl>
 
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Text="自动截图最小墨迹量" Style="{StaticResource SettingsTitleStyle}" VerticalAlignment="Center"/>
-                        <Slider Grid.Column="1" Minimum="0" Maximum="50" Value="{Binding Automation.MinimumAutomationStrokeNumber, Mode=TwoWay}" 
-                                Width="120" Margin="12,0" VerticalAlignment="Center" 
-                                TickFrequency="1" IsSnapToTickEnabled="True" 
-                                Style="{DynamicResource ModernSliderStyle}"/>
-                        <TextBlock Grid.Column="2" Text="{Binding Automation.MinimumAutomationStrokeNumber, StringFormat='{}{0} 条'}" 
-                                   Style="{StaticResource SettingsValueStyle}" Margin="8,0,0,0" VerticalAlignment="Center"/>
-                    </Grid>
-                </StackPanel>
-            </Border>
+            <ui:CardControl Margin="0,0,0,4">
+                 <ui:CardControl.Icon>
+                    <ui:ImageIcon Source="/InkCanvasForClass;component/Resources/Icons-png/Seewo2Annotation.png" Width="24" Height="24"/>
+                </ui:CardControl.Icon>
+                <ui:CardControl.Header>
+                    <ui:TextBlock Text="希沃桌面批注" FontTypography="Body"/>
+                </ui:CardControl.Header>
+                <ui:ToggleSwitch IsChecked="{Binding Automation.IsAutoKillSeewoLauncher2DesktopAnnotation, Mode=TwoWay}"/>
+            </ui:CardControl>
 
+            <ui:CardControl Margin="0,0,0,4">
+                 <ui:CardControl.Icon>
+                    <ui:ImageIcon Source="/InkCanvasForClass;component/Resources/Icons-png/InkCanvas.png" Width="24" Height="24"/>
+                </ui:CardControl.Icon>
+                <ui:CardControl.Header>
+                    <ui:TextBlock Text="InkCanvas" FontTypography="Body"/>
+                </ui:CardControl.Header>
+                <ui:ToggleSwitch IsChecked="{Binding Automation.IsAutoKillInkCanvas, Mode=TwoWay}"/>
+            </ui:CardControl>
+
+            <ui:CardControl Margin="0,0,0,4">
+                 <ui:CardControl.Icon>
+                    <ui:ImageIcon Source="/InkCanvasForClass;component/Resources/Icons-png/ica.png" Width="24" Height="24"/>
+                </ui:CardControl.Icon>
+                <ui:CardControl.Header>
+                    <ui:TextBlock Text="ICA" FontTypography="Body"/>
+                </ui:CardControl.Header>
+                <ui:ToggleSwitch IsChecked="{Binding Automation.IsAutoKillICA, Mode=TwoWay}"/>
+            </ui:CardControl>
+
+            <ui:CardControl Margin="0,0,0,0">
+                 <ui:CardControl.Icon>
+                    <ui:ImageIcon Source="/InkCanvasForClass;component/Resources/Icons-png/idt.png" Width="24" Height="24"/>
+                </ui:CardControl.Icon>
+                <ui:CardControl.Header>
+                    <ui:TextBlock Text="IDT" FontTypography="Body"/>
+                </ui:CardControl.Header>
+                <ui:ToggleSwitch IsChecked="{Binding Automation.IsAutoKillIDT, Mode=TwoWay}"/>
+            </ui:CardControl>
         </StackPanel>
-    </ScrollViewer>
+    </ui:DynamicScrollViewer>
 </UserControl>

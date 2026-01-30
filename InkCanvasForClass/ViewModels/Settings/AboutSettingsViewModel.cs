@@ -18,12 +18,12 @@ namespace Ink_Canvas.ViewModels.Settings
         /// <summary>
         /// 版本号
         /// </summary>
-        public string Version => "0.0.1";
+        public string Version => GetAssemblyVersion();
 
         /// <summary>
         /// 捆绑版本号
         /// </summary>
-        public string BundleVersion => "0.0.1.1";
+        public string BundleVersion => GetFileVersion();
 
         /// <summary>
         /// 代码名称

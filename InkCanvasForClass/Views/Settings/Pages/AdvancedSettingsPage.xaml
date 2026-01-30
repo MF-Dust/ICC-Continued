@@ -3,290 +3,276 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
-             xmlns:wc="clr-namespace:System.Windows.Controls;assembly=PresentationFramework"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             xmlns:local="clr-namespace:Ink_Canvas.Views.Settings.Pages"
              xmlns:vm="clr-namespace:Ink_Canvas.ViewModels.Settings"
+             xmlns:wc="clr-namespace:System.Windows.Controls;assembly=PresentationFramework"
              mc:Ignorable="d"
-             d:DesignHeight="1500" d:DesignWidth="600"
+             d:DesignHeight="1500" d:DesignWidth="800"
              Background="Transparent"
-             Foreground="#FAFAFA"
-             ui:ThemeManager.RequestedTheme="Dark"
              d:DataContext="{d:DesignInstance vm:AdvancedSettingsViewModel, IsDesignTimeCreatable=True}">
 
     <UserControl.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="SettingsPageStyles.xaml"/>
-            </ResourceDictionary.MergedDictionaries>
-            <wc:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
-        </ResourceDictionary>
+        <wc:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
     </UserControl.Resources>
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto" PanningMode="VerticalOnly">
+    <ui:DynamicScrollViewer VerticalScrollBarVisibility="Auto" PanningMode="VerticalOnly">
         <StackPanel Margin="0,0,12,24">
-            <TextBlock Text="高级" Style="{StaticResource PageTitleStyle}"/>
-            <TextBlock Text="高级与实验性功能配置" Style="{StaticResource PageSubtitleStyle}"/>
+            <!-- Header -->
+            <ui:TextBlock Text="高级" FontTypography="Title" Margin="0,0,0,12" />
+            <ui:TextBlock Text="高级与实验性功能配置" 
+                          FontTypography="Body" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,24"/>
 
             <!-- Gesture Eraser Warning -->
-            <Border Style="{StaticResource ErrorInfoBarStyle}"
-                    Visibility="{Binding IsSpecialScreen, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <ui:FontIcon Glyph="&#xE7BA;" Foreground="{StaticResource ErrorBrush}" FontSize="20" VerticalAlignment="Top" Margin="0,2,16,0"/>
-                    <StackPanel Grid.Column="1">
-                        <TextBlock Text="设置项已被禁用" FontWeight="Bold" Foreground="{StaticResource ErrorBrush}" FontSize="14" Margin="0,0,0,4"/>
-                        <TextBlock Text="手势橡皮相关功能已经被禁用！该部分不可用！"
-                                   TextWrapping="Wrap" Foreground="#FAFAFA"/>
-                    </StackPanel>
-                </Grid>
-            </Border>
+            <ui:InfoBar Severity="Error" IsOpen="{Binding IsSpecialScreen, Mode=OneWay}"
+                        Title="设置项已被禁用"
+                        Message="手势橡皮相关功能已经被禁用！该部分不可用！"
+                        Margin="0,0,0,24" />
+            
+            <ui:TextBlock Text="可在手指触摸画板时显示圆形橡皮或手掌触摸画板时显示的橡皮比手掌大很多时调整"
+                          FontTypography="Caption" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,12"/>
 
-            <TextBlock Text="可在手指触摸画板时显示圆形橡皮或手掌触摸画板时显示的橡皮比手掌大很多时调整"
-                       Style="{StaticResource SettingsDescriptionStyle}" Margin="0,0,0,16"/>
-
-            <!-- Touch/Eraser Settings -->
-            <Border Style="{StaticResource SettingsCardStyle}">
+            <!-- Touch & Eraser Settings -->
+            <ui:CardExpander Margin="0,0,0,12" IsExpanded="True">
+                <ui:CardExpander.Icon>
+                    <ui:SymbolIcon Symbol="HandRight24"/>
+                </ui:CardExpander.Icon>
+                <ui:CardExpander.Header>
+                    <ui:TextBlock Text="触摸与橡皮擦" FontTypography="Body"/>
+                </ui:CardExpander.Header>
                 <StackPanel>
                     <!-- Special Screen Mode -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="特殊屏幕模式" Style="{StaticResource SettingsTitleStyle}"/>
-                        <ui:ToggleSwitch Grid.Column="1" IsOn="{Binding Advanced.IsSpecialScreen, Mode=TwoWay}"/>
-                    </Grid>
+                    <ui:CardControl Margin="0,0,0,4">
+                         <ui:CardControl.Icon>
+                            <ui:SymbolIcon Symbol="Desktop24"/>
+                        </ui:CardControl.Icon>
+                        <ui:CardControl.Header>
+                            <ui:TextBlock Text="特殊屏幕模式" FontTypography="Body"/>
+                        </ui:CardControl.Header>
+                        <ui:ToggleSwitch IsChecked="{Binding Advanced.IsSpecialScreen, Mode=TwoWay}"/>
+                    </ui:CardControl>
 
                     <!-- Touch Multiplier -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="100"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="触摸倍数" VerticalAlignment="Center"/>
-                        <Slider Grid.Column="1" Minimum="0.1" Maximum="5.0" Value="{Binding Advanced.TouchMultiplier, Mode=TwoWay}" Margin="12,0"
-                                Style="{StaticResource ModernSliderStyle}"/>
-                        <TextBlock Grid.Column="2" Text="{Binding Advanced.TouchMultiplier, StringFormat=N2}" Width="40" TextAlignment="Right" VerticalAlignment="Center"/>
-                    </Grid>
-
-                    <TextBlock Text="# BoundsWidth 参数作为接触面积区分界限，用来区分橡皮和书写模式。笔尖模式参数值应较小。"
-                               Style="{StaticResource SettingsDescriptionStyle}" Margin="0,0,0,8"/>
-                    <TextBlock Text="# ThresholdValue 参数用来区分 墨迹擦、面积擦。触控面积达到 BoundsWidth 的界限后，触控面积小于等于 BoundsWidth * ThresholdValue 则为墨迹擦，大于则为面积擦。默认均为 2.5"
-                               Style="{StaticResource SettingsDescriptionStyle}" Margin="0,0,0,16"/>
+                    <ui:CardControl Margin="0,0,0,4">
+                        <ui:CardControl.Header>
+                            <ui:TextBlock Text="触摸倍数" FontTypography="Body"/>
+                        </ui:CardControl.Header>
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" MinWidth="200">
+                             <Slider Minimum="0.1" Maximum="5.0" Value="{Binding Advanced.TouchMultiplier, Mode=TwoWay}" 
+                                     Width="150" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                             <TextBlock Text="{Binding Advanced.TouchMultiplier, StringFormat=N2}" VerticalAlignment="Center" Width="30"/>
+                        </StackPanel>
+                    </ui:CardControl>
+                    
+                    <ui:TextBlock Text="BoundsWidth 参数作为接触面积区分界限，用来区分橡皮和书写模式。笔尖模式参数值应较小。"
+                              FontTypography="Caption" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="16,8,16,4"/>
+                     <ui:TextBlock Text="ThresholdValue 参数用来区分 墨迹擦、面积擦。触控面积达到 BoundsWidth 的界限后，触控面积小于等于 BoundsWidth * ThresholdValue 则为墨迹擦，大于则为面积擦。默认均为 2.5"
+                              FontTypography="Caption" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="16,0,16,12"/>
 
                     <!-- Nib Mode ThresholdValue -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="140"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="笔尖模式 ThresholdValue" VerticalAlignment="Center"/>
-                        <Slider Grid.Column="1" Minimum="0.1" Maximum="10.0" Value="{Binding Advanced.NibModeBoundsWidthThresholdValue, Mode=TwoWay}" Margin="12,0"
-                                Style="{StaticResource ModernSliderStyle}"/>
-                        <TextBlock Grid.Column="2" Text="{Binding Advanced.NibModeBoundsWidthThresholdValue, StringFormat=N1}" Width="40" TextAlignment="Right" VerticalAlignment="Center"/>
-                    </Grid>
+                    <ui:CardControl Margin="0,0,0,4">
+                        <ui:CardControl.Header>
+                            <ui:TextBlock Text="笔尖模式 ThresholdValue" FontTypography="Body"/>
+                        </ui:CardControl.Header>
+                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" MinWidth="200">
+                             <Slider Minimum="0.1" Maximum="10.0" Value="{Binding Advanced.NibModeBoundsWidthThresholdValue, Mode=TwoWay}" 
+                                     Width="150" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                             <TextBlock Text="{Binding Advanced.NibModeBoundsWidthThresholdValue, StringFormat=N1}" VerticalAlignment="Center" Width="30"/>
+                        </StackPanel>
+                    </ui:CardControl>
 
                     <!-- Finger Mode ThresholdValue -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="140"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="手指模式 ThresholdValue" VerticalAlignment="Center"/>
-                        <Slider Grid.Column="1" Minimum="0.1" Maximum="10.0" Value="{Binding Advanced.FingerModeBoundsWidthThresholdValue, Mode=TwoWay}" Margin="12,0"
-                                Style="{StaticResource ModernSliderStyle}"/>
-                        <TextBlock Grid.Column="2" Text="{Binding Advanced.FingerModeBoundsWidthThresholdValue, StringFormat=N1}" Width="40" TextAlignment="Right" VerticalAlignment="Center"/>
-                    </Grid>
-
-                    <TextBlock Text="# EraserSize 参数用来调节触控的面积擦大小。默认值均为 0.8"
-                               Style="{StaticResource SettingsDescriptionStyle}" Margin="0,0,0,16"/>
+                    <ui:CardControl Margin="0,0,0,4">
+                        <ui:CardControl.Header>
+                            <ui:TextBlock Text="手指模式 ThresholdValue" FontTypography="Body"/>
+                        </ui:CardControl.Header>
+                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" MinWidth="200">
+                             <Slider Minimum="0.1" Maximum="10.0" Value="{Binding Advanced.FingerModeBoundsWidthThresholdValue, Mode=TwoWay}" 
+                                     Width="150" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                             <TextBlock Text="{Binding Advanced.FingerModeBoundsWidthThresholdValue, StringFormat=N1}" VerticalAlignment="Center" Width="30"/>
+                        </StackPanel>
+                    </ui:CardControl>
+                    
+                     <ui:TextBlock Text="EraserSize 参数用来调节触控的面积擦大小。默认值均为 0.8"
+                              FontTypography="Caption" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="16,8,16,12"/>
 
                     <!-- Nib Mode EraserSize -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="140"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="笔尖模式 EraserSize" VerticalAlignment="Center"/>
-                        <Slider Grid.Column="1" Minimum="0.1" Maximum="5.0" Value="{Binding Advanced.NibModeBoundsWidthEraserSize, Mode=TwoWay}" Margin="12,0"
-                                Style="{StaticResource ModernSliderStyle}"/>
-                        <TextBlock Grid.Column="2" Text="{Binding Advanced.NibModeBoundsWidthEraserSize, StringFormat=N1}" Width="40" TextAlignment="Right" VerticalAlignment="Center"/>
-                    </Grid>
+                    <ui:CardControl Margin="0,0,0,4">
+                        <ui:CardControl.Header>
+                            <ui:TextBlock Text="笔尖模式 EraserSize" FontTypography="Body"/>
+                        </ui:CardControl.Header>
+                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" MinWidth="200">
+                             <Slider Minimum="0.1" Maximum="5.0" Value="{Binding Advanced.NibModeBoundsWidthEraserSize, Mode=TwoWay}" 
+                                     Width="150" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                             <TextBlock Text="{Binding Advanced.NibModeBoundsWidthEraserSize, StringFormat=N1}" VerticalAlignment="Center" Width="30"/>
+                        </StackPanel>
+                    </ui:CardControl>
 
                     <!-- Finger Mode EraserSize -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="140"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="手指模式 EraserSize" VerticalAlignment="Center"/>
-                        <Slider Grid.Column="1" Minimum="0.1" Maximum="5.0" Value="{Binding Advanced.FingerModeBoundsWidthEraserSize, Mode=TwoWay}" Margin="12,0"
-                                Style="{StaticResource ModernSliderStyle}"/>
-                        <TextBlock Grid.Column="2" Text="{Binding Advanced.FingerModeBoundsWidthEraserSize, StringFormat=N1}" Width="40" TextAlignment="Right" VerticalAlignment="Center"/>
-                    </Grid>
-
-                    <TextBlock Text="# 四边红外触控屏启用 四边红外模式 有利于触控面积的确定"
-                               Style="{StaticResource SettingsDescriptionStyle}" Margin="0,0,0,8"/>
+                    <ui:CardControl Margin="0,0,0,4">
+                        <ui:CardControl.Header>
+                            <ui:TextBlock Text="手指模式 EraserSize" FontTypography="Body"/>
+                        </ui:CardControl.Header>
+                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" MinWidth="200">
+                             <Slider Minimum="0.1" Maximum="5.0" Value="{Binding Advanced.FingerModeBoundsWidthEraserSize, Mode=TwoWay}" 
+                                     Width="150" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                             <TextBlock Text="{Binding Advanced.FingerModeBoundsWidthEraserSize, StringFormat=N1}" VerticalAlignment="Center" Width="30"/>
+                        </StackPanel>
+                    </ui:CardControl>
+                    
+                     <ui:TextBlock Text="四边红外触控屏启用 四边红外模式 有利于触控面积的确定"
+                              FontTypography="Caption" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="16,8,16,12"/>
 
                     <!-- Quad IR Mode -->
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="四边红外模式" Style="{StaticResource SettingsTitleStyle}"/>
-                        <ui:ToggleSwitch Grid.Column="1" IsOn="{Binding Advanced.IsQuadIR, Mode=TwoWay}"/>
-                    </Grid>
+                    <ui:CardControl Margin="0,0,0,0">
+                         <ui:CardControl.Icon>
+                            <ui:SymbolIcon Symbol="ScanDash24"/>
+                        </ui:CardControl.Icon>
+                        <ui:CardControl.Header>
+                            <ui:TextBlock Text="四边红外模式" FontTypography="Body"/>
+                        </ui:CardControl.Header>
+                        <ui:ToggleSwitch IsChecked="{Binding Advanced.IsQuadIR, Mode=TwoWay}"/>
+                    </ui:CardControl>
 
                 </StackPanel>
-            </Border>
+            </ui:CardExpander>
 
-            <!-- Other Advanced Settings -->
-            <TextBlock Text="高级功能" Style="{StaticResource SettingsGroupTitleStyle}"/>
-
-            <Border Style="{StaticResource SettingsCardStyle}">
+            <!-- Advanced Features -->
+            <ui:CardExpander Margin="0,0,0,24" IsExpanded="True">
+                <ui:CardExpander.Icon>
+                    <ui:SymbolIcon Symbol="Wrench24"/>
+                </ui:CardExpander.Icon>
+                <ui:CardExpander.Header>
+                    <ui:TextBlock Text="高级功能" FontTypography="Body"/>
+                </ui:CardExpander.Header>
                 <StackPanel>
                     <!-- Log Enabled -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="记录日志" Style="{StaticResource SettingsTitleStyle}"/>
-                        <ui:ToggleSwitch Grid.Column="1" IsOn="{Binding Advanced.IsLogEnabled, Mode=TwoWay}"/>
-                    </Grid>
-                    <TextBlock Text="# 日志文件超过 512 KB 时会自动删除。"
-                               Style="{StaticResource SettingsDescriptionStyle}" Margin="0,-8,0,16"/>
+                    <ui:CardControl Margin="0,0,0,4">
+                        <ui:CardControl.Header>
+                            <StackPanel>
+                                <ui:TextBlock Text="记录日志" FontTypography="Body"/>
+                                <ui:TextBlock Text="日志文件超过 512 KB 时会自动删除" FontTypography="Caption" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                            </StackPanel>
+                        </ui:CardControl.Header>
+                        <ui:ToggleSwitch IsChecked="{Binding Advanced.IsLogEnabled, Mode=TwoWay}"/>
+                    </ui:CardControl>
 
                     <!-- FullScreenHelper -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <TextBlock Text="启用FullScreenHelper" Style="{StaticResource SettingsTitleStyle}"/>
-                            <Border Style="{StaticResource ExperimentalTagStyle}">
-                                <StackPanel Orientation="Horizontal">
-                                    <ui:FontIcon Glyph="&#xE7C1;" FontSize="10" Foreground="#EF4444" Margin="0,0,4,0"/>
-                                    <TextBlock Text="实验性选项" Style="{StaticResource ExperimentalTagTextStyle}"/>
+                    <ui:CardControl Margin="0,0,0,4">
+                         <ui:CardControl.Icon>
+                            <ui:SymbolIcon Symbol="FullScreenMaximize24"/>
+                        </ui:CardControl.Icon>
+                        <ui:CardControl.Header>
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <ui:TextBlock Text="启用 FullScreenHelper" FontTypography="Body"/>
+                                    <Border Background="{DynamicResource SystemAccentColorPrimaryBrush}" CornerRadius="4" Margin="8,0,0,0" Padding="6,2">
+                                        <TextBlock Text="实验性" FontSize="10" Foreground="White"/>
+                                    </Border>
                                 </StackPanel>
-                            </Border>
-                        </StackPanel>
-                        <ui:ToggleSwitch Grid.Column="1" IsOn="{Binding Advanced.IsEnableFullScreenHelper, Mode=TwoWay}"/>
-                    </Grid>
-                    <TextBlock Text="# 感谢lindexi大佬提供的FullScreenHelper，可以减少任务栏弹出的问题，且支持多显示器自动全屏（虽然对icc来说没什么用就是了），如果遇到一些玄学问题，可以关闭该功能，重启icc后生效。"
-                               Style="{StaticResource SettingsDescriptionStyle}" Margin="0,-8,0,16"/>
+                                <ui:TextBlock Text="减少任务栏弹出问题，支持多显示器自动全屏" FontTypography="Caption" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                            </StackPanel>
+                        </ui:CardControl.Header>
+                        <ui:ToggleSwitch IsChecked="{Binding Advanced.IsEnableFullScreenHelper, Mode=TwoWay}"/>
+                    </ui:CardControl>
 
                     <!-- Disable Edge Gestures -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <TextBlock Text="书写时禁用Win10/11边缘手势" Style="{StaticResource SettingsTitleStyle}"/>
-                            <Border Style="{StaticResource NewFeatureTagStyle}">
-                                <StackPanel Orientation="Horizontal">
-                                    <ui:FontIcon Glyph="&#xE710;" FontSize="10" Foreground="{StaticResource NewFeatureBrush}" Margin="0,0,4,0"/>
-                                    <TextBlock Text="新功能" Style="{StaticResource NewFeatureTagTextStyle}"/>
+                    <ui:CardControl Margin="0,0,0,4">
+                         <ui:CardControl.Icon>
+                            <ui:SymbolIcon Symbol="HandRight24"/>
+                        </ui:CardControl.Icon>
+                        <ui:CardControl.Header>
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <ui:TextBlock Text="书写时禁用 Win10/11 边缘手势" FontTypography="Body"/>
+                                    <Border Background="{DynamicResource SystemAccentColorPrimaryBrush}" CornerRadius="4" Margin="8,0,0,0" Padding="6,2">
+                                        <TextBlock Text="新功能" FontSize="10" Foreground="White"/>
+                                    </Border>
                                 </StackPanel>
-                            </Border>
-                        </StackPanel>
-                        <ui:ToggleSwitch Grid.Column="1" IsOn="{Binding Advanced.IsEnableEdgeGestureUtil, Mode=TwoWay}"/>
-                    </Grid>
-                    <TextBlock Text="# 仅在屏幕批注、PPT批注、白板模式时禁用边缘手势"
-                               Style="{StaticResource SettingsDescriptionStyle}" Margin="0,-8,0,16"/>
+                                <ui:TextBlock Text="仅在屏幕批注、PPT批注、白板模式时禁用边缘手势" FontTypography="Caption" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                            </StackPanel>
+                        </ui:CardControl.Header>
+                        <ui:ToggleSwitch IsChecked="{Binding Advanced.IsEnableEdgeGestureUtil, Mode=TwoWay}"/>
+                    </ui:CardControl>
 
                     <!-- Prevent Window Close -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <TextBlock Text="阻止意外关闭窗口" Style="{StaticResource SettingsTitleStyle}"/>
-                            <Border Style="{StaticResource NewFeatureTagStyle}">
-                                <StackPanel Orientation="Horizontal">
-                                    <ui:FontIcon Glyph="&#xE710;" FontSize="10" Foreground="{StaticResource NewFeatureBrush}" Margin="0,0,4,0"/>
-                                    <TextBlock Text="新功能" Style="{StaticResource NewFeatureTagTextStyle}"/>
+                     <ui:CardControl Margin="0,0,0,4">
+                         <ui:CardControl.Icon>
+                            <ui:SymbolIcon Symbol="DismissSquare24"/>
+                        </ui:CardControl.Icon>
+                        <ui:CardControl.Header>
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <ui:TextBlock Text="阻止意外关闭窗口" FontTypography="Body"/>
+                                    <Border Background="{DynamicResource SystemAccentColorPrimaryBrush}" CornerRadius="4" Margin="8,0,0,0" Padding="6,2">
+                                        <TextBlock Text="新功能" FontSize="10" Foreground="White"/>
+                                    </Border>
                                 </StackPanel>
-                            </Border>
-                        </StackPanel>
-                        <ui:ToggleSwitch Grid.Column="1" IsOn="{Binding Advanced.IsDisableCloseWindow, Mode=TwoWay}"/>
-                    </Grid>
+                            </StackPanel>
+                        </ui:CardControl.Header>
+                        <ui:ToggleSwitch IsChecked="{Binding Advanced.IsDisableCloseWindow, Mode=TwoWay}"/>
+                    </ui:CardControl>
 
-                    <!-- Force Topmost -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <TextBlock Text="强制置顶窗口" Style="{StaticResource SettingsTitleStyle}"/>
-                            <Border Style="{StaticResource NewFeatureTagStyle}">
-                                <StackPanel Orientation="Horizontal">
-                                    <ui:FontIcon Glyph="&#xE710;" FontSize="10" Foreground="{StaticResource NewFeatureBrush}" Margin="0,0,4,0"/>
-                                    <TextBlock Text="新功能" Style="{StaticResource NewFeatureTagTextStyle}"/>
+                     <!-- Force Topmost -->
+                     <ui:CardControl Margin="0,0,0,4">
+                         <ui:CardControl.Icon>
+                            <ui:SymbolIcon Symbol="ArrowUp24"/>
+                        </ui:CardControl.Icon>
+                        <ui:CardControl.Header>
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <ui:TextBlock Text="强制置顶窗口" FontTypography="Body"/>
+                                    <Border Background="{DynamicResource SystemAccentColorPrimaryBrush}" CornerRadius="4" Margin="8,0,0,0" Padding="6,2">
+                                        <TextBlock Text="新功能" FontSize="10" Foreground="White"/>
+                                    </Border>
                                 </StackPanel>
-                            </Border>
-                        </StackPanel>
-                        <ui:ToggleSwitch Grid.Column="1" IsOn="{Binding Advanced.EnableForceTopMost, Mode=TwoWay}"/>
-                    </Grid>
-                    <TextBlock Text="# 该功能在 Windows 7 系统下非常有用，可以解决某些玄学的窗口置顶问题，感谢《智绘教》开发者“Alan_CRL”提供的方法！"
-                               Style="{StaticResource SettingsDescriptionStyle}" Margin="0,-8,0,16"/>
+                                <ui:TextBlock Text="在 Windows 7 下解决窗口置顶问题" FontTypography="Caption" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                            </StackPanel>
+                        </ui:CardControl.Header>
+                        <ui:ToggleSwitch IsChecked="{Binding Advanced.EnableForceTopMost, Mode=TwoWay}"/>
+                    </ui:CardControl>
 
                     <!-- Force Full Screen -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <TextBlock Text="让ICC窗口始终可见且全屏显示" Style="{StaticResource SettingsTitleStyle}"/>
-                            <Border Style="{StaticResource NewFeatureTagStyle}">
-                                <StackPanel Orientation="Horizontal">
-                                    <ui:FontIcon Glyph="&#xE710;" FontSize="10" Foreground="{StaticResource NewFeatureBrush}" Margin="0,0,4,0"/>
-                                    <TextBlock Text="新功能" Style="{StaticResource NewFeatureTagTextStyle}"/>
+                     <ui:CardControl Margin="0,0,0,4">
+                         <ui:CardControl.Icon>
+                            <ui:SymbolIcon Symbol="ArrowExpand24"/>
+                        </ui:CardControl.Icon>
+                        <ui:CardControl.Header>
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <ui:TextBlock Text="让 ICC 窗口始终可见且全屏显示" FontTypography="Body"/>
+                                    <Border Background="{DynamicResource SystemAccentColorPrimaryBrush}" CornerRadius="4" Margin="8,0,0,0" Padding="6,2">
+                                        <TextBlock Text="新功能" FontSize="10" Foreground="White"/>
+                                    </Border>
                                 </StackPanel>
-                            </Border>
-                        </StackPanel>
-                        <ui:ToggleSwitch Grid.Column="1" IsOn="{Binding Advanced.IsEnableForceFullScreen, Mode=TwoWay}"/>
-                    </Grid>
-                    <TextBlock Text="# 当检测到窗口大小变化时，自动使用Win32API将本窗口的大小设置为主显示器大小（设备像素大小），同时如果窗口被遮挡，则会立刻恢复置顶。该选项重启icc后生效。"
-                               Style="{StaticResource SettingsDescriptionStyle}" Margin="0,-8,0,16"/>
+                                <ui:TextBlock Text="自动检测窗口大小变化并恢复，被遮挡时自动恢复置顶" FontTypography="Caption" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                            </StackPanel>
+                        </ui:CardControl.Header>
+                        <ui:ToggleSwitch IsChecked="{Binding Advanced.IsEnableForceFullScreen, Mode=TwoWay}"/>
+                    </ui:CardControl>
 
                     <!-- Ensure Toolbar On Screen -->
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <TextBlock Text="实时确保浮动工具栏显示在屏幕内" Style="{StaticResource SettingsTitleStyle}"/>
-                            <Border Style="{StaticResource NewFeatureTagStyle}">
-                                <StackPanel Orientation="Horizontal">
-                                    <ui:FontIcon Glyph="&#xE710;" FontSize="10" Foreground="{StaticResource NewFeatureBrush}" Margin="0,0,4,0"/>
-                                    <TextBlock Text="新功能" Style="{StaticResource NewFeatureTagTextStyle}"/>
+                     <ui:CardControl Margin="0,0,0,0">
+                         <ui:CardControl.Icon>
+                            <ui:SymbolIcon Symbol="ResizeLarge24"/>
+                        </ui:CardControl.Icon>
+                        <ui:CardControl.Header>
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <ui:TextBlock Text="实时确保浮动工具栏显示在屏幕内" FontTypography="Body"/>
+                                    <Border Background="{DynamicResource SystemAccentColorPrimaryBrush}" CornerRadius="4" Margin="8,0,0,0" Padding="6,2">
+                                        <TextBlock Text="新功能" FontSize="10" Foreground="White"/>
+                                    </Border>
                                 </StackPanel>
-                            </Border>
-                        </StackPanel>
-                        <ui:ToggleSwitch Grid.Column="1" IsOn="{Binding Advanced.IsEnableResolutionChangeDetection, Mode=TwoWay}"/>
-                    </Grid>
-                    <TextBlock Text="# 仅确保浮动工具栏每时每刻显示在屏幕中，若不再可见于屏幕范围内才会自动复位，否则不会自动调整位置。开启后会实时监听分辨率变更事件和DPI变更事件并作出相应。如果功能出现异常，您可以在托盘菜单中强制浮动工具栏复位。"
-                               Style="{StaticResource SettingsDescriptionStyle}" Margin="0,4,0,0"/>
+                                <ui:TextBlock Text="实时监听分辨率/DPI变更，确保工具栏可见" FontTypography="Caption" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                            </StackPanel>
+                        </ui:CardControl.Header>
+                        <ui:ToggleSwitch IsChecked="{Binding Advanced.IsEnableResolutionChangeDetection, Mode=TwoWay}"/>
+                    </ui:CardControl>
 
                 </StackPanel>
-            </Border>
+            </ui:CardExpander>
 
         </StackPanel>
-    </ScrollViewer>
+    </ui:DynamicScrollViewer>
 </UserControl>

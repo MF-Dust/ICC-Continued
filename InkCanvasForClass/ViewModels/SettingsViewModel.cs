@@ -7,8 +7,12 @@ using Ink_Canvas.Services.Events;
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using System.Collections.ObjectModel;
+using Wpf.Ui.Controls;
+using System.Windows.Media;
 
 using Ink_Canvas.ViewModels.Settings;
+using Ink_Canvas.Views.Settings.Pages;
 
 namespace Ink_Canvas.ViewModels
 {
@@ -25,6 +29,16 @@ namespace Ink_Canvas.ViewModels
         /// </summary>
         public Ink_Canvas.Settings Settings => _settingsService.Settings;
 
+        #region 导航集合
+
+        [ObservableProperty]
+        private ObservableCollection<object> _navigationItems = new();
+
+        [ObservableProperty]
+        private ObservableCollection<object> _navigationFooter = new();
+
+        #endregion
+
         #region 事件
 
         /// <summary>
@@ -36,6 +50,11 @@ namespace Ink_Canvas.ViewModels
         /// 退出应用请求事件
         /// </summary>
         public event EventHandler ExitRequested;
+
+        /// <summary>
+        /// 重置设置请求事件
+        /// </summary>
+        public event EventHandler ResetRequested;
 
         #endregion
 
@@ -133,6 +152,158 @@ namespace Ink_Canvas.ViewModels
             {
                 InitializeSubViewModels();
             }
+
+            InitializeNavigation();
+        }
+
+        private void InitializeNavigation()
+        {
+            // 常用设置
+            NavigationItems.Add(new NavigationViewItemHeader { Text = "常用" });
+
+            NavigationItems.Add(new NavigationViewItem
+            {
+                Content = "快速设置",
+                Tag = "QuickSettings",
+                Icon = new SymbolIcon { Symbol = SymbolRegular.Rocket24 },
+                TargetPageType = typeof(QuickSettingsPage)
+            });
+
+            NavigationItems.Add(new NavigationViewItem
+            {
+                Content = "外观",
+                Tag = "Appearance",
+                Icon = new SymbolIcon { Symbol = SymbolRegular.ColorBackground24 },
+                TargetPageType = typeof(AppearanceSettingsPage)
+            });
+
+            NavigationItems.Add(new NavigationViewItem
+            {
+                Content = "书写",
+                Tag = "Writing",
+                Icon = new SymbolIcon { Symbol = SymbolRegular.Pen24 },
+                TargetPageType = typeof(WritingSettingsPage)
+            });
+
+            NavigationItems.Add(new NavigationViewItem
+            {
+                Content = "白板",
+                Tag = "Whiteboard",
+                Icon = new SymbolIcon { Symbol = SymbolRegular.Board24 },
+                TargetPageType = typeof(WhiteboardSettingsPage)
+            });
+
+            NavigationItems.Add(new NavigationViewItem
+            {
+                Content = "手势",
+                Tag = "Gesture",
+                Icon = new SymbolIcon { Symbol = SymbolRegular.HandRight24 },
+                TargetPageType = typeof(GestureSettingsPage)
+            });
+
+            NavigationItems.Add(new NavigationViewItem
+            {
+                Content = "PowerPoint",
+                Tag = "PowerPoint",
+                Icon = new SymbolIcon { Symbol = SymbolRegular.ProjectionScreen24 },
+                TargetPageType = typeof(PowerPointSettingsPage)
+            });
+
+            NavigationItems.Add(new NavigationViewItem
+            {
+                Content = "自动化",
+                Tag = "Automation",
+                Icon = new SymbolIcon { Symbol = SymbolRegular.Bot24 },
+                TargetPageType = typeof(AutomationSettingsPage)
+            });
+
+            // 工具
+            NavigationItems.Add(new NavigationViewItemHeader { Text = "工具" });
+
+            NavigationItems.Add(new NavigationViewItem
+            {
+                Content = "截图",
+                Tag = "Snapshot",
+                Icon = new SymbolIcon { Symbol = SymbolRegular.Camera24 },
+                TargetPageType = typeof(SnapshotSettingsPage)
+            });
+
+            NavigationItems.Add(new NavigationViewItem
+            {
+                Content = "随机点名",
+                Tag = "RandomPick",
+                Icon = new SymbolIcon { Symbol = SymbolRegular.People24 },
+                TargetPageType = typeof(RandomPickSettingsPage)
+            });
+
+            // 系统
+            NavigationItems.Add(new NavigationViewItemHeader { Text = "系统" });
+
+            NavigationItems.Add(new NavigationViewItem
+            {
+                Content = "启动",
+                Tag = "Startup",
+                Icon = new SymbolIcon { Symbol = SymbolRegular.Power24 },
+                TargetPageType = typeof(StartupSettingsPage)
+            });
+
+            NavigationItems.Add(new NavigationViewItem
+            {
+                Content = "存储",
+                Tag = "Storage",
+                Icon = new SymbolIcon { Symbol = SymbolRegular.Save24 },
+                TargetPageType = typeof(StorageSettingsPage)
+            });
+
+            NavigationItems.Add(new NavigationViewItem
+            {
+                Content = "高级",
+                Tag = "Advanced",
+                Icon = new SymbolIcon { Symbol = SymbolRegular.Wrench24 },
+                TargetPageType = typeof(AdvancedSettingsPage)
+            });
+
+
+            // 底部菜单
+            NavigationFooter.Add(new NavigationViewItem
+            {
+                Content = "关于",
+                Tag = "About",
+                Icon = new SymbolIcon { Symbol = SymbolRegular.Info24 },
+                TargetPageType = typeof(AboutSettingsPage)
+            });
+
+            NavigationFooter.Add(new NavigationViewItemSeparator());
+
+            NavigationFooter.Add(new NavigationViewItem
+            {
+                Content = "重启应用",
+                Tag = "Restart",
+                Icon = new SymbolIcon { Symbol = SymbolRegular.ArrowCounterclockwise24, Foreground = new SolidColorBrush(Color.FromRgb(0, 120, 212)) },
+                Command = RestartCommand
+            });
+
+            NavigationFooter.Add(new NavigationViewItem
+            {
+                Content = "重置设置",
+                Tag = "Reset",
+                Icon = new SymbolIcon { Symbol = SymbolRegular.ArrowReset24, Foreground = new SolidColorBrush(Color.FromRgb(216, 59, 1)) },
+                Command = RequestResetCommand
+            });
+
+            NavigationFooter.Add(new NavigationViewItem
+            {
+                Content = "退出应用",
+                Tag = "Exit",
+                Icon = new SymbolIcon { Symbol = SymbolRegular.SignOut24, Foreground = new SolidColorBrush(Color.FromRgb(197, 15, 31)) },
+                Command = ExitCommand
+            });
+        }
+
+        [RelayCommand]
+        private void RequestReset()
+        {
+            ResetRequested?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>

@@ -1,4 +1,4 @@
-﻿using OSVersionExtension;
+using OSVersionExtension;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -11,7 +11,7 @@ using System.Windows;
 using Vanara.PInvoke;
 
 namespace Ink_Canvas {
-    public partial class MainWindow : Window {
+    public partial class MainWindow : Wpf.Ui.Controls.FluentWindow {
 
         public IntPtr MagnificationWinHandle;
         public IntPtr MagnificationHostWindowHandle;

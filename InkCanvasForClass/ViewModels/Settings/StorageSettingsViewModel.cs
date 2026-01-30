@@ -42,9 +42,9 @@ namespace Ink_Canvas.ViewModels.Settings
         {
             StorageLocationOptions.Add(new StorageLocationOption
             {
-                Name = "icc安装目录",
+                Name = "ICC 安装目录",
                 Path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data"),
-                Tag = "a-",
+                Tag = "fr",
                 Icon = "\uE8B7"
             });
 
@@ -52,7 +52,7 @@ namespace Ink_Canvas.ViewModels.Settings
             {
                 Name = "“文档”文件夹",
                 Path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-                Tag = "documents",
+                Tag = "fw",
                 Icon = "\uF000"
             });
 
@@ -60,7 +60,7 @@ namespace Ink_Canvas.ViewModels.Settings
             {
                 Name = "当前用户目录",
                 Path = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-                Tag = "user",
+                Tag = "fu",
                 Icon = "\uE77B"
             });
 
@@ -68,7 +68,7 @@ namespace Ink_Canvas.ViewModels.Settings
             {
                 Name = "“桌面”文件夹",
                 Path = Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
-                Tag = "desktop",
+                Tag = "fd",
                 Icon = "\uE8D8"
             });
 
@@ -76,7 +76,7 @@ namespace Ink_Canvas.ViewModels.Settings
             {
                 Name = "自定义...",
                 Path = "",
-                Tag = "custom",
+                Tag = "c-",
                 Icon = "\uE8B7"
             });
         }
@@ -138,9 +138,46 @@ namespace Ink_Canvas.ViewModels.Settings
 
         public int TotalFileCount => AutoSavedInkCount + BoardImageRefCount + ExportedBoardCount + CacheCount + AutoSavedScreenshotCount;
 
-        public string CurrentStoragePath => _settings.StorageLocation == "a-"
-            ? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data")
-            : _settings.UserStorageLocation;
+        public string CurrentStoragePath => GetStoragePathFromStorageLocation();
+
+        private string GetStoragePathFromStorageLocation()
+        {
+            string programDir = AppDomain.CurrentDomain.BaseDirectory.TrimEnd('\\');
+            string storageLocation = _settings.StorageLocation ?? "fr";
+
+            if (storageLocation == "c-")
+            {
+                if (!string.IsNullOrWhiteSpace(_settings.UserStorageLocation))
+                {
+                    return new DirectoryInfo(_settings.UserStorageLocation).FullName;
+                }
+
+                return Path.Combine(programDir, "Data");
+            }
+
+            if (storageLocation.StartsWith("d", StringComparison.OrdinalIgnoreCase) && storageLocation.Length >= 2)
+            {
+                var driveLetter = storageLocation.Substring(1, 1).ToUpperInvariant();
+                return $"{driveLetter}:\\InkCanvasForClass";
+            }
+
+            if (storageLocation == "fw")
+            {
+                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "InkCanvasForClass");
+            }
+
+            if (storageLocation == "fu")
+            {
+                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "InkCanvasForClass");
+            }
+
+            if (storageLocation == "fd")
+            {
+                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), "InkCanvasForClass");
+            }
+
+            return Path.Combine(programDir, "Data");
+        }
 
         [RelayCommand]
         private void BrowseFolder()
@@ -160,6 +197,7 @@ namespace Ink_Canvas.ViewModels.Settings
                 _saveAction?.Invoke();
                 OnPropertyChanged(nameof(UserStorageLocation));
                 OnPropertyChanged(nameof(CurrentStoragePath));
+                RefreshStorageAnalysis();
             }
         }
 
@@ -258,6 +296,12 @@ namespace Ink_Canvas.ViewModels.Settings
                 Debug.WriteLine($"Error clearing screenshots: {ex.Message}");
                 MessageBox.Show($"清理截图失败：{ex.Message}", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        [RelayCommand]
+        private void RefreshStorageAnalysisNow()
+        {
+            RefreshStorageAnalysis();
         }
 
         private async Task RefreshStorageAnalysisAsync()

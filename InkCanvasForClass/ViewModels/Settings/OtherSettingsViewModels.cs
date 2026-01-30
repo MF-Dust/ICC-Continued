@@ -758,6 +758,12 @@ namespace Ink_Canvas.ViewModels
             set { if (SetProperty(_automation.IsAutoFoldInHiteTouchPro, value, _automation, (a, v) => a.IsAutoFoldInHiteTouchPro = v)) { _saveAction?.Invoke(); OnPropertyChanged(nameof(IsEnableAutoFold)); } }
         }
 
+        public bool IsAutoFoldInHiteLightBoard
+        {
+            get => _automation.IsAutoFoldInHiteLightBoard;
+            set { if (SetProperty(_automation.IsAutoFoldInHiteLightBoard, value, _automation, (a, v) => a.IsAutoFoldInHiteLightBoard = v)) { _saveAction?.Invoke(); OnPropertyChanged(nameof(IsEnableAutoFold)); } }
+        }
+
         public bool IsAutoFoldInHiteCamera
         {
             get => _automation.IsAutoFoldInHiteCamera;
@@ -782,6 +788,18 @@ namespace Ink_Canvas.ViewModels
             set { if (SetProperty(_automation.IsAutoFoldInMSWhiteboard, value, _automation, (a, v) => a.IsAutoFoldInMSWhiteboard = v)) { _saveAction?.Invoke(); OnPropertyChanged(nameof(IsEnableAutoFold)); } }
         }
 
+        public bool IsAutoFoldInAdmoxWhiteboard
+        {
+            get => _automation.IsAutoFoldInAdmoxWhiteboard;
+            set { if (SetProperty(_automation.IsAutoFoldInAdmoxWhiteboard, value, _automation, (a, v) => a.IsAutoFoldInAdmoxWhiteboard = v)) { _saveAction?.Invoke(); OnPropertyChanged(nameof(IsEnableAutoFold)); } }
+        }
+
+        public bool IsAutoFoldInAdmoxBooth
+        {
+            get => _automation.IsAutoFoldInAdmoxBooth;
+            set { if (SetProperty(_automation.IsAutoFoldInAdmoxBooth, value, _automation, (a, v) => a.IsAutoFoldInAdmoxBooth = v)) { _saveAction?.Invoke(); OnPropertyChanged(nameof(IsEnableAutoFold)); } }
+        }
+
         public bool IsAutoFoldInPPTSlideShow
         {
             get => _automation.IsAutoFoldInPPTSlideShow;
@@ -798,6 +816,42 @@ namespace Ink_Canvas.ViewModels
         {
             get => _automation.IsAutoKillEasiNote;
             set { if (SetProperty(_automation.IsAutoKillEasiNote, value, _automation, (a, v) => a.IsAutoKillEasiNote = v)) _saveAction?.Invoke(); }
+        }
+
+        public bool IsAutoKillHiteAnnotation
+        {
+            get => _automation.IsAutoKillHiteAnnotation;
+            set { if (SetProperty(_automation.IsAutoKillHiteAnnotation, value, _automation, (a, v) => a.IsAutoKillHiteAnnotation = v)) _saveAction?.Invoke(); }
+        }
+
+        public bool IsAutoKillVComYouJiao
+        {
+            get => _automation.IsAutoKillVComYouJiao;
+            set { if (SetProperty(_automation.IsAutoKillVComYouJiao, value, _automation, (a, v) => a.IsAutoKillVComYouJiao = v)) _saveAction?.Invoke(); }
+        }
+
+        public bool IsAutoKillSeewoLauncher2DesktopAnnotation
+        {
+            get => _automation.IsAutoKillSeewoLauncher2DesktopAnnotation;
+            set { if (SetProperty(_automation.IsAutoKillSeewoLauncher2DesktopAnnotation, value, _automation, (a, v) => a.IsAutoKillSeewoLauncher2DesktopAnnotation = v)) _saveAction?.Invoke(); }
+        }
+
+        public bool IsAutoKillInkCanvas
+        {
+            get => _automation.IsAutoKillInkCanvas;
+            set { if (SetProperty(_automation.IsAutoKillInkCanvas, value, _automation, (a, v) => a.IsAutoKillInkCanvas = v)) _saveAction?.Invoke(); }
+        }
+
+        public bool IsAutoKillICA
+        {
+            get => _automation.IsAutoKillICA;
+            set { if (SetProperty(_automation.IsAutoKillICA, value, _automation, (a, v) => a.IsAutoKillICA = v)) _saveAction?.Invoke(); }
+        }
+
+        public bool IsAutoKillIDT
+        {
+            get => _automation.IsAutoKillIDT;
+            set { if (SetProperty(_automation.IsAutoKillIDT, value, _automation, (a, v) => a.IsAutoKillIDT = v)) _saveAction?.Invoke(); }
         }
 
         public bool IsSaveScreenshotsInDateFolders

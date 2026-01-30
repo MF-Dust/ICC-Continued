@@ -10,7 +10,6 @@
 //
 // ============================================================================
 
-using Hardcodet.Wpf.TaskbarNotification;
 using Ink_Canvas.ViewModels;
 using System;
 using System.Windows;
@@ -19,7 +18,7 @@ using System.Windows.Media.Imaging;
 
 namespace Ink_Canvas
 {
-    public partial class MainWindow : Window
+    public partial class MainWindow : Wpf.Ui.Controls.FluentWindow
     {
         /// <summary>
         /// 初始化外观设置事件监听
@@ -251,8 +250,7 @@ namespace Ink_Canvas
         /// </summary>
         private void ApplyTrayIconVisibility()
         {
-            var taskbar = (TaskbarIcon)Application.Current.Resources["TaskbarTrayIcon"];
-            taskbar.Visibility = Settings.Appearance.EnableTrayIcon ? Visibility.Visible : Visibility.Collapsed;
+            TrayIcon.Visibility = Settings.Appearance.EnableTrayIcon ? Visibility.Visible : Visibility.Collapsed;
         }
 
         /// <summary>

@@ -1,4 +1,4 @@
-<Window Name="window" x:Class="Ink_Canvas.MainWindow"
+<wpfui:FluentWindow Name="window" x:Class="Ink_Canvas.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -15,6 +15,8 @@
         xmlns:floatingBar="clr-namespace:Ink_Canvas.Views.FloatingBar"
         xmlns:settings="clr-namespace:Ink_Canvas.Views.Settings"
         xmlns:shapeDrawing="clr-namespace:Ink_Canvas.Views.ShapeDrawing"
+        xmlns:tray="http://schemas.lepo.co/wpfui/2022/xaml/tray"
+        xmlns:wpfui="http://schemas.lepo.co/wpfui/2022/xaml"
         d:DataContext="{d:DesignInstance Type=vm:MainWindowViewModel}"
         mc:Ignorable="d"
         WindowStyle="None"
@@ -42,7 +44,7 @@
         DpiChanged="MainWindow_OnDpiChanged"
         Stylus.IsTouchFeedbackEnabled="False">
     <!--资源中添加命令-->
-    <Window.Resources>
+    <wpfui:FluentWindow.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <!-- 上下文菜单和橡皮擦资源 -->
@@ -74,9 +76,9 @@
             <RoutedUICommand x:Key="HotKey_DrawLine" Text=" " />
             <RoutedUICommand x:Key="NothingWillHappened" Text=" " />
         </ResourceDictionary>
-    </Window.Resources>
+    </wpfui:FluentWindow.Resources>
     <!--输入命令绑定-->
-    <Window.InputBindings>
+    <wpfui:FluentWindow.InputBindings>
         <KeyBinding Gesture="Escape" Command="{StaticResource KeyExit}" />
         <KeyBinding Modifiers="Control" Key="Z" Command="{StaticResource HotKey_Command_Undo}" />
         <KeyBinding Modifiers="Control" Key="Y" Command="{StaticResource HotKey_Command_Redo}" />
@@ -95,9 +97,9 @@
         <KeyBinding Modifiers="Alt" Key="D5" Command="{StaticResource HotKey_ChangeToPen5}" />
         <KeyBinding Modifiers="Alt" Key="L" Command="{StaticResource HotKey_DrawLine}" />
         <KeyBinding Modifiers="Alt" Key="F4" Command="{StaticResource NothingWillHappened}" />
-    </Window.InputBindings>
+    </wpfui:FluentWindow.InputBindings>
     <!--命令执行方法绑定-->
-    <Window.CommandBindings>
+    <wpfui:FluentWindow.CommandBindings>
         <CommandBinding CanExecute="CommandBinding_CanExecute" Command="{StaticResource KeyExit}" Executed="KeyExit" />
         <CommandBinding CanExecute="CommandBinding_CanExecute" Command="{StaticResource HotKey_Command_Undo}"
                         Executed="HotKey_Undo" />
@@ -121,9 +123,16 @@
                         Executed="KeyHide" />
         <CommandBinding CanExecute="CommandBinding_CanExecute" Command="{StaticResource HotKey_DrawLine}"
                         Executed="KeyDrawLine" />
-    </Window.CommandBindings>
+    </wpfui:FluentWindow.CommandBindings>
 
     <Grid x:Name="Main_Grid">
+
+        <tray:NotifyIcon x:Name="TrayIcon"
+                         FocusOnLeftClick="True"
+                         MenuOnRightClick="True"
+                         TooltipText="InkCanvasForClass"
+                         Icon="pack://application:,,,/Resources/icc.ico"
+                         Menu="{StaticResource SysTrayMenu}"/>
 
         <Popup Name="PenPaletteV2Popup" PopupAnimation="Fade" IsOpen="False" StaysOpen="True" AllowsTransparency="True" Placement="Bottom">
             <popups:ColorPalette x:Name="PenPaletteV2" Width="300" />
@@ -2866,4 +2875,4 @@
             <Border Name="SettingsOverlay" MouseDown="SettingsOverlayClick" d:IsHidden="True"></Border>
         </Grid>
     </Grid>
-</Window>
+</wpfui:FluentWindow>

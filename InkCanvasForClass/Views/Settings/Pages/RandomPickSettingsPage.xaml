@@ -3,79 +3,69 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
              xmlns:local="clr-namespace:Ink_Canvas.Views.Settings.Pages"
              mc:Ignorable="d"
              d:DesignHeight="800" d:DesignWidth="600"
-             Background="Transparent"
-             Foreground="#FAFAFA"
-             ui:ThemeManager.RequestedTheme="Dark">
+             Background="Transparent">
 
-    <UserControl.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="SettingsPageStyles.xaml"/>
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </UserControl.Resources>
-
-    <ScrollViewer VerticalScrollBarVisibility="Auto" PanningMode="VerticalOnly">
+    <ui:DynamicScrollViewer VerticalScrollBarVisibility="Auto" PanningMode="VerticalOnly">
         <StackPanel Margin="0,0,12,24">
-            <TextBlock Text="随机点名" Style="{StaticResource PageTitleStyle}"/>
+            <!-- Header -->
+            <ui:TextBlock Text="随机点名" FontTypography="Title" Margin="0,0,0,8" />
+            <ui:TextBlock Text="随机点名名单存放在 ICC 存储位置下的 LuckyRandom 目录下。支持多名单加载和切换，文件格式为txt，文件名必须以 .luckyrand.list.txt 结尾，否则不会识别！" 
+                          FontTypography="Body" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,24" TextWrapping="Wrap"/>
 
-            <TextBlock Text="# 随机点名名单存放在 ICC 存储位置下的 LuckyRandom 目录下。支持多名单加载和切换，文件格式为txt，文件名必须以 .luckyrand.list.txt 结尾，否则不会识别！"
-                       Style="{StaticResource SettingsDescriptionStyle}" Margin="0,0,0,16"/>
+            <ui:CardControl Margin="0,0,0,4">
+                <ui:CardControl.Icon>
+                    <ui:SymbolIcon Symbol="PeopleList24"/>
+                </ui:CardControl.Icon>
+                <ui:CardControl.Header>
+                    <ui:TextBlock Text="显示切换随机点名名单的按钮" FontTypography="Body"/>
+                </ui:CardControl.Header>
+                <ui:ToggleSwitch IsChecked="{Binding RandomPick.DisplaySwitchRandomPickListBtn, Mode=TwoWay}"/>
+            </ui:CardControl>
 
-            <!-- Settings -->
-            <Border Style="{StaticResource SettingsCardStyle}">
-                <StackPanel>
-                    <!-- Show Switch List Button -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="显示切换随机点名名单的按钮" Style="{StaticResource SettingsTitleStyle}"/>
-                        <ui:ToggleSwitch Grid.Column="1" IsOn="{Binding RandomPick.DisplaySwitchRandomPickListBtn, Mode=TwoWay}"/>
-                    </Grid>
+            <ui:CardControl Margin="0,0,0,4">
+                <ui:CardControl.Icon>
+                    <ui:SymbolIcon Symbol="History24"/>
+                </ui:CardControl.Icon>
+                <ui:CardControl.Header>
+                    <ui:TextBlock Text="显示点名历史记录" FontTypography="Body"/>
+                </ui:CardControl.Header>
+                <ui:ToggleSwitch IsChecked="{Binding RandomPick.DisplayPickHistory, Mode=TwoWay}"/>
+            </ui:CardControl>
 
-                    <!-- Show Pick History -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="显示点名历史记录" Style="{StaticResource SettingsTitleStyle}"/>
-                        <ui:ToggleSwitch Grid.Column="1" IsOn="{Binding RandomPick.DisplayPickHistory, Mode=TwoWay}"/>
-                    </Grid>
-
-                    <!-- Window Close Delay -->
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="160"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="单次抽人窗口关闭延迟" VerticalAlignment="Center"/>
-                        <Slider Grid.Column="1" Minimum="0.5" Maximum="10.0" Value="{Binding RandomPick.RandWindowOnceCloseLatency, Mode=TwoWay}" Margin="12,0"/>
-                        <TextBlock Grid.Column="2" Text="{Binding RandomPick.RandWindowOnceCloseLatency, StringFormat='{}{0:F1}s'}" Width="40" TextAlignment="Right" VerticalAlignment="Center"/>
-                    </Grid>
-
-                    <!-- Max Students -->
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="160"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="单次随机点名人数上限" VerticalAlignment="Center"/>
-                        <Slider Grid.Column="1" Minimum="1" Maximum="50" Value="{Binding RandomPick.RandWindowOnceMaxStudents, Mode=TwoWay}" Margin="12,0"/>
-                        <TextBlock Grid.Column="2" Text="{Binding RandomPick.RandWindowOnceMaxStudents, StringFormat='{}{0}人'}" Width="40" TextAlignment="Right" VerticalAlignment="Center"/>
-                    </Grid>
-
+            <ui:CardControl Margin="0,0,0,4">
+                <ui:CardControl.Icon>
+                    <ui:SymbolIcon Symbol="Timer24"/>
+                </ui:CardControl.Icon>
+                <ui:CardControl.Header>
+                     <StackPanel>
+                        <ui:TextBlock Text="单次抽人窗口关闭延迟" FontTypography="Body"/>
+                    </StackPanel>
+                </ui:CardControl.Header>
+                <StackPanel Orientation="Horizontal">
+                    <Slider MinWidth="120" Minimum="0.5" Maximum="10.0" Value="{Binding RandomPick.RandWindowOnceCloseLatency, Mode=TwoWay}" TickFrequency="0.5" IsSnapToTickEnabled="True" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                    <ui:TextBlock Text="{Binding RandomPick.RandWindowOnceCloseLatency, StringFormat='{}{0:F1}s'}" VerticalAlignment="Center" Width="40" TextAlignment="Right"/>
                 </StackPanel>
-            </Border>
+            </ui:CardControl>
+
+            <ui:CardControl Margin="0,0,0,4">
+                <ui:CardControl.Icon>
+                    <ui:SymbolIcon Symbol="People24"/>
+                </ui:CardControl.Icon>
+                <ui:CardControl.Header>
+                     <StackPanel>
+                        <ui:TextBlock Text="单次随机点名人数上限" FontTypography="Body"/>
+                    </StackPanel>
+                </ui:CardControl.Header>
+                 <StackPanel Orientation="Horizontal">
+                    <Slider MinWidth="120" Minimum="1" Maximum="50" Value="{Binding RandomPick.RandWindowOnceMaxStudents, Mode=TwoWay}" TickFrequency="1" IsSnapToTickEnabled="True" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                    <ui:TextBlock Text="{Binding RandomPick.RandWindowOnceMaxStudents, StringFormat='{}{0}人'}" VerticalAlignment="Center" Width="40" TextAlignment="Right"/>
+                </StackPanel>
+            </ui:CardControl>
 
         </StackPanel>
-    </ScrollViewer>
+    </ui:DynamicScrollViewer>
 </UserControl>

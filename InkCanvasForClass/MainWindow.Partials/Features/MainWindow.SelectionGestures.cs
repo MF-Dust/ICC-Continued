@@ -1,4 +1,4 @@
-﻿using Ink_Canvas.Helpers;
+using Ink_Canvas.Helpers;
 using Ink_Canvas.Popups;
 using System;
 using System.Collections.Generic;
@@ -15,7 +15,7 @@ using Matrix = System.Windows.Media.Matrix;
 using Point = System.Windows.Point;
 
 namespace Ink_Canvas {
-    public partial class MainWindow : Window {
+    public partial class MainWindow : Wpf.Ui.Controls.FluentWindow {
         #region Floating Control
 
         private object lastBorderMouseDownObject;

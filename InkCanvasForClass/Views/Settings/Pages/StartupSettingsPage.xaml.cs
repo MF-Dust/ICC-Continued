@@ -5,7 +5,7 @@ using System.Windows.Controls;
 using Ink_Canvas.Core;
 using Ink_Canvas.Helpers;
 using Ink_Canvas.ViewModels;
-using iNKORE.UI.WPF.Modern.Controls;
+using Wpf.Ui.Controls;
 
 namespace Ink_Canvas.Views.Settings.Pages
 {
@@ -30,7 +30,7 @@ namespace Ink_Canvas.Views.Settings.Pages
         private void StartupSettingsPage_Loaded(object sender, RoutedEventArgs e)
         {
             // 检查开机自启动状态
-            ToggleRunAtStartup.IsOn = CheckAutoStartEnabled();
+            ToggleRunAtStartup.IsChecked = CheckAutoStartEnabled();
         }
 
         /// <summary>
@@ -58,7 +58,7 @@ namespace Ink_Canvas.Views.Settings.Pages
         {
             if (sender is ToggleSwitch toggleSwitch)
             {
-                if (toggleSwitch.IsOn)
+                if (toggleSwitch.IsChecked == true)
                 {
                     StartAutomaticallyCreate(AppName);
                 }

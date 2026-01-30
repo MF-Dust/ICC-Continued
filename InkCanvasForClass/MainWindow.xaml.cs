@@ -33,6 +33,7 @@ using iNKORE.UI.WPF.Modern.Controls;
 using System.Windows.Forms;
 using System.Windows.Input;
 using Vanara.PInvoke;
+using Wpf.Ui.Controls;
 using Application = System.Windows.Application;
 using Button = System.Windows.Controls.Button;
 using TextBox = System.Windows.Controls.TextBox;
@@ -53,7 +54,7 @@ namespace Ink_Canvas {
     /// - 设置面板导航已通过事件绑定
     /// - 白板页面管理已通过 ViewModel 事件处理
     /// </summary>
-    public partial class MainWindow : Window {
+    public partial class MainWindow : FluentWindow {
         public Services.ISettingsService SettingsService => (Services.ISettingsService)((App)Application.Current).Services.GetService(typeof(Services.ISettingsService));
         public Settings Settings => SettingsService.Settings;
 
@@ -1872,8 +1873,7 @@ namespace Ink_Canvas {
 
                 // 释放托盘图标
                 try {
-                    var taskbar = (Hardcodet.Wpf.TaskbarNotification.TaskbarIcon)Application.Current.FindResource("TaskbarTrayIcon");
-                    taskbar?.Dispose();
+                    TrayIcon?.Dispose();
                 }
                 catch { /* 忽略错误 */ }
 
@@ -1895,6 +1895,11 @@ namespace Ink_Canvas {
                 }
             }
             catch { /* 忽略错误 */ }
+        }
+
+        public void DisposeTrayIcon()
+        {
+            TrayIcon?.Dispose();
         }
 
         /// <summary>

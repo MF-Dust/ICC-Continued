@@ -3,263 +3,213 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
              xmlns:local="clr-namespace:Ink_Canvas.Views.Settings.Pages"
              mc:Ignorable="d"
-             d:DesignHeight="1200" d:DesignWidth="600"
-             Background="Transparent"
-             Foreground="#FAFAFA"
-             ui:ThemeManager.RequestedTheme="Dark">
+             d:DesignHeight="1200" d:DesignWidth="800"
+             Background="Transparent">
 
-    <UserControl.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="SettingsPageStyles.xaml"/>
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </UserControl.Resources>
-
-    <ScrollViewer VerticalScrollBarVisibility="Auto" PanningMode="VerticalOnly">
+    <ui:DynamicScrollViewer VerticalScrollBarVisibility="Auto" PanningMode="VerticalOnly">
         <StackPanel Margin="0,0,12,24">
-        <TextBlock Text="书写" Style="{StaticResource PageTitleStyle}"/>
-        <TextBlock Text="书写与墨迹行为相关设置" Style="{StaticResource PageSubtitleStyle}"/>
+            <!-- Header -->
+            <ui:TextBlock Text="书写" FontTypography="Title" Margin="0,0,0,8" />
+            <ui:TextBlock Text="书写与墨迹行为相关设置" FontTypography="Body" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,24" />
 
-        <!-- ==================== 画板和墨迹 ==================== -->
-        <TextBlock Text="画板和墨迹" Style="{StaticResource SettingsGroupTitleStyle}"/>
+            <!-- 画板和墨迹 -->
+            <ui:TextBlock Text="画板和墨迹" FontTypography="BodyStrong" Margin="0,0,0,8"/>
 
-        <!-- 显示画笔光标 -->
-        <Border Style="{StaticResource SettingsCardStyle}">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" Text="显示画笔光标" Style="{StaticResource SettingsTitleStyle}"
-                           VerticalAlignment="Center"/>
-                <ui:ToggleSwitch Grid.Column="1" VerticalAlignment="Center"
-                                 IsOn="{Binding Whiteboard.IsShowCursor, Mode=TwoWay}"/>
-            </Grid>
-        </Border>
+            <ui:CardControl Margin="0,0,0,4">
+                <ui:CardControl.Icon>
+                    <ui:SymbolIcon Symbol="Edit24"/>
+                </ui:CardControl.Icon>
+                <ui:CardControl.Header>
+                     <ui:TextBlock Text="显示画笔光标" FontTypography="Body"/>
+                </ui:CardControl.Header>
+                <ui:ToggleSwitch IsChecked="{Binding Whiteboard.IsShowCursor, Mode=TwoWay}"/>
+            </ui:CardControl>
 
-        <!-- 橡皮大小 -->
-        <Border Style="{StaticResource SettingsCardStyle}">
-            <StackPanel>
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" Text="橡皮大小" Style="{StaticResource SettingsTitleStyle}"
-                               VerticalAlignment="Center" Margin="0,0,16,0"/>
-                    <ComboBox Grid.Column="2" Width="100"
-                              SelectedIndex="{Binding Whiteboard.EraserSize, Mode=TwoWay}">
-                        <ComboBoxItem Content="很小"/>
-                        <ComboBoxItem Content="较小"/>
-                        <ComboBoxItem Content="中等"/>
-                        <ComboBoxItem Content="较大"/>
-                        <ComboBoxItem Content="很大"/>
-                    </ComboBox>
-                </Grid>
-                <TextBlock Text="非实时切换，下一次使用画板擦时生效。"
-                           Style="{StaticResource HintTextStyle}"/>
-            </StackPanel>
-        </Border>
+            <ui:CardControl Margin="0,0,0,24">
+                <ui:CardControl.Icon>
+                    <ui:SymbolIcon Symbol="EraserTool24"/>
+                </ui:CardControl.Icon>
+                <ui:CardControl.Header>
+                    <StackPanel>
+                        <ui:TextBlock Text="橡皮大小" FontTypography="Body"/>
+                        <ui:TextBlock Text="非实时切换，下一次使用画板擦时生效。" FontTypography="Caption" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                    </StackPanel>
+                </ui:CardControl.Header>
+                <ComboBox MinWidth="120" SelectedIndex="{Binding Whiteboard.EraserSize, Mode=TwoWay}">
+                    <ComboBoxItem Content="很小"/>
+                    <ComboBoxItem Content="较小"/>
+                    <ComboBoxItem Content="中等"/>
+                    <ComboBoxItem Content="较大"/>
+                    <ComboBoxItem Content="很大"/>
+                </ComboBox>
+            </ui:CardControl>
 
-        <!-- 手掌橡皮 -->
-        <TextBlock Text="手掌橡皮" Style="{StaticResource SettingsGroupTitleStyle}"/>
+            <!-- 手掌橡皮 -->
+             <ui:TextBlock Text="手掌橡皮" FontTypography="BodyStrong" Margin="0,0,0,8"/>
+             
+             <ui:CardExpander Margin="0,0,0,24" IsExpanded="True">
+                <ui:CardExpander.Icon>
+                    <ui:SymbolIcon Symbol="HandRight24"/>
+                </ui:CardExpander.Icon>
+                <ui:CardExpander.Header>
+                    <ui:TextBlock Text="手掌橡皮设置" FontTypography="Body"/>
+                </ui:CardExpander.Header>
+                <StackPanel>
+                     <!-- Toggle Switch for Palm Detection -->
+                     <Grid Margin="0,0,0,12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <ui:TextBlock Text="触摸移动检测手掌" VerticalAlignment="Center"/>
+                        <ui:ToggleSwitch Grid.Column="1" IsChecked="{Binding Gesture.PalmEraserDetectOnMove, Mode=TwoWay}"/>
+                     </Grid>
+                     
+                     <!-- Sliders -->
+                     <!-- Threshold -->
+                     <Grid Margin="0,0,0,12">
+                         <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="140"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="50"/>
+                         </Grid.ColumnDefinitions>
+                         <ui:TextBlock Text="触发稳定次数" VerticalAlignment="Center"/>
+                         <Slider Grid.Column="1" Minimum="1" Maximum="6" Value="{Binding Gesture.PalmEraserDetectionThreshold, Mode=TwoWay}" TickFrequency="1" IsSnapToTickEnabled="True" Margin="12,0"/>
+                         <ui:TextBlock Grid.Column="2" Text="{Binding Gesture.PalmEraserDetectionThreshold, StringFormat='{}{0}次'}" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                     </Grid>
 
-        <Border Style="{StaticResource SettingsCardStyle}">
-            <StackPanel>
-                <Grid Margin="0,0,0,12">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" Text="触摸移动检测手掌" Style="{StaticResource SettingsTitleStyle}"
-                               VerticalAlignment="Center"/>
-                    <ui:ToggleSwitch Grid.Column="1" VerticalAlignment="Center"
-                                     IsOn="{Binding Gesture.PalmEraserDetectOnMove, Mode=TwoWay}"/>
-                </Grid>
+                     <!-- Multiplier -->
+                     <Grid Margin="0,0,0,12">
+                         <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="140"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="50"/>
+                         </Grid.ColumnDefinitions>
+                         <ui:TextBlock Text="巨大触摸倍率" VerticalAlignment="Center"/>
+                         <Slider Grid.Column="1" Minimum="1.5" Maximum="4.0" Value="{Binding Gesture.PalmEraserHugeAreaMultiplier, Mode=TwoWay}" TickFrequency="0.1" IsSnapToTickEnabled="True" Margin="12,0"/>
+                         <ui:TextBlock Grid.Column="2" Text="{Binding Gesture.PalmEraserHugeAreaMultiplier, StringFormat='{}{0:F1}x'}" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                     </Grid>
 
-                <Grid Margin="0,0,0,12">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="140"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Text="触发稳定次数" VerticalAlignment="Center"/>
-                    <Slider Grid.Column="1" Minimum="1" Maximum="6"
-                            Value="{Binding Gesture.PalmEraserDetectionThreshold, Mode=TwoWay}"
-                            TickFrequency="1" IsSnapToTickEnabled="True" Margin="12,0"
-                            Style="{StaticResource ModernSliderStyle}"/>
-                    <TextBlock Grid.Column="2"
-                               Text="{Binding Gesture.PalmEraserDetectionThreshold, StringFormat='{}{0}次'}"
-                               Style="{StaticResource SettingsValueStyle}"/>
-                </Grid>
+                     <!-- Min Move -->
+                     <Grid Margin="0,0,0,12">
+                         <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="140"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="50"/>
+                         </Grid.ColumnDefinitions>
+                         <ui:TextBlock Text="最小移动距离" VerticalAlignment="Center"/>
+                         <Slider Grid.Column="1" Minimum="0.5" Maximum="8.0" Value="{Binding Gesture.PalmEraserMinMove, Mode=TwoWay}" TickFrequency="0.5" IsSnapToTickEnabled="True" Margin="12,0"/>
+                         <ui:TextBlock Grid.Column="2" Text="{Binding Gesture.PalmEraserMinMove, StringFormat='{}{0:F1}px'}" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                     </Grid>
 
-                <Grid Margin="0,0,0,12">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="140"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Text="巨大触摸倍率" VerticalAlignment="Center"/>
-                    <Slider Grid.Column="1" Minimum="1.5" Maximum="4.0"
-                            Value="{Binding Gesture.PalmEraserHugeAreaMultiplier, Mode=TwoWay}"
-                            TickFrequency="0.1" IsSnapToTickEnabled="True" Margin="12,0"
-                            Style="{StaticResource ModernSliderStyle}"/>
-                    <TextBlock Grid.Column="2"
-                               Text="{Binding Gesture.PalmEraserHugeAreaMultiplier, StringFormat='{}{0:F1}x'}"
-                               Style="{StaticResource SettingsValueStyle}"/>
-                </Grid>
+                     <!-- Min Interval -->
+                     <Grid Margin="0,0,0,12">
+                         <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="140"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="50"/>
+                         </Grid.ColumnDefinitions>
+                         <ui:TextBlock Text="最小更新间隔" VerticalAlignment="Center"/>
+                         <Slider Grid.Column="1" Minimum="0" Maximum="60" Value="{Binding Gesture.PalmEraserMinIntervalMs, Mode=TwoWay}" TickFrequency="2" IsSnapToTickEnabled="True" Margin="12,0"/>
+                         <ui:TextBlock Grid.Column="2" Text="{Binding Gesture.PalmEraserMinIntervalMs, StringFormat='{}{0}ms'}" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                     </Grid>
+                     
+                     <ui:TextBlock Text="数值越大越不容易触发，同时可提升稳定性；移动/间隔越大越省性能。" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontTypography="Caption" TextWrapping="Wrap"/>
+                </StackPanel>
+             </ui:CardExpander>
 
-                <Grid Margin="0,0,0,12">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="140"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Text="最小移动距离" VerticalAlignment="Center"/>
-                    <Slider Grid.Column="1" Minimum="0.5" Maximum="8.0"
-                            Value="{Binding Gesture.PalmEraserMinMove, Mode=TwoWay}"
-                            TickFrequency="0.5" IsSnapToTickEnabled="True" Margin="12,0"
-                            Style="{StaticResource ModernSliderStyle}"/>
-                    <TextBlock Grid.Column="2"
-                               Text="{Binding Gesture.PalmEraserMinMove, StringFormat='{}{0:F1}px'}"
-                               Style="{StaticResource SettingsValueStyle}"/>
-                </Grid>
+             <!-- Ink Correction -->
+             <ui:TextBlock Text="墨迹纠正" FontTypography="BodyStrong" Margin="0,0,0,8"/>
 
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="140"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Text="最小更新间隔" VerticalAlignment="Center"/>
-                    <Slider Grid.Column="1" Minimum="0" Maximum="60"
-                            Value="{Binding Gesture.PalmEraserMinIntervalMs, Mode=TwoWay}"
-                            TickFrequency="2" IsSnapToTickEnabled="True" Margin="12,0"
-                            Style="{StaticResource ModernSliderStyle}"/>
-                    <TextBlock Grid.Column="2"
-                               Text="{Binding Gesture.PalmEraserMinIntervalMs, StringFormat='{}{0}ms'}"
-                               Style="{StaticResource SettingsValueStyle}"/>
-                </Grid>
+             <ui:CardControl Margin="0,0,0,4">
+                <ui:CardControl.Icon>
+                    <ui:SymbolIcon Symbol="Shapes24"/>
+                </ui:CardControl.Icon>
+                <ui:CardControl.Header>
+                    <ui:TextBlock Text="启用墨迹识别" FontTypography="Body"/>
+                </ui:CardControl.Header>
+                <ui:ToggleSwitch IsChecked="{Binding InkToShape.IsInkToShapeEnabled, Mode=TwoWay}"/>
+             </ui:CardControl>
 
-                <TextBlock Text="数值越大越不容易触发，同时可提升稳定性；移动/间隔越大越省性能。"
-                           Style="{StaticResource HintTextStyle}"/>
-            </StackPanel>
-        </Border>
+             <ui:CardExpander Margin="0,0,0,4">
+                <ui:CardExpander.Icon>
+                    <ui:SymbolIcon Symbol="TopSpeed24"/> 
+                </ui:CardExpander.Icon>
+                <ui:CardExpander.Header>
+                    <ui:TextBlock Text="模拟压感值" FontTypography="Body"/>
+                </ui:CardExpander.Header>
+                <StackPanel>
+                     <Grid Margin="0,0,0,12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <ui:TextBlock Text="阻止矫正后的矩形带有模拟压感值" VerticalAlignment="Center"/>
+                        <ui:ToggleSwitch Grid.Column="1" IsChecked="{Binding InkToShape.IsInkToShapeNoFakePressureRectangle, Mode=TwoWay}"/>
+                     </Grid>
+                     <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <ui:TextBlock Text="阻止矫正后的三角形带有模拟压感值" VerticalAlignment="Center"/>
+                        <ui:ToggleSwitch Grid.Column="1" IsChecked="{Binding InkToShape.IsInkToShapeNoFakePressureTriangle, Mode=TwoWay}"/>
+                     </Grid>
+                </StackPanel>
+             </ui:CardExpander>
 
-        <!-- ==================== 墨迹纠正 ==================== -->
-        <TextBlock Text="墨迹纠正" Style="{StaticResource SettingsGroupTitleStyle}"/>
+             <ui:CardControl Margin="0,0,0,4">
+                <ui:CardControl.Icon>
+                    <ui:SymbolIcon Symbol="SelectObject24"/>
+                </ui:CardControl.Icon>
+                <ui:CardControl.Header>
+                    <ui:TextBlock Text="将识别的墨迹当作形状处理" FontTypography="Body"/>
+                </ui:CardControl.Header>
+                <ui:ToggleSwitch IsChecked="{Binding InkToShape.TreatRecognizedInkAsShape, Mode=TwoWay}"/>
+             </ui:CardControl>
 
-        <!-- 启用墨迹识别 -->
-        <Border Style="{StaticResource SettingsCardStyle}">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" Text="启用墨迹识别" Style="{StaticResource SettingsTitleStyle}"
-                           VerticalAlignment="Center"/>
-                <ui:ToggleSwitch Grid.Column="1" VerticalAlignment="Center"
-                                 IsOn="{Binding InkToShape.IsInkToShapeEnabled, Mode=TwoWay}"/>
-            </Grid>
-        </Border>
+             <ui:CardExpander Margin="0,0,0,24">
+                <ui:CardExpander.Icon>
+                    <ui:SymbolIcon Symbol="CheckboxChecked24"/>
+                </ui:CardExpander.Icon>
+                <ui:CardExpander.Header>
+                    <ui:TextBlock Text="矫正手绘形状类型" FontTypography="Body"/>
+                </ui:CardExpander.Header>
+                <StackPanel>
+                     <CheckBox Content="矫正手绘三角形" IsChecked="{Binding InkToShape.IsInkToShapeTriangle, Mode=TwoWay}" Margin="0,0,0,12"/>
+                     <CheckBox Content="矫正手绘矩形" IsChecked="{Binding InkToShape.IsInkToShapeRectangle, Mode=TwoWay}" Margin="0,0,0,12"/>
+                     <CheckBox Content="矫正手绘圆形与椭圆" IsChecked="{Binding InkToShape.IsInkToShapeRounded, Mode=TwoWay}"/>
+                </StackPanel>
+             </ui:CardExpander>
 
-        <!-- 阻止矫正后的矩形带有模拟压感值 -->
-        <Border Style="{StaticResource SettingsCardStyle}">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" Text="阻止矫正后的矩形带有模拟压感值" Style="{StaticResource SettingsTitleStyle}"
-                           VerticalAlignment="Center"/>
-                <ui:ToggleSwitch Grid.Column="1" VerticalAlignment="Center"
-                                 IsOn="{Binding InkToShape.IsInkToShapeNoFakePressureRectangle, Mode=TwoWay}"/>
-            </Grid>
-        </Border>
-
-        <!-- 阻止矫正后的三角形带有模拟压感值 -->
-        <Border Style="{StaticResource SettingsCardStyle}">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" Text="阻止矫正后的三角形带有模拟压感值" Style="{StaticResource SettingsTitleStyle}"
-                           VerticalAlignment="Center"/>
-                <ui:ToggleSwitch Grid.Column="1" VerticalAlignment="Center"
-                                 IsOn="{Binding InkToShape.IsInkToShapeNoFakePressureTriangle, Mode=TwoWay}"/>
-            </Grid>
-        </Border>
-
-        <!-- 将识别的墨迹当作形状处理 -->
-        <Border Style="{StaticResource SettingsCardStyle}">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" Text="将识别的墨迹当作形状处理" Style="{StaticResource SettingsTitleStyle}"
-                           VerticalAlignment="Center"/>
-                <ui:ToggleSwitch Grid.Column="1" VerticalAlignment="Center"
-                                 IsOn="{Binding InkToShape.TreatRecognizedInkAsShape, Mode=TwoWay}"/>
-            </Grid>
-        </Border>
-
-        <!-- 矫正手绘形状复选框组 -->
-        <Border Style="{StaticResource SettingsCardStyle}">
-            <StackPanel>
-                <CheckBox Content="矫正手绘三角形" Style="{StaticResource SettingsCheckBoxStyle}"
-                          IsChecked="{Binding InkToShape.IsInkToShapeTriangle, Mode=TwoWay}"
-                          Margin="0"/>
-                <CheckBox Content="矫正手绘矩形" Style="{StaticResource SettingsCheckBoxStyle}"
-                          IsChecked="{Binding InkToShape.IsInkToShapeRectangle, Mode=TwoWay}"/>
-                <CheckBox Content="矫正手绘圆形与椭圆" Style="{StaticResource SettingsCheckBoxStyle}"
-                          IsChecked="{Binding InkToShape.IsInkToShapeRounded, Mode=TwoWay}"/>
-            </StackPanel>
-        </Border>
-
-        <!-- ==================== 形状绘制 ==================== -->
-        <TextBlock Text="形状绘制" Style="{StaticResource SettingsGroupTitleStyle}"/>
-
-        <!-- 启用绘制时工具栏 -->
-        <Border Style="{StaticResource SettingsCardStyle}">
-            <StackPanel>
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" Text="启用绘制时工具栏" Style="{StaticResource SettingsTitleStyle}"
-                               VerticalAlignment="Center"/>
-                    <ui:ToggleSwitch Grid.Column="1" VerticalAlignment="Center"
-                                     IsOn="{Binding InkToShape.EnableDrawingToolbar, Mode=TwoWay}"/>
-                </Grid>
-                <TextBlock Text="启用绘制工具栏后，可以在绘制形状时显示一个工具栏，可以快捷进行变体的切换、形状绘制属性，关闭该选项后将无法修改形状变体！"
-                           Style="{StaticResource HintTextStyle}"/>
-            </StackPanel>
-        </Border>
-
-        <!-- 工具栏默认展开形状变体栏 -->
-        <Border Style="{StaticResource SettingsCardStyle}">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" Text="工具栏默认展开形状变体栏" Style="{StaticResource SettingsTitleStyle}"
-                           VerticalAlignment="Center"/>
-                <ui:ToggleSwitch Grid.Column="1" VerticalAlignment="Center"
-                                 IsOn="{Binding InkToShape.ExpandShapeVariantsByDefault, Mode=TwoWay}"/>
-            </Grid>
-        </Border>
-
-        <!-- 底部间距 -->
-        <Border Height="40"/>
-    </StackPanel>
-    </ScrollViewer>
+             <!-- Shape Drawing -->
+             <ui:TextBlock Text="形状绘制" FontTypography="BodyStrong" Margin="0,0,0,8"/>
+             
+             <ui:CardControl Margin="0,0,0,4">
+                <ui:CardControl.Icon>
+                    <ui:SymbolIcon Symbol="Toolbox24"/>
+                </ui:CardControl.Icon>
+                <ui:CardControl.Header>
+                    <StackPanel>
+                        <ui:TextBlock Text="启用绘制时工具栏" FontTypography="Body"/>
+                        <ui:TextBlock Text="启用绘制工具栏后，可以在绘制形状时显示一个工具栏，可以快捷进行变体的切换、形状绘制属性，关闭该选项后将无法修改形状变体！" FontTypography="Caption" Foreground="{DynamicResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
+                    </StackPanel>
+                </ui:CardControl.Header>
+                <ui:ToggleSwitch IsChecked="{Binding InkToShape.EnableDrawingToolbar, Mode=TwoWay}"/>
+             </ui:CardControl>
+             
+             <ui:CardControl Margin="0,0,0,4">
+               <ui:CardControl.Icon>
+                    <ui:SymbolIcon Symbol="PanelRightExpand20"/>
+               </ui:CardControl.Icon>
+                <ui:CardControl.Header>
+                    <ui:TextBlock Text="工具栏默认展开形状变体栏" FontTypography="Body"/>
+                </ui:CardControl.Header>
+                <ui:ToggleSwitch IsChecked="{Binding InkToShape.ExpandShapeVariantsByDefault, Mode=TwoWay}"/>
+             </ui:CardControl>
+        </StackPanel>
+    </ui:DynamicScrollViewer>
 </UserControl>

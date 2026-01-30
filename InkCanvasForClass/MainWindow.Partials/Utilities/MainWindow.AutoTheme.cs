@@ -1,4 +1,4 @@
-﻿using Microsoft.Win32;
+using Microsoft.Win32;
 using iNKORE.UI.WPF.Modern;
 using System;
 using Ink_Canvas.Helpers;
@@ -7,7 +7,7 @@ using System.Windows.Media;
 using Application = System.Windows.Application;
 
 namespace Ink_Canvas {
-    public partial class MainWindow : Window {
+    public partial class MainWindow : Wpf.Ui.Controls.FluentWindow {
         private Color FloatBarForegroundColor = Color.FromRgb(102, 102, 102);
 
         private void SetTheme(string theme) {

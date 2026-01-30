@@ -3,34 +3,39 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
              xmlns:vm="clr-namespace:Ink_Canvas.ViewModels"
-             xmlns:local="clr-namespace:Ink_Canvas.Views.Settings.Pages"
              mc:Ignorable="d"
-             d:DesignHeight="1200" d:DesignWidth="600"
+             d:DesignHeight="1200" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance Type=vm:AppearanceSettingsViewModel}"
-             Background="Transparent"
-             Foreground="#FAFAFA"
-             ui:ThemeManager.RequestedTheme="Dark">
+             Foreground="{DynamicResource TextFillColorPrimaryBrush}">
 
-    <UserControl.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="SettingsPageStyles.xaml"/>
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </UserControl.Resources>
-
-    <ScrollViewer VerticalScrollBarVisibility="Auto" PanningMode="VerticalOnly">
+    <ui:DynamicScrollViewer VerticalScrollBarVisibility="Auto" PanningMode="VerticalOnly">
         <StackPanel Margin="0,0,12,24">
-        <TextBlock Text="外观" Style="{StaticResource PageTitleStyle}"/>
-        <TextBlock Text="界面外观与显示细节配置" Style="{StaticResource PageSubtitleStyle}"/>
+            
+            <!-- 页面标题 -->
+            <ui:TextBlock Text="外观" FontTypography="Title" Margin="0,0,0,8" />
+            <ui:TextBlock Text="自定义应用的外观和显示选项" FontTypography="Body" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,24" />
 
-        <!-- ==================== 按钮显示区域 ==================== -->
-        <Border Style="{StaticResource SettingsCardStyle}">
-            <StackPanel>
-                <!-- 按钮显示复选框网格 - 5列2行 -->
-                <Grid>
+            <!-- 按钮显示设置 -->
+            <ui:TextBlock Text="工具栏按钮" FontTypography="BodyStrong" Margin="0,0,0,8" />
+            
+            <ui:CardExpander Margin="0,0,0,12" IsExpanded="True">
+                <ui:CardExpander.Icon>
+                    <ui:SymbolIcon Symbol="Apps24" />
+                </ui:CardExpander.Icon>
+                <ui:CardExpander.Header>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <ui:TextBlock Grid.Row="0" Text="按钮可见性" FontTypography="Body" />
+                        <ui:TextBlock Grid.Row="1" Text="选择在主工具栏上显示的按钮" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontTypography="Caption" />
+                    </Grid>
+                </ui:CardExpander.Header>
+                
+                <Grid Margin="0,8,0,0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
@@ -44,339 +49,157 @@
                     </Grid.RowDefinitions>
 
                     <!-- 第一行 -->
-                    <CheckBox Grid.Row="0" Grid.Column="0" Content="显示&quot;形状&quot;按钮"
-                              Style="{StaticResource SettingsCheckBoxStyle}"
-                              IsChecked="{Binding Appearance.IsShowShapeButton, Mode=TwoWay}"/>
-                    <CheckBox Grid.Row="0" Grid.Column="1" Content="显示&quot;冻结&quot;按钮"
-                              Style="{StaticResource SettingsCheckBoxStyle}"
-                              IsChecked="{Binding Appearance.IsShowFreezeButton, Mode=TwoWay}"/>
-                    <CheckBox Grid.Row="0" Grid.Column="2" Content="显示&quot;漫游&quot;按钮"
-                              Style="{StaticResource SettingsCheckBoxStyle}"
-                              IsChecked="{Binding Appearance.IsShowRoamingButton, Mode=TwoWay}"/>
-                    <CheckBox Grid.Row="0" Grid.Column="3" Content="显示&quot;撤销&quot;按钮"
-                              Style="{StaticResource SettingsCheckBoxStyle}"
-                              IsChecked="{Binding Appearance.IsShowUndoButton, Mode=TwoWay}"/>
-                    <CheckBox Grid.Row="0" Grid.Column="4" Content="显示&quot;重做&quot;按钮"
-                              Style="{StaticResource SettingsCheckBoxStyle}"
-                              IsChecked="{Binding Appearance.IsShowRedoButton, Mode=TwoWay}"/>
+                    <CheckBox Grid.Row="0" Grid.Column="0" Content="形状" IsChecked="{Binding Appearance.IsShowShapeButton, Mode=TwoWay}" Margin="0,0,8,12"/>
+                    <CheckBox Grid.Row="0" Grid.Column="1" Content="冻结" IsChecked="{Binding Appearance.IsShowFreezeButton, Mode=TwoWay}" Margin="0,0,8,12"/>
+                    <CheckBox Grid.Row="0" Grid.Column="2" Content="漫游" IsChecked="{Binding Appearance.IsShowRoamingButton, Mode=TwoWay}" Margin="0,0,8,12"/>
+                    <CheckBox Grid.Row="0" Grid.Column="3" Content="撤销" IsChecked="{Binding Appearance.IsShowUndoButton, Mode=TwoWay}" Margin="0,0,8,12"/>
+                    <CheckBox Grid.Row="0" Grid.Column="4" Content="重做" IsChecked="{Binding Appearance.IsShowRedoButton, Mode=TwoWay}" Margin="0,0,0,12"/>
 
                     <!-- 第二行 -->
-                    <CheckBox Grid.Row="1" Grid.Column="0" Content="显示&quot;清并鼠&quot;按钮"
-                              Style="{StaticResource SettingsCheckBoxStyle}"
-                              IsChecked="{Binding Appearance.IsShowClearButton, Mode=TwoWay}"/>
-                    <CheckBox Grid.Row="1" Grid.Column="1" Content="显示&quot;框选&quot;按钮"
-                              Style="{StaticResource SettingsCheckBoxStyle}"
-                              IsChecked="{Binding Appearance.IsShowSelectButton, Mode=TwoWay}"/>
-                    <CheckBox Grid.Row="1" Grid.Column="2" Content="显示&quot;白板&quot;按钮"
-                              Style="{StaticResource SettingsCheckBoxStyle}"
-                              IsChecked="{Binding Appearance.IsShowWhiteboardButton, Mode=TwoWay}"/>
-                    <CheckBox Grid.Row="1" Grid.Column="3" Content="显示&quot;隐藏&quot;按钮"
-                              Style="{StaticResource SettingsCheckBoxStyle}"
-                              IsChecked="{Binding Appearance.IsShowHideButton, Mode=TwoWay}"/>
-                    <CheckBox Grid.Row="1" Grid.Column="4" Content="显示&quot;手势&quot;按钮"
-                              Style="{StaticResource SettingsCheckBoxStyle}"
-                              IsChecked="{Binding Appearance.IsShowGestureButton, Mode=TwoWay}"/>
+                    <CheckBox Grid.Row="1" Grid.Column="0" Content="清并鼠" IsChecked="{Binding Appearance.IsShowClearButton, Mode=TwoWay}" Margin="0,0,8,0"/>
+                    <CheckBox Grid.Row="1" Grid.Column="1" Content="框选" IsChecked="{Binding Appearance.IsShowSelectButton, Mode=TwoWay}" Margin="0,0,8,0"/>
+                    <CheckBox Grid.Row="1" Grid.Column="2" Content="白板" IsChecked="{Binding Appearance.IsShowWhiteboardButton, Mode=TwoWay}" Margin="0,0,8,0"/>
+                    <CheckBox Grid.Row="1" Grid.Column="3" Content="隐藏" IsChecked="{Binding Appearance.IsShowHideButton, Mode=TwoWay}" Margin="0,0,8,0"/>
+                    <CheckBox Grid.Row="1" Grid.Column="4" Content="手势" IsChecked="{Binding Appearance.IsShowGestureButton, Mode=TwoWay}" Margin="0,0,0,0"/>
                 </Grid>
+            </ui:CardExpander>
 
-                <!-- 橡皮按钮下拉 -->
-                <StackPanel Orientation="Horizontal" Margin="0,16,0,0">
-                    <TextBlock Text="橡皮按钮" Style="{StaticResource SettingsTitleStyle}"
-                               VerticalAlignment="Center" Margin="0,0,16,0"/>
-                    <ComboBox x:Name="ComboBoxEraserButtons" Width="140"
-                              SelectedIndex="{Binding Appearance.EraserButtonsVisibility, Mode=TwoWay}">
-                        <ComboBoxItem Content="两个都显示"/>
-                        <ComboBoxItem Content="仅墨迹擦"/>
-                        <ComboBoxItem Content="仅板擦"/>
-                    </ComboBox>
-                </StackPanel>
-            </StackPanel>
-        </Border>
-
-        <!-- ==================== 浮动工具栏设置 ==================== -->
-        <TextBlock Text="浮动工具栏" Style="{StaticResource SettingsGroupTitleStyle}"/>
-
-        <!-- 浮动工具栏显示按钮文字 -->
-        <Border Style="{StaticResource SettingsCardStyle}">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <ui:FontIcon Glyph="&#xE8D2;" Style="{StaticResource SettingsIconStyle}"/>
-                <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                    <TextBlock Text="浮动工具栏显示按钮文字" Style="{StaticResource SettingsTitleStyle}"/>
-                    <TextBlock Text="在工具栏按钮旁边显示功能名称" Style="{StaticResource SettingsDescriptionStyle}"/>
-                </StackPanel>
-                <ui:ToggleSwitch Grid.Column="2" VerticalAlignment="Center"
-                                 IsOn="{Binding Appearance.FloatingBarButtonLabelVisibility, Mode=TwoWay}"/>
-            </Grid>
-        </Border>
-
-        <!-- 浮动工具栏图标 -->
-        <Border Style="{StaticResource SettingsCardStyle}">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <ui:FontIcon Glyph="&#xE790;" Style="{StaticResource SettingsIconStyle}"/>
-                <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                    <TextBlock Text="浮动工具栏图标" Style="{StaticResource SettingsTitleStyle}"/>
-                    <TextBlock Text="选择工具栏的图标主题" Style="{StaticResource SettingsDescriptionStyle}"/>
-                </StackPanel>
-                <ComboBox Grid.Column="2" Width="160"
-                          SelectedIndex="{Binding Appearance.FloatingBarImg, Mode=TwoWay}">
-                    <ComboBoxItem Content="&quot;icc!&quot;默认蓝色"/>
-                    <ComboBoxItem Content="&quot;icc!&quot;黑色透明版"/>
+            <ui:CardControl Margin="0,0,0,24">
+                <ui:CardControl.Icon>
+                    <ui:SymbolIcon Symbol="EraserTool24" />
+                </ui:CardControl.Icon>
+                <ui:CardControl.Header>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <ui:TextBlock Grid.Row="0" Text="橡皮擦按钮模式" FontTypography="Body" />
+                        <ui:TextBlock Grid.Row="1" Text="选择橡皮擦按钮的显示方式" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontTypography="Caption" />
+                    </Grid>
+                </ui:CardControl.Header>
+                <ComboBox MinWidth="140" SelectedIndex="{Binding Appearance.EraserButtonsVisibility, Mode=TwoWay}">
+                    <ComboBoxItem Content="显示墨迹擦和板擦"/>
+                    <ComboBoxItem Content="仅显示墨迹擦"/>
+                    <ComboBoxItem Content="仅显示板擦"/>
                 </ComboBox>
-            </Grid>
-        </Border>
+            </ui:CardControl>
 
-        <!-- 浮动工具栏缩放 -->
-        <Border Style="{StaticResource SettingsCardStyle}">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="200"/>
-                    <ColumnDefinition Width="50"/>
-                </Grid.ColumnDefinitions>
-                <ui:FontIcon Glyph="&#xE740;" Style="{StaticResource SettingsIconStyle}"/>
-                <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                    <TextBlock Text="浮动工具栏缩放" Style="{StaticResource SettingsTitleStyle}"/>
+            <!-- 浮动工具栏设置 -->
+            <ui:TextBlock Text="浮动工具栏" FontTypography="BodyStrong" Margin="0,0,0,8" />
+
+            <ui:CardControl Margin="0,0,0,4">
+                <ui:CardControl.Icon>
+                    <ui:SymbolIcon Symbol="TextDescription24" />
+                </ui:CardControl.Icon>
+                <ui:CardControl.Header>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <ui:TextBlock Grid.Row="0" Text="显示按钮文字" FontTypography="Body" />
+                        <ui:TextBlock Grid.Row="1" Text="在工具栏按钮旁边显示功能名称" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontTypography="Caption" />
+                    </Grid>
+                </ui:CardControl.Header>
+                <ui:ToggleSwitch IsChecked="{Binding Appearance.FloatingBarButtonLabelVisibility, Mode=TwoWay}" />
+            </ui:CardControl>
+
+            <ui:CardControl Margin="0,0,0,4">
+                <ui:CardControl.Icon>
+                    <ui:SymbolIcon Symbol="Color24" />
+                </ui:CardControl.Icon>
+                <ui:CardControl.Header>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <ui:TextBlock Grid.Row="0" Text="图标主题" FontTypography="Body" />
+                        <ui:TextBlock Grid.Row="1" Text="选择工具栏的图标风格" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontTypography="Caption" />
+                    </Grid>
+                </ui:CardControl.Header>
+                <ComboBox MinWidth="160" SelectedIndex="{Binding Appearance.FloatingBarImg, Mode=TwoWay}">
+                    <ComboBoxItem Content="icc! 默认蓝色"/>
+                    <ComboBoxItem Content="icc! 黑色透明版"/>
+                </ComboBox>
+            </ui:CardControl>
+
+            <ui:CardControl Margin="0,0,0,4">
+                <ui:CardControl.Icon>
+                    <ui:SymbolIcon Symbol="ArrowMaximize24" />
+                </ui:CardControl.Icon>
+                <ui:CardControl.Header>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <ui:TextBlock Grid.Row="0" Text="缩放比例" FontTypography="Body" />
+                        <ui:TextBlock Grid.Row="1" Text="调整浮动工具栏的大小" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontTypography="Caption" />
+                    </Grid>
+                </ui:CardControl.Header>
+                <StackPanel Orientation="Horizontal">
+                    <Slider Width="200" VerticalAlignment="Center" Margin="0,0,10,0"
+                            Minimum="0.5" Maximum="2.0"
+                            Value="{Binding Appearance.ViewboxFloatingBarScaleTransformValue, Mode=TwoWay}"
+                            TickFrequency="0.1" IsSnapToTickEnabled="True"
+                            SmallChange="0.1" LargeChange="0.2"/>
+                    <TextBlock Text="{Binding Appearance.ViewboxFloatingBarScaleTransformValue, StringFormat={}{0:F1}}" 
+                               VerticalAlignment="Center" Width="30" TextAlignment="Right"/>
                 </StackPanel>
-                <Slider Grid.Column="2" VerticalAlignment="Center"
-                        Minimum="0.5" Maximum="2.0"
-                        Value="{Binding Appearance.ViewboxFloatingBarScaleTransformValue, Mode=TwoWay}"
-                        TickFrequency="0.1" IsSnapToTickEnabled="True"
-                        SmallChange="0.1" LargeChange="0.2"
-                        Style="{StaticResource ModernSliderStyle}"/>
-                <TextBlock Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Right"
-                           Text="{Binding Appearance.ViewboxFloatingBarScaleTransformValue, StringFormat={}{0:F1}}"
-                           Style="{StaticResource SettingsTitleStyle}"
-                           Foreground="{StaticResource AccentBrush}"/>
-            </Grid>
-        </Border>
+            </ui:CardControl>
 
-        <!-- 浮动工具栏透明度 -->
-        <Border Style="{StaticResource SettingsCardStyle}">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="200"/>
-                    <ColumnDefinition Width="50"/>
-                </Grid.ColumnDefinitions>
-                <ui:FontIcon Glyph="&#xE7A6;" Style="{StaticResource SettingsIconStyle}"/>
-                <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                    <TextBlock Text="浮动工具栏透明度" Style="{StaticResource SettingsTitleStyle}"/>
-                </StackPanel>
-                <Slider Grid.Column="2" VerticalAlignment="Center"
-                        Minimum="0.1" Maximum="1.0"
-                        Value="{Binding Appearance.ViewboxFloatingBarOpacityValue, Mode=TwoWay}"
-                        TickFrequency="0.1" IsSnapToTickEnabled="True"
-                        SmallChange="0.1" LargeChange="0.2"
-                        Style="{StaticResource ModernSliderStyle}"/>
-                <TextBlock Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Right"
-                           Text="{Binding Appearance.ViewboxFloatingBarOpacityValue, StringFormat={}{0:F1}}"
-                           Style="{StaticResource SettingsTitleStyle}"
-                           Foreground="{StaticResource AccentBrush}"/>
-            </Grid>
-        </Border>
-
-        <!-- 浮栏在PPT下透明度 -->
-        <Border Style="{StaticResource SettingsCardStyle}">
-            <StackPanel>
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="200"/>
-                        <ColumnDefinition Width="50"/>
-                    </Grid.ColumnDefinitions>
-                    <ui:FontIcon Glyph="&#xE8A1;" Style="{StaticResource SettingsIconStyle}"/>
-                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                        <TextBlock Text="浮栏在PPT下透明度" Style="{StaticResource SettingsTitleStyle}"/>
-                    </StackPanel>
-                    <Slider Grid.Column="2" VerticalAlignment="Center"
+            <ui:CardControl Margin="0,0,0,4">
+                <ui:CardControl.Icon>
+                    <ui:SymbolIcon Symbol="Drop24" />
+                </ui:CardControl.Icon>
+                <ui:CardControl.Header>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <ui:TextBlock Grid.Row="0" Text="常规透明度" FontTypography="Body" />
+                        <ui:TextBlock Grid.Row="1" Text="正常状态下的工具栏透明度" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontTypography="Caption" />
+                    </Grid>
+                </ui:CardControl.Header>
+                <StackPanel Orientation="Horizontal">
+                    <Slider Width="200" VerticalAlignment="Center" Margin="0,0,10,0"
                             Minimum="0.1" Maximum="1.0"
+                            Value="{Binding Appearance.ViewboxFloatingBarOpacityValue, Mode=TwoWay}"
+                            TickFrequency="0.1" IsSnapToTickEnabled="True"
+                            SmallChange="0.1" LargeChange="0.2"/>
+                    <TextBlock Text="{Binding Appearance.ViewboxFloatingBarOpacityValue, StringFormat={}{0:F1}}" 
+                               VerticalAlignment="Center" Width="30" TextAlignment="Right"/>
+                </StackPanel>
+            </ui:CardControl>
+
+            <ui:CardControl Margin="0,0,0,4">
+                <ui:CardControl.Icon>
+                    <ui:SymbolIcon Symbol="SlidePlay24" />
+                </ui:CardControl.Icon>
+                <ui:CardControl.Header>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <ui:TextBlock Grid.Row="0" Text="PPT 模式透明度" FontTypography="Body" />
+                        <ui:TextBlock Grid.Row="1" Text="在 PPT 放映时的工具栏透明度" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontTypography="Caption" />
+                    </Grid>
+                </ui:CardControl.Header>
+                <StackPanel Orientation="Horizontal">
+                    <Slider Width="200" VerticalAlignment="Center" Margin="0,0,10,0"
+                            Minimum="0.0" Maximum="1.0"
                             Value="{Binding Appearance.ViewboxFloatingBarOpacityInPPTValue, Mode=TwoWay}"
                             TickFrequency="0.1" IsSnapToTickEnabled="True"
-                            SmallChange="0.1" LargeChange="0.2"
-                            Style="{StaticResource ModernSliderStyle}"/>
-                    <TextBlock Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Right"
-                               Text="{Binding Appearance.ViewboxFloatingBarOpacityInPPTValue, StringFormat={}{0:F1}}"
-                               Style="{StaticResource SettingsTitleStyle}"
-                               Foreground="{StaticResource AccentBrush}"/>
-                </Grid>
-                <TextBlock Text="# 重新进入PPT放映后生效" Style="{StaticResource HintTextStyle}"/>
-            </StackPanel>
-        </Border>
-
-        <!-- 在调色盘窗口中显示笔尖模式按钮 -->
-        <Border Style="{StaticResource SettingsCardStyle}">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <ui:FontIcon Glyph="&#xE70F;" Style="{StaticResource SettingsIconStyle}"/>
-                <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                    <TextBlock Text="在调色盘窗口中显示 笔尖模式 按钮" Style="{StaticResource SettingsTitleStyle}"/>
-                    <TextBlock Text="允许在颜色选择器中切换笔尖模式" Style="{StaticResource SettingsDescriptionStyle}"/>
+                            SmallChange="0.1" LargeChange="0.2"/>
+                    <TextBlock Text="{Binding Appearance.ViewboxFloatingBarOpacityInPPTValue, StringFormat={}{0:F1}}" 
+                               VerticalAlignment="Center" Width="30" TextAlignment="Right"/>
                 </StackPanel>
-                <ui:ToggleSwitch Grid.Column="2" VerticalAlignment="Center"
-                                 IsOn="{Binding Appearance.IsEnableDisPlayNibModeToggler, Mode=TwoWay}"/>
-            </Grid>
-        </Border>
+            </ui:CardControl>
 
-        <!-- ==================== 白板设置 ==================== -->
-        <TextBlock Text="白板" Style="{StaticResource SettingsGroupTitleStyle}"/>
-
-        <!-- 白板 UI 80% 缩放 -->
-        <Border Style="{StaticResource SettingsCardStyle}">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <ui:FontIcon Glyph="&#xE799;" Style="{StaticResource SettingsIconStyle}"/>
-                <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                    <TextBlock Text="白板 UI 80% 缩放" Style="{StaticResource SettingsTitleStyle}"/>
-                    <TextBlock Text="在白板模式下将界面缩放至80%" Style="{StaticResource SettingsDescriptionStyle}"/>
-                </StackPanel>
-                <ui:ToggleSwitch Grid.Column="2" VerticalAlignment="Center"
-                                 IsOn="{Binding Appearance.EnableViewboxBlackBoardScaleTransform, Mode=TwoWay}"/>
-            </Grid>
-        </Border>
-
-        <!-- 在白板中显示当前时间和日期 -->
-        <Border Style="{StaticResource SettingsCardStyle}">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <ui:FontIcon Glyph="&#xE787;" Style="{StaticResource SettingsIconStyle}"/>
-                <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                    <TextBlock Text="在白板中显示当前时间和日期" Style="{StaticResource SettingsTitleStyle}"/>
-                    <TextBlock Text="白板模式下在界面显示时间日期信息" Style="{StaticResource SettingsDescriptionStyle}"/>
-                </StackPanel>
-                <ui:ToggleSwitch Grid.Column="2" VerticalAlignment="Center"
-                                 IsOn="{Binding Appearance.EnableTimeDisplayInWhiteboardMode, Mode=TwoWay}"/>
-            </Grid>
-        </Border>
-
-        <!-- 在白板中显示信仰の源 -->
-        <Border Style="{StaticResource SettingsCardStyle}">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <ui:FontIcon Glyph="&#xE82D;" Style="{StaticResource SettingsIconStyle}"/>
-                <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                    <TextBlock Text="在白板中显示信仰の源（好喝的/毒的鸡汤）" Style="{StaticResource SettingsTitleStyle}"/>
-                    <TextBlock Text="白板模式下显示励志或有趣的语句" Style="{StaticResource SettingsDescriptionStyle}"/>
-                </StackPanel>
-                <ui:ToggleSwitch Grid.Column="2" VerticalAlignment="Center"
-                                 IsOn="{Binding Appearance.EnableChickenSoupInWhiteboardMode, Mode=TwoWay}"/>
-            </Grid>
-        </Border>
-
-        <!-- 信仰の源出自Where -->
-        <Border Style="{StaticResource SettingsCardStyle}">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <ui:FontIcon Glyph="&#xE8F1;" Style="{StaticResource SettingsIconStyle}"/>
-                <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                    <TextBlock Text="信仰の源出自Where?" Style="{StaticResource SettingsTitleStyle}"/>
-                    <TextBlock Text="选择鸡汤语句的来源类型" Style="{StaticResource SettingsDescriptionStyle}"/>
-                </StackPanel>
-                <ComboBox Grid.Column="2" Width="180"
-                          SelectedIndex="{Binding Appearance.ChickenSoupSource, Mode=TwoWay}">
-                    <ComboBoxItem Content="osu!玩家语录"/>
-                    <ComboBoxItem Content="励志立志的名言警句"/>
-                    <ComboBoxItem Content="高考祝福语"/>
-                </ComboBox>
-            </Grid>
-        </Border>
-
-        <!-- ==================== 收纳模式设置 ==================== -->
-        <TextBlock Text="收纳模式" Style="{StaticResource SettingsGroupTitleStyle}"/>
-
-        <!-- 在收纳模式下启用快速面板 -->
-        <Border Style="{StaticResource SettingsCardStyle}">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <ui:FontIcon Glyph="&#xE8A0;" Style="{StaticResource SettingsIconStyle}"/>
-                <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                    <TextBlock Text="在收纳模式下启用快速面板" Style="{StaticResource SettingsTitleStyle}"/>
-                    <TextBlock Text="收纳时显示快捷操作面板" Style="{StaticResource SettingsDescriptionStyle}"/>
-                </StackPanel>
-                <ui:ToggleSwitch Grid.Column="2" VerticalAlignment="Center"
-                                 IsOn="{Binding Appearance.IsShowQuickPanel, Mode=TwoWay}"/>
-            </Grid>
-        </Border>
-
-        <!-- 取消收纳按钮图标 -->
-        <Border Style="{StaticResource SettingsCardStyle}">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <ui:FontIcon Glyph="&#xE76C;" Style="{StaticResource SettingsIconStyle}"/>
-                <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                    <TextBlock Text="取消收纳按钮图标" Style="{StaticResource SettingsTitleStyle}"/>
-                    <TextBlock Text="选择展开按钮的图标样式" Style="{StaticResource SettingsDescriptionStyle}"/>
-                </StackPanel>
-                <ComboBox Grid.Column="2" Width="120"
-                          SelectedIndex="{Binding Appearance.UnFoldButtonImageType, Mode=TwoWay}">
-                    <ComboBoxItem Content="箭头"/>
-                    <ComboBoxItem Content="笔"/>
-                </ComboBox>
-            </Grid>
-        </Border>
-
-        <!-- ==================== 任务栏托盘图标 ==================== -->
-        <TextBlock Text="任务栏托盘图标" Style="{StaticResource SettingsGroupTitleStyle}"/>
-
-        <!-- 启用托盘图标 -->
-        <Border Style="{StaticResource SettingsCardStyle}">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <ui:FontIcon Glyph="&#xE87B;" Style="{StaticResource SettingsIconStyle}"/>
-                <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                    <TextBlock Text="启用托盘图标" Style="{StaticResource SettingsTitleStyle}"/>
-                    <TextBlock Text="在系统托盘区域显示应用图标" Style="{StaticResource SettingsDescriptionStyle}"/>
-                </StackPanel>
-                <ui:ToggleSwitch Grid.Column="2" VerticalAlignment="Center"
-                                 IsOn="{Binding Appearance.EnableTrayIcon, Mode=TwoWay}"/>
-            </Grid>
-        </Border>
-
-        <!-- 底部间距 -->
-        <Border Height="40"/>
-    </StackPanel>
-    </ScrollViewer>
+        </StackPanel>
+    </ui:DynamicScrollViewer>
 </UserControl>
