@@ -18,8 +18,9 @@ namespace Ink_Canvas {
 
         public bool isFreezeFrameLoaded = false;
 
-        [DllImport("user32.dll")]
-        static extern bool UpdateWindow(IntPtr hWnd);
+        [LibraryImport("user32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        static partial bool UpdateWindow(IntPtr hWnd);
 
         /// <summary>
         /// 初始化画面定格窗口
@@ -31,14 +32,22 @@ namespace Ink_Canvas {
             if (OSVersion.GetOperatingSystem() < OSVersionExtension.OperatingSystem.Windows81) return;
             if (!Magnification.MagInitialize()) return;
             // 註冊宿主窗體類名
-            var wndClassEx = new WNDCLASSEX {
-                cbSize = (uint)Marshal.SizeOf<WNDCLASSEX>(), style = CS_HREDRAW | CS_VREDRAW,
-                lpfnWndProc = StaticWndProcDelegate, hInstance = IntPtr.Zero,
-                hCursor = LoadCursor(IntPtr.Zero, IDC_ARROW), hbrBackground = (IntPtr)(1 + COLOR_BTNFACE),
-                lpszClassName = "ICCMagnifierWindowHostForFreezeFrame",
-                hIcon = IntPtr.Zero, hIconSm = IntPtr.Zero
-            };
-            RegisterClassEx(ref wndClassEx);
+            var className = "ICCMagnifierWindowHostForFreezeFrame";
+            var classNamePtr = Marshal.StringToHGlobalUni(className);
+            try {
+                var wndClassEx = new WNDCLASSEX {
+                    cbSize = (uint)Marshal.SizeOf<WNDCLASSEX>(), style = CS_HREDRAW | CS_VREDRAW,
+                    lpfnWndProc = StaticWndProcDelegate, hInstance = IntPtr.Zero,
+                    hCursor = LoadCursor(IntPtr.Zero, (IntPtr)IDC_ARROW), hbrBackground = (IntPtr)(1 + COLOR_BTNFACE),
+                    lpszClassName = classNamePtr,
+                    lpszMenuName = IntPtr.Zero,
+                    hIcon = IntPtr.Zero, hIconSm = IntPtr.Zero
+                };
+                RegisterClassEx(ref wndClassEx);
+            }
+            finally {
+                Marshal.FreeHGlobal(classNamePtr);
+            }
             // 創建宿主窗體
             var windowHostHandle = CreateWindowEx(
                 WS_EX_TOPMOST | WS_EX_LAYERED, "ICCMagnifierWindowHostForFreezeFrame", "ICCMagnifierWindowHostWindowForFreezeFrame",
