@@ -31,18 +31,18 @@ namespace Ink_Canvas {
 
                 string fileName = DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss-fff");
                 if (currentMode != 0) {
-                    fileName += " Page-" + CurrentWhiteboardIndex + " StrokesCount-" + inkCanvas.Strokes.Count;
+                    fileName += $" Page-{CurrentWhiteboardIndex} StrokesCount-{inkCanvas.Strokes.Count}";
                 }
-                string savePathWithName = Path.Combine(savePath, fileName + ".icstk");
+                string savePathWithName = Path.Combine(savePath, $"{fileName}.icstk");
 
                 using (var fs = new FileStream(savePathWithName, FileMode.Create)) {
                     inkCanvas.Strokes.Save(fs);
                 }
-                if (newNotice) ShowNewToast("墨迹成功保存至 " + savePathWithName, MW_Toast.ToastType.Success, 2500);
+                if (newNotice) ShowNewToast($"墨迹成功保存至 {savePathWithName}", MW_Toast.ToastType.Success, 2500);
             }
             catch (Exception ex) {
                 ShowNewToast("墨迹保存失败！", MW_Toast.ToastType.Error, 3000);
-                LogHelper.WriteLogToFile("墨迹保存失败 | " + ex.ToString(), LogHelper.LogType.Error);
+                LogHelper.WriteLogToFile($"墨迹保存失败 | {ex}", LogHelper.LogType.Error);
             }
         }
 

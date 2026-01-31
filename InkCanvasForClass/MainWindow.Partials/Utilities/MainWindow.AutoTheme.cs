@@ -7,51 +7,28 @@ using System.Windows.Media;
 using Application = System.Windows.Application;
 
 namespace Ink_Canvas {
-    public partial class MainWindow {
+    public partial class MainWindow : System.Windows.Window {
         private Color FloatBarForegroundColor = Color.FromRgb(102, 102, 102);
 
         private void SetTheme(string theme) {
-            if (theme == "Light") {
-                var rd1 = new ResourceDictionary()
-                    { Source = new Uri("Resources/Styles/Light.xaml", UriKind.Relative) };
-                Application.Current.Resources.MergedDictionaries.Add(rd1);
+            string themeXaml = theme == "Light" ? "Resources/Styles/Light.xaml" : "Resources/Styles/Dark.xaml";
+            ElementTheme elementTheme = theme == "Light" ? ElementTheme.Light : ElementTheme.Dark;
 
-                var rd2 = new ResourceDictionary()
-                    { Source = new Uri("Resources/DrawShapeImageDictionary.xaml", UriKind.Relative) };
-                Application.Current.Resources.MergedDictionaries.Add(rd2);
+            var dictionaries = new string[] {
+                themeXaml,
+                "Resources/DrawShapeImageDictionary.xaml",
+                "Resources/SeewoImageDictionary.xaml",
+                "Resources/IconImageDictionary.xaml"
+            };
 
-                var rd3 = new ResourceDictionary()
-                    { Source = new Uri("Resources/SeewoImageDictionary.xaml", UriKind.Relative) };
-                Application.Current.Resources.MergedDictionaries.Add(rd3);
-
-                var rd4 = new ResourceDictionary()
-                    { Source = new Uri("Resources/IconImageDictionary.xaml", UriKind.Relative) };
-                Application.Current.Resources.MergedDictionaries.Add(rd4);
-
-                ThemeManager.SetRequestedTheme(window, ElementTheme.Light);
-
-                FloatBarForegroundColor = (Color)Application.Current.FindResource("FloatBarForegroundColor");
+            foreach (var source in dictionaries) {
+                 var rd = new ResourceDictionary() { Source = new Uri(source, UriKind.Relative) };
+                 Application.Current.Resources.MergedDictionaries.Add(rd);
             }
-            else if (theme == "Dark") {
-                var rd1 = new ResourceDictionary() { Source = new Uri("Resources/Styles/Dark.xaml", UriKind.Relative) };
-                Application.Current.Resources.MergedDictionaries.Add(rd1);
 
-                var rd2 = new ResourceDictionary()
-                    { Source = new Uri("Resources/DrawShapeImageDictionary.xaml", UriKind.Relative) };
-                Application.Current.Resources.MergedDictionaries.Add(rd2);
+            ThemeManager.SetRequestedTheme((System.Windows.Window)this, elementTheme);
 
-                var rd3 = new ResourceDictionary()
-                    { Source = new Uri("Resources/SeewoImageDictionary.xaml", UriKind.Relative) };
-                Application.Current.Resources.MergedDictionaries.Add(rd3);
-
-                var rd4 = new ResourceDictionary()
-                    { Source = new Uri("Resources/IconImageDictionary.xaml", UriKind.Relative) };
-                Application.Current.Resources.MergedDictionaries.Add(rd4);
-
-                ThemeManager.SetRequestedTheme(window, ElementTheme.Dark);
-
-                FloatBarForegroundColor = (Color)Application.Current.FindResource("FloatBarForegroundColor");
-            }
+            FloatBarForegroundColor = (Color)Application.Current.FindResource("FloatBarForegroundColor");
         }
 
         private void SystemEvents_UserPreferenceChanged(object sender, UserPreferenceChangedEventArgs e) {
@@ -63,8 +40,7 @@ namespace Ink_Canvas {
                     SetTheme("Dark");
                     break;
                 case 2:
-                    if (IsSystemThemeLight()) SetTheme("Light");
-                    else SetTheme("Dark");
+                    SetTheme(IsSystemThemeLight() ? "Light" : "Dark");
                     break;
             }
         }

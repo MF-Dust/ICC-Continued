@@ -48,7 +48,7 @@ using Path = System.IO.Path;
 using Rectangle = System.Drawing.Rectangle;
 
 namespace Ink_Canvas {
-    public partial class MainWindow {
+    public partial class MainWindow : System.Windows.Window {
         #region MagnificationAPI 获取屏幕截图并过滤ICC窗口
 
         #region Dubi906w 的轮子
@@ -770,7 +770,7 @@ namespace Ink_Canvas {
         [RequiresUnmanagedCode("Uses user32 ShowWindow and Magnification API for screenshots.")]
         public async Task<Bitmap> FullscreenSnapshot(SnapshotConfig config) {
             Bitmap bitmap = new Bitmap(1, 1);
-            var excludedHwnds = new List<HWND>() { new HWND(new WindowInteropHelper(this).Handle) };
+            var excludedHwnds = new List<HWND>() { new HWND(new WindowInteropHelper((System.Windows.Window)this).Handle) };
             excludedHwnds.AddRange(config.ExcludedHwnds);
             if (config.SnapshotMethod == SnapshotMethod.Auto) {
                 if (OSVersion.GetOperatingSystem() >= OperatingSystem.Windows81) {

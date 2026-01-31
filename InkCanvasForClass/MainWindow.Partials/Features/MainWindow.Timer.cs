@@ -38,7 +38,7 @@ namespace Ink_Canvas {
         }
     }
 
-    public partial class MainWindow {
+    public partial class MainWindow : System.Windows.Window {
         private System.Timers.Timer timerCheckPPT = new();
         private System.Timers.Timer timerKillProcess = new();
         private System.Timers.Timer timerCheckAutoFold = new();
@@ -102,8 +102,7 @@ namespace Ink_Canvas {
                     if (processes.Length > 0) arg += " /IM HiteAnnotation.exe";
                 }
 
-                if (Settings.Automation.IsAutoKillVComYouJiao)
-                {
+                if (Settings.Automation.IsAutoKillVComYouJiao) {
                     var processes = Process.GetProcessesByName("VcomTeach");
                     if (processes.Length > 0) arg += " /IM VcomTeach.exe" + " /IM VcomDaemon.exe" + " /IM VcomRender.exe";
                 }
@@ -121,46 +120,45 @@ namespace Ink_Canvas {
                 }
 
                 if (arg != "/F") {
-                    using (var p = new Process()) {
-                        p.StartInfo = new ProcessStartInfo("taskkill", arg);
-                        p.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                        p.Start();
+                    Application.Current.Dispatcher.Invoke(() => {
+                        try {
+                            var p = new Process();
+                            p.StartInfo.FileName = "taskkill.exe";
+                            p.StartInfo.Arguments = arg;
+                            p.StartInfo.CreateNoWindow = true;
+                            p.StartInfo.UseShellExecute = false;
+                            p.Start();
 
-                        if (arg.Contains("EasiNote")) {
-                            Dispatcher.Invoke(() => {
+                            if (arg.Contains("EasiNote")) {
                                 ShowNewToast("“希沃白板 5”已自动关闭", MW_Toast.ToastType.Warning, 3000);
-                            });
-                        }
+                            }
 
-                        if (arg.Contains("HiteAnnotation")) {
-                            Dispatcher.Invoke(() => {
+                            if (arg.Contains("HiteAnnotation")) {
                                 ShowNewToast("“鸿合屏幕书写”已自动关闭", MW_Toast.ToastType.Warning, 3000);
-                            });
-                        }
+                            }
 
-                        if (arg.Contains("Ink Canvas Annotation") || arg.Contains("Ink Canvas Artistry")) {
-                            Dispatcher.Invoke(() => {
+                            if (arg.Contains("Ink Canvas Annotation") || arg.Contains("Ink Canvas Artistry")) {
                                 ShowNewToast("“ICA”已自动关闭", MW_Toast.ToastType.Warning, 3000);
-                            });
-                        }
+                            }
 
-                        if (arg.Contains("\"Ink Canvas.exe\"")) {
-                            Dispatcher.Invoke(() => {
+                            if (arg.Contains("\"Ink Canvas.exe\"")) {
                                 ShowNewToast("“Ink Canvas”已自动关闭", MW_Toast.ToastType.Warning, 3000);
-                            });
-                        }
+                            }
 
-                        if (arg.Contains("VcomTeach"))
-                        {
-                            Dispatcher.Invoke(() => {
+                            if (arg.Contains("VcomTeach")) {
                                 ShowNewToast("“优教授课端”已自动关闭", MW_Toast.ToastType.Warning, 3000);
-                            });
+                            }
+
+                            p.WaitForExit();
                         }
-                    }
+                        catch (Exception ex) {
+                            LogHelper.WriteLogToFile("Failed to kill process: " + ex.Message, LogHelper.LogType.Error);
+                        }
+                    });
                 }
             }
             catch (Exception ex) {
-                LogHelper.WriteLogToFile("Error in TimerKillProcess_Elapsed: " + ex.Message, LogHelper.LogType.Error);
+                LogHelper.WriteLogToFile("TimerKillProcess error: " + ex.Message, LogHelper.LogType.Error);
             }
         }
 

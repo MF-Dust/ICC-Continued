@@ -14,7 +14,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 
 namespace Ink_Canvas {
-    public partial class MainWindow {
+    public partial class MainWindow : System.Windows.Window {
         public bool isFloatingBarFolded = false;
         private bool isFloatingBarChangingHideMode = false;
 
@@ -46,7 +46,7 @@ namespace Ink_Canvas {
         {
             var isShouldRejectAction = false;
 
-            await Dispatcher.InvokeAsync(() => {
+            await Application.Current.Dispatcher.InvokeAsync(() => {
                 if (lastBorderMouseDownObject != null && lastBorderMouseDownObject is Panel)
                     ((Panel)lastBorderMouseDownObject).Background = new SolidColorBrush(Colors.Transparent);
                 if (sender == Fold_Icon && lastBorderMouseDownObject != Fold_Icon) isShouldRejectAction = true;
@@ -240,29 +240,31 @@ namespace Ink_Canvas {
                     ViewboxFloatingBarMarginAnimation(Constants.FloatingBarBottomMarginPPT);
                 else
                     ViewboxFloatingBarMarginAnimation(Constants.FloatingBarBottomMarginNormal, true);
-                SidePannelMarginAnimation(Constants.SidePanelCollapsedMargin, !unfoldFloatingBarByUser);
+                SidePanelMarginAnimation(Constants.SidePanelCollapsedMargin, !unfoldFloatingBarByUser);
             });
 
             isFloatingBarChangingHideMode = false;
         }
 
-        private async void SidePannelMarginAnimation(int MarginFromEdge, bool isNoAnimation = false) // Possible value: -50, -10
+        private async void SidePanelMarginAnimation(int MarginFromEdge, bool isNoAnimation = false) // Possible value: -50, -10
         {
             await Dispatcher.InvokeAsync(() => {
                 if (MarginFromEdge == -10) LeftSidePanel.Visibility = Visibility.Visible;
 
                 var LeftSidePanelmarginAnimation = new ThicknessAnimation {
-                    Duration = isNoAnimation == true ? TimeSpan.FromSeconds(0) : TimeSpan.FromSeconds(Constants.SidePanelAnimationDuration),
+                    Duration = isNoAnimation ? TimeSpan.Zero : TimeSpan.FromSeconds(Constants.SidePanelAnimationDuration),
                     From = LeftSidePanel.Margin,
-                    To = new Thickness(MarginFromEdge, 0, 0, Constants.SidePanelBottomMargin)
+                    To = new Thickness(MarginFromEdge, 0, 0, Constants.SidePanelBottomMargin),
+                    EasingFunction = new CubicEase()
                 };
-                LeftSidePanelmarginAnimation.EasingFunction = new CubicEase();
+                
                 var RightSidePanelmarginAnimation = new ThicknessAnimation {
-                    Duration = isNoAnimation == true ? TimeSpan.FromSeconds(0) : TimeSpan.FromSeconds(Constants.SidePanelAnimationDuration),
+                    Duration = isNoAnimation ? TimeSpan.Zero : TimeSpan.FromSeconds(Constants.SidePanelAnimationDuration),
                     From = RightSidePanel.Margin,
-                    To = new Thickness(0, 0, MarginFromEdge, Constants.SidePanelBottomMargin)
+                    To = new Thickness(0, 0, MarginFromEdge, Constants.SidePanelBottomMargin),
+                    EasingFunction = new CubicEase()
                 };
-                RightSidePanelmarginAnimation.EasingFunction = new CubicEase();
+                
                 LeftSidePanel.BeginAnimation(MarginProperty, LeftSidePanelmarginAnimation);
                 RightSidePanel.BeginAnimation(MarginProperty, RightSidePanelmarginAnimation);
             });

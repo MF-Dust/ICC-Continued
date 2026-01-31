@@ -55,7 +55,7 @@ using System.Xml.Linq;
 using Image = System.Windows.Controls.Image;
 
 namespace Ink_Canvas {
-    public partial class MainWindow {
+    public partial class MainWindow : System.Windows.Window {
         #region 常用颜色画刷缓存
 
         private static readonly SolidColorBrush CachedTransparentBrush = new SolidColorBrush(Colors.Transparent);
@@ -179,7 +179,7 @@ namespace Ink_Canvas {
 
         private void SymbolIconEmoji_MouseDown(object sender, MouseButtonEventArgs e) {
             if (isViewboxFloatingBarMarginAnimationRunning) {
-                ViewboxFloatingBar.BeginAnimation(MarginProperty, null);
+                ViewboxFloatingBar.BeginAnimation(FrameworkElement.MarginProperty, null);
                 isViewboxFloatingBarMarginAnimationRunning = false;
             }
 
@@ -734,12 +734,12 @@ namespace Ink_Canvas {
             if (!isFreezeFrameLoaded) return;
             if (_isAnnotationFreezeOn) {
                 var bmp = await GetFreezedFrameAsync();
-                _ = Dispatcher.InvokeAsync(() => {
+                _ = Application.Current.Dispatcher.InvokeAsync(() => {
                     FreezeFrameBackgroundImage.Source = BitmapToImageSource(bmp);
                     FreezeFrameBackgroundImage.Visibility = Visibility.Visible;
                 });
             } else {
-                _ = Dispatcher.InvokeAsync(() => {
+                _ = Application.Current.Dispatcher.InvokeAsync(() => {
                     FreezeFrameBackgroundImage.Source = null;
                     FreezeFrameBackgroundImage.Visibility = Visibility.Collapsed;
                 });
@@ -1735,7 +1735,7 @@ namespace Ink_Canvas {
 
         public async void PureViewboxFloatingBarMarginAnimationInPPTMode()
         {
-            await Dispatcher.InvokeAsync(() => {
+            await Application.Current.Dispatcher.InvokeAsync(() => {
                 ViewboxFloatingBar.Visibility = Visibility.Visible;
                 isViewboxFloatingBarMarginAnimationRunning = true;
 
@@ -1747,7 +1747,7 @@ namespace Ink_Canvas {
                     dpiScaleY = source.CompositionTarget.TransformToDevice.M22;
                 }
 
-                var screen = System.Windows.Forms.Screen.FromHandle(new WindowInteropHelper(this).Handle);
+                var screen = System.Windows.Forms.Screen.FromHandle(new WindowInteropHelper((System.Windows.Window)this).Handle);
                 double screenWidth = screen.Bounds.Width / dpiScaleX, screenHeight = screen.Bounds.Height / dpiScaleY;
                 var scale = _floatingBarViewModel?.Scale ?? 1.0;
                 pos.X = (screenWidth - ViewboxFloatingBar.ActualWidth * scale) / 2;
@@ -1766,12 +1766,12 @@ namespace Ink_Canvas {
                     To = new Thickness(pos.X, pos.Y, 0, -20)
                 };
                 marginAnimation.EasingFunction = new CircleEase();
-                ViewboxFloatingBar.BeginAnimation(MarginProperty, marginAnimation);
+                ViewboxFloatingBar.BeginAnimation(FrameworkElement.MarginProperty, marginAnimation);
             });
 
             await Task.Delay(349);
 
-            await Dispatcher.InvokeAsync(() => {
+            await Application.Current.Dispatcher.InvokeAsync(() => {
                 ViewboxFloatingBar.Margin = new Thickness(pos.X, pos.Y, -2000, -200);
             });
         }
